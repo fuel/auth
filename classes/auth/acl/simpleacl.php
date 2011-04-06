@@ -35,7 +35,7 @@ class Auth_Acl_SimpleAcl extends \Auth_Acl_Driver {
 		$area    = $condition[0];
 		$rights  = $condition[1];
 		$current_roles  = $group->get_roles($entity[1]);
-		$current_rights = '';
+		$current_rights = array();
 		if (is_array($current_roles))
 		{
 			$roles = \Config::get('simpleauth.roles', array());
