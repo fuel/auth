@@ -14,6 +14,8 @@
 
 namespace Auth;
 
+import('phpseclib/Crypt/Hash', 'vendor');
+use \PHPSecLib\Crypt_Hash;
 
 abstract class Auth_Login_Driver extends \Auth_Driver {
 
@@ -60,6 +62,11 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 		'salt_prefix' => '',
 		'salt_postfix' => ''
 	);
+
+	/**
+	 * @var	object	PHPSecLib hash object
+	 */
+	protected $hasher = null;
 
 	/**
 	 * Check for login
@@ -170,7 +177,9 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	 */
 	public function hash_password($password)
 	{
-		return sha1(@$this->config['salt_prefix'].$password.@$this->config['salt_postfix']);
+		is_null($this->hasher) && $this->hasher = new Crypt_Hash();
+
+		return $this->hasher->pbkdf2($password, @$this->config['salt_prefix'].@$this->config['salt_postfix'], 10000, 32);
 	}
 
 	// ------------------------------------------------------------------------
