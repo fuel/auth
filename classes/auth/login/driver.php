@@ -179,7 +179,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	{
 		is_null($this->hasher) && $this->hasher = new Crypt_Hash();
 
-		return $this->hasher->pbkdf2($password, @$this->config['salt_prefix'].@$this->config['salt_postfix'], 10000, 32);
+		return base64_encode($this->hasher->pbkdf2($password, @$this->config['salt_prefix'].@$this->config['salt_postfix'], 10000, 32));
 	}
 
 	// ------------------------------------------------------------------------

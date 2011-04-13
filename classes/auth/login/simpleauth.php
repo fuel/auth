@@ -320,7 +320,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$last_login = \Date::factory()->get_timestamp();
 
 		is_null($this->hasher) && $this->hasher = new Crypt_Hash();
-		$login_hash = $this->hasher->pbkdf2($this->user->get('username').$last_login, $this->config['login_hash_salt'], 10000, 64);
+		$login_hash = base64_encode($this->hasher->pbkdf2($this->user->get('username').$last_login, $this->config['login_hash_salt'], 10000, 32));
 
 		\DB::update(\Config::get('simpleauth.table_name'))
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
