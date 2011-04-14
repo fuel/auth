@@ -187,7 +187,7 @@ class Auth {
 	 */
 	public static function check($specific = null)
 	{
-		$drivers = $specific === null ? static::$_instances : (array) $drivers;
+		$drivers = $specific === null ? static::$_instances : (array) $specific;
 
 		foreach ($drivers as $i)
 		{

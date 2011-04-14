@@ -25,7 +25,7 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 	}
 
 	protected $config = array(
-		'drivers' => array('acl' => array('simpleacl'))
+		'drivers' => array('acl' => array('SimpleAcl'))
 	);
 
 	public function member($group, $user = null)

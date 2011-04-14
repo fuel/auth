@@ -1,6 +1,6 @@
 <?php
 
 return array(
-	'driver' => 'simpleauth',
+	'driver' => 'SimpleAuth',
 	'verify_multiple_logins' => false,
 );
