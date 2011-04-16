@@ -339,6 +339,10 @@ class Auth {
 		{
 			return static::_driver_check($type, $args[0], $args[1], @$args[2]);
 		}
+		if (static::$_verify_multiple !== true and method_exists(static::$_instance, $method))
+		{
+			return call_user_func_array(array(static::$_instance, $method), $args);
+		}
 
 		throw new \Auth_Exception('Invalid method.');
 	}
