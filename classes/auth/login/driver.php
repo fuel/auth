@@ -34,6 +34,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 		$class = \Inflector::get_namespace($config['driver']).'Auth_Login_'.ucfirst(\Inflector::denamespace($config['driver']));
 		$driver = new $class($config);
 		static::$_instances[$driver->get_id()] = $driver;
+		is_null(static::$_instance) and static::$_instance = $driver;
 
 		foreach ($driver->get_config('drivers', array()) as $type => $drivers)
 		{

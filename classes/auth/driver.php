@@ -56,11 +56,6 @@ abstract class Auth_Driver {
 			return static::$_instances[$instance];
 		}
 
-		if (static::$_instance === null)
-		{
-			static::$_instance = static::factory();
-		}
-
 		return static::$_instance;
 	}
 

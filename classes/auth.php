@@ -330,13 +330,14 @@ class Auth {
 	 */
 	public static function __callStatic($method, $args)
 	{
+		$args = array_pad($args, 3, null);
 		if (array_key_exists($method, static::$_drivers))
 		{
 			return static::_driver_instance($method, $args[0]);
 		}
 		if ($type = array_search($method, static::$_drivers))
 		{
-			return static::_driver_check($type, $args[0], @$args[1], @$args[2]);
+			return static::_driver_check($type, $args[0], $args[1], @$args[2]);
 		}
 
 		throw new \Auth_Exception('Invalid method.');
