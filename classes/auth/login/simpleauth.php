@@ -14,24 +14,6 @@
 
 namespace Auth;
 
-
-/*
-	CREATE TABLE `simpleusers` (
-		`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-		`username` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
-		`password` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
-		`group` INT NOT NULL DEFAULT 1 ,
-		`email` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
-		`last_login` VARCHAR( 25 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
-		`login_hash` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
-		`profile_fields` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
-		UNIQUE (
-			`username` ,
-			`email`
-		)
-	)
-*/
-
 class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 	public static function _init()
@@ -50,7 +32,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	protected $config = array(
 		'salt_prefix' => '',
 		'salt_postfix' => '',
-		'drivers' => array('group' => array('simplegroup')),
+		'drivers' => array('group' => array('SimpleGroup')),
 		'login_hash_salt' => 'put_some_salt_in_here',
 		'additional_fields' => array('profile_fields')
 	);
@@ -354,7 +336,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return array(array('simplegroup', $this->user->get('group')));
+		return array(array('SimpleGroup', $this->user->get('group')));
 	}
 
 	/**
