@@ -21,7 +21,7 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 
 	public static function _init()
 	{
-		static::$_valid_groups = array_keys(\Config::get('simpleauth.groups'));
+		static::$_valid_groups = array_keys(\Config::get('simpleauth.groups', array()));
 	}
 
 	protected $config = array(
@@ -50,14 +50,14 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 
 	public function get_name($group)
 	{
-		return @static::$_valid_groups[(int) $group]['name'] ?: false;
+		return \Config::get('simpleauth.groups.'.$group.'.name', null);
 	}
 
 	public function get_roles($group)
 	{
 		if ( ! in_array((int) $group, static::$_valid_groups))
 		{
-			return false;
+			return null;
 		}
 
 		$groups = \Config::get('simpleauth.groups');
