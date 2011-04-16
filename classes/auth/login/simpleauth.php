@@ -336,7 +336,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return array(array('simplegroup', $this->user->get('group')));
+		return array(array('SimpleGroup', $this->user->get('group')));
 	}
 
 	/**
