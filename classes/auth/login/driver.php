@@ -14,9 +14,6 @@
 
 namespace Auth;
 
-import('phpseclib/Crypt/Hash', 'vendor');
-use \PHPSecLib\Crypt_Hash;
-
 abstract class Auth_Login_Driver extends \Auth_Driver {
 
 	/**
@@ -66,7 +63,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	/**
 	 * @var	object	PHPSecLib hash object
 	 */
-	protected $hasher = null;
+	private $hasher = null;
 
 	/**
 	 * Check for login
@@ -171,15 +168,28 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 
 	/**
 	 * Default password hash method
-	 * NOTICE: works by reference
 	 *
 	 * @param	string
 	 */
 	public function hash_password($password)
 	{
-		is_null($this->hasher) && $this->hasher = new Crypt_Hash();
+		return base64_encode($this->hasher()->pbkdf2($password, @$this->config['salt_prefix'].@$this->config['salt_postfix'], 10000, 32));
+	}
 
-		return base64_encode($this->hasher->pbkdf2($password, @$this->config['salt_prefix'].@$this->config['salt_postfix'], 10000, 32));
+	/**
+	 * Returns the hash object and creates it if necessary
+	 *
+	 * @return PHPSecLib\Crypt_Hash
+	 */
+	public function hasher()
+	{
+		if ( ! class_exists('PHPSecLib\\Crypt_Hash', false))
+		{
+			import('phpseclib/Crypt/Hash', 'vendor');
+		}
+		is_null($this->hasher) and $this->hasher = new \PHPSecLib\Crypt_Hash();
+
+		return $this->hasher;
 	}
 
 	// ------------------------------------------------------------------------
