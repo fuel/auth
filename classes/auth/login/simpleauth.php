@@ -47,7 +47,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
 		}
 
-		if ($this->user and $this->user->get('login_hash') === $login_hash)
+		if ($this->user and $this->user->count() > 0 and $this->user->get('login_hash') === $login_hash)
 		{
 			return true;
 		}
