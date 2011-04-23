@@ -45,18 +45,14 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		if ($this->user === null || (is_object($this->user) && $this->user->get('username') != $username))
 		{
 			$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
-			// this prevents a second check to query again, but will still fail the login_hash check
-			if ($this->user->count() == 0)
-			{
-				$this->user = false;
-			}
-		}
-		if (empty($this->user) || $this->user->get('login_hash') != $login_hash)
-		{
-			return false;
 		}
 
-		return true;
+		if ($this->user->get('login_hash') === $login_hash)
+		{
+			return true;
+		}
+
+		return $this->user = false;
 	}
 
 	/**
