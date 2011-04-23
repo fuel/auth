@@ -291,7 +291,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		}
 
 		$last_login = \Date::factory()->get_timestamp();
-		$login_hash = sha1(\Config::get('auth.login_hash_salt').$this->user->get('username').$last_login);
+		$login_hash = sha1(\Config::get('simpleauth.login_hash_salt').$this->user->get('username').$last_login);
 
 		\DB::update(\Config::get('simpleauth.table_name'))
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
