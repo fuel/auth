@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -22,30 +20,27 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	}
 
 	/**
-	 * @var	Model\SimpleUser
+	 * @var  Database_Result  when login succeeded
 	 */
 	protected $user;
 
 	/**
-	 * @var	array	SimpleAuth config
+	 * @var  array  SimpleAuth class config
 	 */
 	protected $config = array(
-		'salt_prefix' => '',
-		'salt_postfix' => '',
 		'drivers' => array('group' => array('SimpleGroup')),
-		'login_hash_salt' => 'put_some_salt_in_here',
-		'additional_fields' => array('profile_fields')
+		'additional_fields' => array('profile_fields'),
 	);
 
 	/**
 	 * Check for login
 	 *
-	 * @return	bool
+	 * @return  bool
 	 */
 	public function perform_check()
 	{
-		$username = \Session::get('username');
-		$login_hash = \Session::get('login_hash');
+		$username    = \Session::get('username');
+		$login_hash  = \Session::get('login_hash');
 
 		if ($this->user === null || (is_object($this->user) && $this->user->get('username') != $username))
 		{
@@ -83,9 +78,9 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 		$password = $this->hash_password($password);
 		$this->user = \DB::select()
-				->where('username', '=', $username)
-				->where('password', '=', $password)
-				->from(\Config::get('simpleauth.table_name'))->execute();
+			->where('username', '=', $username)
+			->where('password', '=', $password)
+			->from(\Config::get('simpleauth.table_name'))->execute();
 		if ($this->user->count() == 0)
 		{
 			$this->user = null;
@@ -130,11 +125,11 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		}
 
 		$user = array(
-			'username'		=> (string) $username,
-			'password'		=> $this->hash_password((string) $password),
-			'email'			=> $email,
-			'group'			=> (int) $group,
-			'profile_fields'=> serialize($profile_fields)
+			'username'        => (string) $username,
+			'password'        => $this->hash_password((string) $password),
+			'email'           => $email,
+			'group'           => (int) $group,
+			'profile_fields'  => serialize($profile_fields)
 		);
 		$result = \DB::insert(\Config::get('simpleauth.table_name'))
 			->set($user)
@@ -301,7 +296,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		}
 
 		$last_login = \Date::factory()->get_timestamp();
-		$login_hash = sha1($this->config['login_hash_salt'].$this->user->get('username').$last_login);
+		$login_hash = sha1(\Config::get('auth.login_hash_salt').$this->user->get('username').$last_login);
 
 		\DB::update(\Config::get('simpleauth.table_name'))
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
@@ -330,7 +325,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 *
 	 * @return array	containing the group driver ID & the user's group ID
 	 */
-	public function get_user_groups()
+	public function get_groups()
 	{
 		if (empty($this->user))
 		{
@@ -345,7 +340,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 *
 	 * @return	string
 	 */
-	public function get_user_email()
+	public function get_email()
 	{
 		if (empty($this->user))
 		{
@@ -360,7 +355,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 *
 	 * @return	string
 	 */
-	public function get_user_screen_name()
+	public function get_screen_name()
 	{
 		if (empty($this->user))
 		{
@@ -397,3 +392,5 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		return parent::has_access($condition, $driver, $user);
 	}
 }
+
+// end of file simpleauth.php

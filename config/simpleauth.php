@@ -1,6 +1,15 @@
 <?php
 
 return array(
+
+	/**
+	 * DB table name for the user table
+	 */
+	'table_name' => 'simpleusers',
+
+	/**
+	 * Groups as id => array(name => <string>, roles => <array>)
+	 */
 	'groups' => array(
 		-1	=> array('name' => 'Banned', 'roles' => array('banned')),
 		0	=> array('name' => 'Guests', 'roles' => array()),
@@ -9,6 +18,9 @@ return array(
 		100	=> array('name' => 'Administrators', 'roles' => array('user', 'moderator', 'admin')),
 	),
 
+	/**
+	 * Roles as name => array(location => rights)
+	 */
 	'roles' => array(
 		'#'          => array('website' => array('read')), // default rights
 		'banned'     => false,
@@ -21,5 +33,8 @@ return array(
 		'super'      => true,
 	),
 
-    'table_name' => 'simpleusers',
+	/**
+	 * Salt for the login hash
+	 */
+	'login_hash_salt' => 'put_some_salt_in_here',
 );
