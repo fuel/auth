@@ -224,21 +224,21 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	 *
 	 * @return  array
 	 */
-	abstract public function get_user_groups();
+	abstract public function get_groups();
 
 	/**
 	 * Get emailaddress of the current logged in user
 	 *
 	 * @return  string
 	 */
-	abstract public function get_user_email();
+	abstract public function get_email();
 
 	/**
 	 * Get screen name of the current logged in user
 	 *
 	 * @return  string
 	 */
-	abstract public function get_user_screen_name();
+	abstract public function get_screen_name();
 }
 
 /* end of file driver.php */
