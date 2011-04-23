@@ -22,7 +22,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * @var  Database_Result  when login succeeded
 	 */
-	protected $user;
+	protected $user = null;
 
 	/**
 	 * @var  array  SimpleAuth class config
@@ -47,7 +47,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
 		}
 
-		if ($this->user->get('login_hash') === $login_hash)
+		if ($this->user and $this->user->get('login_hash') === $login_hash)
 		{
 			return true;
 		}
@@ -77,10 +77,9 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->where('username', '=', $username)
 			->where('password', '=', $password)
 			->from(\Config::get('simpleauth.table_name'))->execute();
-		if ($this->user->count() == 0)
+		if (empty($this->user))
 		{
-			$this->user = null;
-			return false;
+			return $this->user = false;
 		}
 
 		\Session::set('username', $username);
