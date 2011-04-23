@@ -42,7 +42,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$username    = \Session::get('username');
 		$login_hash  = \Session::get('login_hash');
 
-		if ($this->user === null || (is_object($this->user) && $this->user->get('username') != $username))
+		if ($this->user === null or (is_object($this->user) and $this->user->get('username') != $username))
 		{
 			$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
 		}
@@ -67,7 +67,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$username = trim($username) ?: trim(\Input::post('username'));
 		$password = trim($password) ?: trim(\Input::post('password'));
 
-		if (empty($username) || empty($password))
+		if (empty($username) or empty($password))
 		{
 			return false;
 		}
@@ -114,7 +114,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	{
 		$email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
 
-		if (empty($username) || empty($password) || empty($email))
+		if (empty($username) or empty($password) or empty($email))
 		{
 			return false;
 		}
