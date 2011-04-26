@@ -382,7 +382,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	{
 		if (is_null($user))
 		{
-			$user = reset($this->get_user_groups());
+			$user = reset($this->get_groups());
 		}
 		return parent::has_access($condition, $driver, $user);
 	}
