@@ -77,7 +77,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->where('username', '=', $username)
 			->where('password', '=', $password)
 			->from(\Config::get('simpleauth.table_name'))->execute();
-		if (empty($this->user))
+		if ($this->user->count() === 0)
 		{
 			return $this->user = false;
 		}
