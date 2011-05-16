@@ -214,6 +214,9 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->where('username', '=', $username)
 			->execute();
 
+		// Refresh user
+		$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
+
 		return $affected_rows > 0;
 	}
 
