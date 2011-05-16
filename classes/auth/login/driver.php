@@ -120,9 +120,9 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 
 		if ($driver === null)
 		{
-			foreach (\Auth::group(true) as $group)
+			foreach (\Auth::group(true) as $g)
 			{
-				if ($group->group($group, $user))
+				if ($g->member($group, $user))
 				{
 					return true;
 				}
