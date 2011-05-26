@@ -30,45 +30,79 @@ class Auth_Acl_SimpleAcl extends \Auth_Acl_Driver {
 			return false;
 		}
 
-		$area    = $condition[0];
-		$rights  = $condition[1];
-		$current_roles  = $group->get_roles($entity[1]);
-		$current_rights = array();
-		if (is_array($current_roles))
+		$area_heirarchy = is_array($condition[0]) ? $condition[0] : array($condition[0]);
+		$rights_needed  = $condition[1];
+		$rights_have = array();
+		$roles_have  = $group->get_roles($entity[1]);
+		if ( ! is_array($roles_have))
 		{
-			$roles = \Config::get('simpleauth.roles', array());
-			array_key_exists('#', $roles) && array_unshift($current_roles, '#');
-			foreach ($current_roles as $r_role)
+			return false;
+		}
+		$roles = \Config::get('simpleauth.roles', array());
+		// Add default role
+		array_unshift($roles_have, '#');
+		foreach ($roles_have as $role)
+		{
+			// continue if the role wasn't found
+			if ( ! array_key_exists($role, $roles))
 			{
-				// continue if the role wasn't found
-				if ( ! array_key_exists($r_role, $roles))
-				{
-					continue;
-				}
-				$r_rights = $roles[$r_role];
+				continue;
+			}
+			$rights = $roles[$role];
 
-				// if one of the roles has a negative wildcard (false) return it
-				if ($r_rights === false)
+			// Drill down as far as possible
+			foreach ($area_heirarchy as $key => $area)
+			{
+				// Pick up the wildcard rights at each level
+				if (isset($rights['#']))
 				{
-					return false;
+					if ($rights['#'] === true)
+					{
+						return true;
+					}
+					elseif ($rights['#'] === false)
+					{
+						return false;
+					}
+					$rights_have = array_unique(array_merge($rights_have, $rights['#']));
 				}
-				// if one of the roles has a positive wildecard (true) return it
-				elseif ($r_rights === true)
+				if (isset($rights[$area]))
 				{
-					return true;
+					$rights = $rights[$area];
 				}
-				// if there are roles for the current area, merge them with earlier fetched roles
-				elseif (array_key_exists($area, $r_rights))
+				else
 				{
-					$current_rights = array_unique(array_merge($current_rights, $r_rights[$area]));
+					// this role doesn't have rights for the specified area
+					$role = false;
+					break;
 				}
 			}
-		}
+			if ($role === false)
+			{
+				continue;
+			}
+			
+			// if the role has a negative wildcard (false) return false
+			if ($rights === false)
+			{
+				return false;
+			}
+			// if the role has a positive wildcard (true) return true
+			elseif ($rights === true)
+			{
+				return true;
+			}
+			// if there are roles for the current area, merge them with earlier fetched roles
+			else
+			{
+				$rights_have = array_unique(array_merge($rights_have, $rights));
+			}
+		} // foreach roles_have
 
 		// start checking rights, terminate false when right not found
-		foreach ($rights as $right)
+		foreach ($rights_needed as $right)
 		{
-			if ( ! in_array($right, $current_rights))
+			if ( ! in_array($right, $rights_have))
 			{
 				return false;
 			}
