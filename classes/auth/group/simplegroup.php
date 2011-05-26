@@ -45,8 +45,17 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 		return in_array(array($this->id, $group), $groups);
 	}
 
-	public function get_name($group)
+	public function get_name($group = null)
 	{
+		if ($group === null)
+		{
+			if ( ! $login = \Auth::instance() or ! is_array($groups = $login->get_groups()))
+			{
+				return false;
+			}
+			$group = isset($groups[0][1]) ? $groups[0][1] : null;
+		}
+
 		return \Config::get('simpleauth.groups.'.$group.'.name', null);
 	}
 
@@ -54,7 +63,7 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 	{
 		if ( ! in_array((int) $group, static::$_valid_groups))
 		{
-			return null;
+			return array();
 		}
 
 		$groups = \Config::get('simpleauth.groups');
