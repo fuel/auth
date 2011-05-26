@@ -376,11 +376,24 @@ class Auth {
 		{
 			if ($entity === null)
 			{
-				foreach (static::$_verified as $v)
+				if ( ! empty(static::$_verified))
 				{
-					if ($v->$method($condition))
+					foreach (static::$_verified as $v)
 					{
-						return true;
+						if ($v->$method($condition))
+						{
+							return true;
+						}
+					}
+				}
+				else
+				{
+					foreach (static::$_instances as $i)
+					{
+						if ($i->guest_login() and $i->$method($condition))
+						{
+							return true;
+						}
 					}
 				}
 			}

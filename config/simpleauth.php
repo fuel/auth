@@ -8,6 +8,11 @@ return array(
 	'table_name' => 'simpleusers',
 
 	/**
+	 * This will allow you to use the group & acl driver for non-logged in users
+	 */
+	'guest_login' => true,
+
+	/**
 	 * Groups as id => array(name => <string>, roles => <array>)
 	 */
 	'groups' => array(

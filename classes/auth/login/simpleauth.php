@@ -12,6 +12,12 @@
 
 namespace Auth;
 
+
+class SimpleUserUpdateException extends \Fuel_Exception {}
+
+class SimpleUserWrongPassword extends \Fuel_Exception {}
+
+
 class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 	public static function _init()
@@ -23,6 +29,17 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 * @var  Database_Result  when login succeeded
 	 */
 	protected $user = null;
+
+	/**
+	 * @var  array  value for guest login
+	 */
+	protected static $guest_login = array(
+		'id' => 0,
+		'username' => 'guest',
+		'group' => '0',
+		'login_hash' => false,
+		'email' => false
+	);
 
 	/**
 	 * @var  array  SimpleAuth class config
@@ -42,17 +59,24 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$username    = \Session::get('username');
 		$login_hash  = \Session::get('login_hash');
 
-		if ($this->user === null or (is_object($this->user) and $this->user->get('username') != $username))
+		if (is_null($this->user) or ($this->user['username'] != $username and $this->user != static::$guest_login))
 		{
-			$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
+			$this->user = \DB::select()
+				->where('username', '=', $username)
+				->from(\Config::get('simpleauth.table_name'))
+				->execute()->current();
 		}
 
-		if ($this->user and $this->user->count() > 0 and $this->user->get('login_hash') === $login_hash)
+		if ($this->user and $this->user['login_hash'] === $login_hash)
 		{
 			return true;
 		}
 
-		return $this->user = false;
+		$this->user = \Config::get('simpleauth.guest_login', true) ? static::$guest_login : false;
+		\Session::delete('username');
+		\Session::delete('login_hash');
+
+		return false;
 	}
 
 	/**
@@ -76,10 +100,15 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$this->user = \DB::select()
 			->where('username', '=', $username)
 			->where('password', '=', $password)
-			->from(\Config::get('simpleauth.table_name'))->execute();
-		if ($this->user->count() === 0)
+			->from(\Config::get('simpleauth.table_name'))
+			->execute()->current();
+
+		if ($this->user == false)
 		{
-			return $this->user = false;
+			$this->user = \Config::get('simpleauth.guest_login', true) ? static::$guest_login : false;
+			\Session::delete('username');
+			\Session::delete('login_hash');
+			return false;
 		}
 
 		\Session::set('username', $username);
@@ -94,7 +123,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 */
 	public function logout()
 	{
-		$this->user = null;
+		$this->user = \Config::get('simpleauth.guest_login', true) ? static::$guest_login : false;
 		\Session::delete('username');
 		\Session::delete('login_hash');
 		return true;
@@ -143,25 +172,26 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 */
 	public function update_user($values, $username = null)
 	{
-		$username = $username ?: $this->user->get('username');
+		$username = $username ?: $this->user['username'];
 		$current_values = \DB::select()
 			->where('username', '=', $username)
 			->from(\Config::get('simpleauth.table_name'))->execute();
+
 		if (empty($current_values))
 		{
-			throw new \Auth_Exception('not_found');
+			throw new \SimpleUserUpdateException('Username not found');
 		}
 
 		$update = array();
 		if (array_key_exists('username', $values))
 		{
-			throw new \Auth_Exception('username_change_not_allowed');
+			throw new \SimpleUserUpdateException('Username cannot be changed.');
 		}
 		if (array_key_exists('password', $values))
 		{
 			if ($current_values->get('password') != $this->hash_password(@$values['old_password']))
 			{
-				throw new \Auth_Exception('invalid_old_password');
+				throw new \SimpleUserWrongPassword('Old password is invalid');
 			}
 
 			if ( ! empty($values['password']))
@@ -179,7 +209,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			$email = filter_var(trim($values['email']), FILTER_VALIDATE_EMAIL);
 			if ( ! $email)
 			{
-				throw new \Auth_Exception('invalid_email');
+				throw new \SimpleUserUpdateException('Email address is not valid');
 			}
 			$update['email'] = $email;
 			unset($values['email']);
@@ -215,7 +245,13 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->execute();
 
 		// Refresh user
-		$this->user = \DB::select()->where('username', '=', $username)->from(\Config::get('simpleauth.table_name'))->execute();
+		if ($this->user['username'] == $username)
+		{
+			$this->user = \DB::select()
+				->where('username', '=', $username)
+				->from(\Config::get('simpleauth.table_name'))
+				->execute()->current();
+		}
 
 		return $affected_rows > 0;
 	}
@@ -234,15 +270,10 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		{
 			return (bool) $this->update_user(array('old_password' => $old_password, 'password' => $new_password), $username);
 		}
-		catch (\Auth_Exception $e)
+		// Only catch the wrong password exception
+		catch (SimpleUserWrongPassword $e)
 		{
-			if ($e->getMessage() == 'invalid_old_password')
-			{
-				return false;
-			}
-
-			// If it's something else throw the error anyway
-			throw $e;
+			return false;
 		}
 	}
 
@@ -256,7 +287,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	{
 		if (empty($username))
 		{
-			throw new \Auth_Exception('cannot_delete_empty_username');
+			throw new \SimpleUserUpdateException('Cannot delete user with empty username');
 		}
 
 		$affected_rows = \DB::delete(\Config::get('simpleauth.table_name'))
@@ -271,10 +302,11 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$username = $username;
 		$user = \DB::select()
 			->where('username', '=', $username)
-			->from(\Config::get('simpleauth.table_name'))->execute();
+			->from(\Config::get('simpleauth.table_name'))
+			->execute()->current();
 		if (empty($user))
 		{
-			throw new \Auth_Exception('not_found');
+			throw new \SimpleUserUpdateException('User not found, cannot reset password');
 		}
 
 		// MUST GET CODE TO RESET THE PASSWORD TO SOMETHING RANDOM AND EMAIL IT
@@ -290,15 +322,15 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	{
 		if (empty($this->user))
 		{
-			throw new \Auth_Exception('User not logged in, can\'t create login hash.');
+			throw new \SimpleUserUpdateException('User not logged in, can\'t create login hash.');
 		}
 
 		$last_login = \Date::factory()->get_timestamp();
-		$login_hash = sha1(\Config::get('simpleauth.login_hash_salt').$this->user->get('username').$last_login);
+		$login_hash = sha1(\Config::get('simpleauth.login_hash_salt').$this->user['username'].$last_login);
 
 		\DB::update(\Config::get('simpleauth.table_name'))
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
-			->where('username', '=', $this->user->get('username'))->execute();
+			->where('username', '=', $this->user['username'])->execute();
 
 		return $login_hash;
 	}
@@ -315,7 +347,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return array($this->id, (int) $this->user->get('id'));
+		return array($this->id, (int) $this->user['id']);
 	}
 
 	/**
@@ -330,7 +362,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return array(array('SimpleGroup', $this->user->get('group')));
+		return array(array('SimpleGroup', $this->user['group']));
 	}
 
 	/**
@@ -345,7 +377,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return $this->user->get('email');
+		return $this->user['email'];
 	}
 
 	/**
@@ -360,7 +392,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return $this->user->get('username');
+		return $this->user['username'];
 	}
 
 	/**
@@ -375,7 +407,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		return @unserialize($this->user->get('profile_fields')) ?: array();
+		return @unserialize($this->user['profile_fields']) ?: array();
 	}
 
 	/**
@@ -389,6 +421,14 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			$user = reset($groups);
 		}
 		return parent::has_access($condition, $driver, $user);
+	}
+
+	/**
+	 * Extension of base driver because this supports a guest login when switched on
+	 */
+	public function guest_login()
+	{
+		return \Config::get('simpleauth.guest_login', true);
 	}
 }
 

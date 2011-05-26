@@ -107,6 +107,16 @@ abstract class Auth_Driver {
 	{
 		return array_key_exists($key, $this->config) ? $this->config[$key] : $default;
 	}
+
+	/**
+	 * Whether this driver supports guest login
+	 *
+	 * @return  bool
+	 */
+	public function guest_login()
+	{
+		return false;
+	}
 }
 
 /* end of file driver.php */
