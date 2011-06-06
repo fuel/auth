@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -330,13 +328,18 @@ class Auth {
 	 */
 	public static function __callStatic($method, $args)
 	{
+		$args = array_pad($args, 3, null);
 		if (array_key_exists($method, static::$_drivers))
 		{
 			return static::_driver_instance($method, $args[0]);
 		}
 		if ($type = array_search($method, static::$_drivers))
 		{
-			return static::_driver_check($type, $args[0], @$args[1], @$args[2]);
+			return static::_driver_check($type, $args[0], $args[1], @$args[2]);
+		}
+		if (static::$_verify_multiple !== true and method_exists(static::$_instance, $method))
+		{
+			return call_user_func_array(array(static::$_instance, $method), $args);
 		}
 
 		throw new \Auth_Exception('Invalid method.');
@@ -373,11 +376,24 @@ class Auth {
 		{
 			if ($entity === null)
 			{
-				foreach (static::$_verified as $v)
+				if ( ! empty(static::$_verified))
 				{
-					if ($v->$method($condition))
+					foreach (static::$_verified as $v)
 					{
-						return true;
+						if ($v->$method($condition))
+						{
+							return true;
+						}
+					}
+				}
+				else
+				{
+					foreach (static::$_instances as $i)
+					{
+						if ($i->guest_login() and $i->$method($condition))
+						{
+							return true;
+						}
 					}
 				}
 			}

@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -14,18 +12,15 @@
 
 namespace Auth;
 
-import('phpseclib/Crypt/Hash', 'vendor');
-use \PHPSecLib\Crypt_Hash;
-
 abstract class Auth_Login_Driver extends \Auth_Driver {
 
 	/**
-	 * @var	Auth_Driver
+	 * @var  Auth_Driver
 	 */
 	protected static $_instance = null;
 
 	/**
-	 * @var	array	contains references if multiple were loaded
+	 * @var  array  contains references if multiple were loaded
 	 */
 	protected static $_instances = array();
 
@@ -37,6 +32,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 		$class = \Inflector::get_namespace($config['driver']).'Auth_Login_'.ucfirst(\Inflector::denamespace($config['driver']));
 		$driver = new $class($config);
 		static::$_instances[$driver->get_id()] = $driver;
+		is_null(static::$_instance) and static::$_instance = $driver;
 
 		foreach ($driver->get_config('drivers', array()) as $type => $drivers)
 		{
@@ -56,23 +52,20 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @var	array	config values
+	 * @var  array  config values
 	 */
-	protected $config = array(
-		'salt_prefix' => '',
-		'salt_postfix' => ''
-	);
+	protected $config = array();
 
 	/**
-	 * @var	object	PHPSecLib hash object
+	 * @var  object  PHPSecLib hash object
 	 */
-	protected $hasher = null;
+	private $hasher = null;
 
 	/**
 	 * Check for login
 	 * (final method to (un)register verification, work is done by _check())
 	 *
-	 * @return	bool
+	 * @return  bool
 	 */
 	final public function check()
 	{
@@ -91,21 +84,21 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	 * Additional fields can be requested in the first param or set in config,
 	 * all additional fields must have their own method "get_user_" + fieldname
 	 *
-	 * @param	array	additional fields
-	 * @return	array
+	 * @param   array  additional fields
+	 * @return  array
 	 */
 	final public function get_user_array(Array $additional_fields = array())
 	{
 		$user = array(
-			'email'			=> $this->get_user_email(),
-			'screen_name'	=> $this->get_user_screen_name()
+			'email'			=> $this->get_email(),
+			'screen_name'	=> $this->get_screen_name()
 		);
 
 		$additional_fields = array_merge($this->config['additional_fields'], $additional_fields);
 		foreach($additional_fields as $af)
 		{
 			// only works if it actually can be fetched through a get_ method
-			if (is_callable(array($this, $method = 'get_user_'.$af)))
+			if (is_callable(array($this, $method = 'get_'.$af)))
 			{
 				$user[$af] = $this->$method();
 			}
@@ -116,10 +109,10 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	/**
 	 * Verify Group membership
 	 *
-	 * @param	mixed	group identifier to check for membership
-	 * @param	string	group driver id or null to check all
-	 * @param	array	user identifier to check in form array(driver_id, user_id)
-	 * @return	bool
+	 * @param   mixed   group identifier to check for membership
+	 * @param   string  group driver id or null to check all
+	 * @param   array   user identifier to check in form array(driver_id, user_id)
+	 * @return  bool
 	 */
 	public function member($group, $driver = null, $user = null)
 	{
@@ -127,9 +120,9 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 
 		if ($driver === null)
 		{
-			foreach (\Auth::group(true) as $group)
+			foreach (\Auth::group(true) as $g)
 			{
-				if ($group->group($group, $user))
+				if ($g->member($group, $user))
 				{
 					return true;
 				}
@@ -144,10 +137,10 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	/**
 	 * Verify Acl access
 	 *
-	 * @param	mixed	condition to validate
-	 * @param	string	acl driver id or null to check all
-	 * @param	array	user identifier to check in form array(driver_id, user_id)
-	 * @return	bool
+	 * @param   mixed   condition to validate
+	 * @param   string  acl driver id or null to check all
+	 * @param   array   user identifier to check in form array(driver_id, user_id)
+	 * @return  bool
 	 */
 	public function has_access($condition, $driver = null, $entity = null)
 	{
@@ -171,15 +164,29 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 
 	/**
 	 * Default password hash method
-	 * NOTICE: works by reference
 	 *
-	 * @param	string
+	 * @param   string
+	 * @return  string
 	 */
 	public function hash_password($password)
 	{
-		is_null($this->hasher) && $this->hasher = new Crypt_Hash();
+		return base64_encode($this->hasher()->pbkdf2($password, \Config::get('auth.salt'), 10000, 32));
+	}
 
-		return base64_encode($this->hasher->pbkdf2($password, @$this->config['salt_prefix'].@$this->config['salt_postfix'], 10000, 32));
+	/**
+	 * Returns the hash object and creates it if necessary
+	 *
+	 * @return  PHPSecLib\Crypt_Hash
+	 */
+	public function hasher()
+	{
+		if ( ! class_exists('PHPSecLib\\Crypt_Hash', false))
+		{
+			import('phpseclib/Crypt/Hash', 'vendor');
+		}
+		is_null($this->hasher) and $this->hasher = new \PHPSecLib\Crypt_Hash();
+
+		return $this->hasher;
 	}
 
 	// ------------------------------------------------------------------------
@@ -187,14 +194,14 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	/**
 	 * Perform the actual login check
 	 *
-	 * @return bool
+	 * @return  bool
 	 */
 	abstract protected function perform_check();
 
 	/**
 	 * Login method
 	 *
-	 * @return	bool	whether login succeeded
+	 * @return  bool  whether login succeeded
 	 */
 	abstract public function login();
 
@@ -207,7 +214,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	 * Get User Identifier of the current logged in user
 	 * in the form: array(driver_id, user_id)
 	 *
-	 * @return	array
+	 * @return  array
 	 */
 	abstract public function get_user_id();
 
@@ -215,23 +222,23 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	 * Get User Groups of the current logged in user
 	 * in the form: array(array(driver_id, group_id), array(driver_id, group_id), etc)
 	 *
-	 * @return	array
+	 * @return  array
 	 */
-	abstract public function get_user_groups();
+	abstract public function get_groups();
 
 	/**
 	 * Get emailaddress of the current logged in user
 	 *
-	 * @return	string
+	 * @return  string
 	 */
-	abstract public function get_user_email();
+	abstract public function get_email();
 
 	/**
 	 * Get screen name of the current logged in user
 	 *
-	 * @return	string
+	 * @return  string
 	 */
-	abstract public function get_user_screen_name();
+	abstract public function get_screen_name();
 }
 
-/* end of file auth.php */
+/* end of file driver.php */

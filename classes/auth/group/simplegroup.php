@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -21,7 +19,7 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 
 	public static function _init()
 	{
-		static::$_valid_groups = array_keys(\Config::get('simpleauth.groups'));
+		static::$_valid_groups = array_keys(\Config::get('simpleauth.groups', array()));
 	}
 
 	protected $config = array(
@@ -32,12 +30,11 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 	{
 		if ($user === null)
 		{
-			$groups = \Auth::instance()->get_user_groups();
+			$groups = \Auth::instance()->get_groups();
 		}
 		else
 		{
-			// to be written...
-			// $groups = \Auth::instance($user[0])->get_user_groups();
+			$groups = \Auth::instance($user[0])->get_groups();
 		}
 
 		if ( ! $groups || ! in_array((int) $group, static::$_valid_groups))
@@ -48,16 +45,25 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 		return in_array(array($this->id, $group), $groups);
 	}
 
-	public function get_name($group)
+	public function get_name($group = null)
 	{
-		return @static::$_valid_groups[(int) $group]['name'] ?: false;
+		if ($group === null)
+		{
+			if ( ! $login = \Auth::instance() or ! is_array($groups = $login->get_groups()))
+			{
+				return false;
+			}
+			$group = isset($groups[0][1]) ? $groups[0][1] : null;
+		}
+
+		return \Config::get('simpleauth.groups.'.$group.'.name', null);
 	}
 
 	public function get_roles($group)
 	{
 		if ( ! in_array((int) $group, static::$_valid_groups))
 		{
-			return false;
+			return array();
 		}
 
 		$groups = \Config::get('simpleauth.groups');

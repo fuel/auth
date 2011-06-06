@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -56,11 +54,6 @@ abstract class Auth_Driver {
 			return static::$_instances[$instance];
 		}
 
-		if (static::$_instance === null)
-		{
-			static::$_instance = static::factory();
-		}
-
 		return static::$_instance;
 	}
 
@@ -113,6 +106,16 @@ abstract class Auth_Driver {
 	public function get_config($key, $default = null)
 	{
 		return array_key_exists($key, $this->config) ? $this->config[$key] : $default;
+	}
+
+	/**
+	 * Whether this driver supports guest login
+	 *
+	 * @return  bool
+	 */
+	public function guest_login()
+	{
+		return false;
 	}
 }
 

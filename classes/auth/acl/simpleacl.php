@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -33,7 +31,7 @@ class Auth_Acl_SimpleAcl extends \Auth_Acl_Driver {
 		}
 
 		$area    = $condition[0];
-		$rights  = $condition[1];
+		$rights  = (array) $condition[1];
 		$current_roles  = $group->get_roles($entity[1]);
 		$current_rights = array();
 		if (is_array($current_roles))
@@ -49,15 +47,10 @@ class Auth_Acl_SimpleAcl extends \Auth_Acl_Driver {
 				}
 				$r_rights = $roles[$r_role];
 
-				// if one of the roles has a negative wildcard (false) return it
-				if ($r_rights === false)
+				// if one of the roles has a negative or positive wildcard return it without question
+				if (is_bool($r_rights))
 				{
-					return false;
-				}
-				// if one of the roles has a positive wildecard (true) return it
-				elseif ($r_rights === true)
-				{
-					return true;
+					return $r_rights;
 				}
 				// if there are roles for the current area, merge them with earlier fetched roles
 				elseif (array_key_exists($area, $r_rights))

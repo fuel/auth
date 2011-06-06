@@ -1,7 +1,5 @@
 <?php
 /**
- * Fuel
- *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
@@ -35,6 +33,7 @@ abstract class Auth_Group_Driver extends \Auth_Driver {
 		$class = \Inflector::get_namespace($config['driver']).'Auth_Group_'.ucfirst(\Inflector::denamespace($config['driver']));
 		$driver = new $class($config);
 		static::$_instances[$driver->get_id()] = $driver;
+		is_null(static::$_instance) and static::$_instance = $driver;
 
 		foreach ($driver->get_config('drivers', array()) as $type => $drivers)
 		{
