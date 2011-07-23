@@ -297,22 +297,6 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		return $affected_rows > 0;
 	}
 
-	public function forgotten_password($username)
-	{
-		$username = $username;
-		$user = \DB::select()
-			->where('username', '=', $username)
-			->from(\Config::get('simpleauth.table_name'))
-			->execute()->current();
-		if (empty($user))
-		{
-			throw new \SimpleUserUpdateException('User not found, cannot reset password');
-		}
-
-		// MUST GET CODE TO RESET THE PASSWORD TO SOMETHING RANDOM AND EMAIL IT
-		// TO THE USER'S EMAILADDRESS
-	}
-
 	/**
 	 * Creates a temporary hash that will validate the current login
 	 *
