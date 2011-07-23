@@ -61,16 +61,18 @@ class Auth_Group_SimpleGroup extends \Auth_Group_Driver {
 
 	public function get_roles($group = null)
 	{
+		// When group is empty, attempt to get groups from a current login
 		if ($group === null)
 		{
-			if ( ! $login = \Auth::instance() or ! is_array($groups = $login->get_groups()))
+			if ( ! $login = \Auth::instance()
+				or ! is_array($groups = $login->get_groups())
+				or ! isset($groups[0][1]))
 			{
-				return false;
+				return array();
 			}
-			$group = isset($groups[0][1]) ? $groups[0][1] : null;
+			$group = $groups[0][1];
 		}
-	
-		if ( ! in_array((int) $group, static::$_valid_groups))
+		elseif ( ! in_array((int) $group, static::$_valid_groups))
 		{
 			return array();
 		}
