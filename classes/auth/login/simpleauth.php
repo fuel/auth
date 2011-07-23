@@ -17,7 +17,12 @@ class SimpleUserUpdateException extends \Fuel_Exception {}
 
 class SimpleUserWrongPassword extends \Fuel_Exception {}
 
-
+/**
+ * SimpleAuth basic login driver
+ *
+ * @package     Fuel
+ * @subpackage  Auth
+ */
 class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 	public static function _init()
@@ -82,9 +87,9 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Login user
 	 *
-	 * @param	string
-	 * @param	string
-	 * @return	bool
+	 * @param   string
+	 * @param   string
+	 * @return  bool
 	 */
 	public function login($username = '', $password = '')
 	{
@@ -119,7 +124,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Logout user
 	 *
-	 * @return bool
+	 * @return  bool
 	 */
 	public function logout()
 	{
@@ -132,12 +137,12 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Create new user
 	 *
-	 * @param	string
-	 * @param	string
-	 * @param	string	must contain valid email address
-	 * @param	int		group id
-	 * @param	array
-	 * @return	bool
+	 * @param   string
+	 * @param   string
+	 * @param   string  must contain valid email address
+	 * @param   int     group id
+	 * @param   Array
+	 * @return  bool
 	 */
 	public function create_user($username, $password, $email, $group = 1, Array $profile_fields = array())
 	{
@@ -166,9 +171,9 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 * Update a user's properties
 	 * Note: Username cannot be updated, to update password the old password must be passed as old_password
 	 *
-	 * @param	array	properties to be updated including profile fields
-	 * @param	string
-	 * @return	bool
+	 * @param   Array  properties to be updated including profile fields
+	 * @param   string
+	 * @return  bool
 	 */
 	public function update_user($values, $username = null)
 	{
@@ -259,10 +264,10 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Change a user's password
 	 *
-	 * @param	string
-	 * @param	string
-	 * @param	string	username or null for current user
-	 * @return	bool
+	 * @param   string
+	 * @param   string
+	 * @param   string  username or null for current user
+	 * @return  bool
 	 */
 	public function change_password($old_password, $new_password, $username = null)
 	{
@@ -280,8 +285,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Deletes a given user
 	 *
-	 * @param	string
-	 * @return	bool
+	 * @param   string
+	 * @return  bool
 	 */
 	public function delete_user($username)
 	{
@@ -300,7 +305,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Creates a temporary hash that will validate the current login
 	 *
-	 * @return	string
+	 * @return  string
 	 */
 	public function create_login_hash()
 	{
@@ -322,7 +327,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Get the user's ID
 	 *
-	 * @return	array	containing this driver's ID & the user's ID
+	 * @return  Array  containing this driver's ID & the user's ID
 	 */
 	public function get_user_id()
 	{
@@ -337,7 +342,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Get the user's groups
 	 *
-	 * @return array	containing the group driver ID & the user's group ID
+	 * @return  Array  containing the group driver ID & the user's group ID
 	 */
 	public function get_groups()
 	{
@@ -352,7 +357,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Get the user's emailaddress
 	 *
-	 * @return	string
+	 * @return  string
 	 */
 	public function get_email()
 	{
@@ -367,7 +372,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Get the user's screen name
 	 *
-	 * @return	string
+	 * @return  string
 	 */
 	public function get_screen_name()
 	{
@@ -382,7 +387,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	/**
 	 * Get the user's profile fields
 	 *
-	 * @return array
+	 * @return  Array
 	 */
 	public function get_profile_fields()
 	{
