@@ -14,7 +14,9 @@
 Autoloader::add_core_namespace('Auth');
 
 Autoloader::add_classes(array(
-	'Auth\\Auth'         => __DIR__.'/classes/auth.php',
+	'Auth\\Auth'           => __DIR__.'/classes/auth.php',
+	'Auth\\AuthException'  => __DIR__.'/classes/auth.php',
+
 	'Auth\\Auth_Driver'  => __DIR__.'/classes/auth/driver.php',
 
 	'Auth\\Auth_Acl_Driver'     => __DIR__.'/classes/auth/acl/driver.php',

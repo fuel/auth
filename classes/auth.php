@@ -13,7 +13,8 @@
 namespace Auth;
 
 
-// ------------------------------------------------------------------------
+class AuthException extends \Fuel_Exception {}
+
 
 /**
  * Auth
@@ -79,7 +80,7 @@ class Auth {
 	 * Load a login driver to the array of loaded drivers
 	 *
 	 * @param	array			settings for the new driver
-	 * @throws	Auth_Exception	on driver load failure
+	 * @throws	AuthException	on driver load failure
 	 */
 	public static function factory($custom = array())
 	{
@@ -91,7 +92,7 @@ class Auth {
 		// Driver must be set
 		if (empty($config['driver']) || ! is_string($config['driver']))
 		{
-			throw new \Auth_Exception('No auth driver given.');
+			throw new \AuthException('No auth driver given.');
 		}
 
 		// determine the driver to load
@@ -107,7 +108,7 @@ class Auth {
 			$class = get_class($driver);
 			if ( ! static::$_instances[$id] instanceof $class)
 			{
-				throw new \Auth_Exception('You can not instantiate two different login drivers using the same id "'.$id.'"');
+				throw new \AuthException('You can not instantiate two different login drivers using the same id "'.$id.'"');
 			}
 		}
 		else
@@ -132,7 +133,7 @@ class Auth {
 	 * Remove individual driver, or all drivers of $type
 	 *
 	 * @param	string	driver id or null for default driver
-	 * @throws	Auth_Exception	when $driver_id isn't valid or true
+	 * @throws	AuthException	when $driver_id isn't valid or true
 	 */
 	public static function unload($driver_id = null)
 	{
@@ -324,7 +325,7 @@ class Auth {
 	 * @param	string
 	 * @param	array
 	 * @return	mixed
-	 * @throws	Auth_Exception
+	 * @throws	BadMethodCallException
 	 */
 	public static function __callStatic($method, $args)
 	{
@@ -342,7 +343,7 @@ class Auth {
 			return call_user_func_array(array(static::$_instance, $method), $args);
 		}
 
-		throw new \Auth_Exception('Invalid method.');
+		throw new \BadMethodCallException('Invalid method.');
 	}
 
 	/**
