@@ -321,6 +321,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
 			->where('username', '=', $this->user['username'])->execute();
 
+		$this->user['login_hash'] = $login_hash;
+
 		return $login_hash;
 	}
 
