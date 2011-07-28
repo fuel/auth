@@ -26,10 +26,7 @@ class Auth_Acl_SimpleAcl extends \Auth_Acl_Driver {
 	{
 		$group = \Auth::group($entity[0]);
 		
-		if(is_string($condition) and stripos($condition, '.') !== false)
-		{
-			$condition = explode('.', $condition);
-		}
+		$condition = static::_parse_conditions($condition);
 		
 		if ( ! is_array($condition) || empty($group) || ! is_callable(array($group, 'get_roles')))
 		{
