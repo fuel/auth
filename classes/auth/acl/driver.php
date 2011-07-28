@@ -71,7 +71,7 @@ abstract class Auth_Acl_Driver extends \Auth_Driver {
 
 		list($area, $rights) = explode('.', $rights);
 
-		if (substr($rights, 1) == '[' and substr($rights, -1, 1) == ']')
+		if (substr($rights, 0, 1) == '[' and substr($rights, -1, 1) == ']')
 		{
 			$rights = preg_split('#( *)?,( *)?#', substr($rights, 1, -1));
 		}
