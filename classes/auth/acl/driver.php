@@ -49,7 +49,7 @@ abstract class Auth_Acl_Driver extends \Auth_Driver {
 
 		return $driver;
 	}
-	
+
 	/**
 	 * Parses a conditions string into it's array equivalent
 	 *
@@ -59,26 +59,23 @@ abstract class Auth_Acl_Driver extends \Auth_Driver {
 	 */
 	public static function _parse_conditions($rights)
 	{
-		if(is_array($rights))
+		if (is_array($rights))
 		{
 			return $rights;
 		}
-		
-		if( ! is_string($rights) or stripos($rights, '.') === false)
+
+		if ( ! is_string($rights) or strpos($rights, '.') === false)
 		{
-			var_dump($rights);
-			var_dump(is_array($rights));
-			die();
 			throw new \InvalidArgumentException('Given rights where not formatted proppery. Formatting should be like area.right or area.[right, other_right]. Received: '.$rights);
 		}
-		
+
 		list($area, $rights) = explode('.', $rights);
-		
-		if(substr($rights, 0 , 1) === '[')
+
+		if (substr($rights, 1) == '[' and substr($rights, -1, 1) == ']')
 		{
-			$rights = explode(',', str_replace(array('[', ']', ' '), '', $rights));
+			$rights = preg_split('#( *)?,( *)?#', substr($rights, 1, -1));
 		}
-		
+
 		return array($area, $rights);
 	}
 
