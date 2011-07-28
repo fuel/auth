@@ -49,6 +49,38 @@ abstract class Auth_Acl_Driver extends \Auth_Driver {
 
 		return $driver;
 	}
+	
+	/**
+	 * Parses a conditions string into it's array equivalent
+	 *
+	 * @rights	mixed	conditions array or string
+	 * @return	array	conditions array formatted as array(area, rights)
+	 *
+	 */
+	public static function _parse_conditions($rights)
+	{
+		if(is_array($rights))
+		{
+			return $rights;
+		}
+		
+		if( ! is_string($rights) or stripos($rights, '.') === false)
+		{
+			var_dump($rights);
+			var_dump(is_array($rights));
+			die();
+			throw new \InvalidArgumentException('Given rights where not formatted proppery. Formatting should be like area.right or area.[right, other_right]. Received: '.$rights);
+		}
+		
+		list($area, $rights) = explode('.', $rights);
+		
+		if(substr($rights, 0 , 1) === '[')
+		{
+			$rights = explode(',', str_replace(array('[', ']', ' '), '', $rights));
+		}
+		
+		return array($area, $rights);
+	}
 
 	// ------------------------------------------------------------------------
 
