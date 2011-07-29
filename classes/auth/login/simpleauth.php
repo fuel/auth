@@ -153,6 +153,32 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
+		$same_users = \DB::select()
+			->where('username', '=', $username)
+			->or_where('email', '=', $email)
+			->from(\Config::get('simpleauth.table_name'))
+			->execute();
+
+		if($same_users->count() > 0)
+		{
+			if (in_array(strtolower($username), array_map('strtolower', $same_users->current())))
+			{
+				throw new \SimpleUserUpdateException('Username already exists');
+			}
+
+			if (in_array(strtolower($email), array_map('strtolower', $same_users->current())))
+			{
+				throw new \SimpleUserUpdateException('Email address already exists');
+			}
+		}
+
+		return false;
+
+		if( $same_users->count() > 0 )
+		{
+			throw new \SimpleUserCreateException('Username already exists');
+		}
+
 		$user = array(
 			'username'        => (string) $username,
 			'password'        => $this->hash_password((string) $password),
