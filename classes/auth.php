@@ -337,7 +337,7 @@ class Auth {
 			return call_user_func_array(array(static::$_instance, $method), $args);
 		}
 
-		throw new \BadMethodCallException('Invalid method.');
+		throw new \BadMethodCallException('Invalid method: '.get_called_class().'::'.$method);
 	}
 
 	/**
