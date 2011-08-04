@@ -91,19 +91,22 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 * @param   string
 	 * @return  bool
 	 */
-	public function login($username = '', $password = '')
+	public function login($username_or_email = '', $password = '')
 	{
-		$username = trim($username) ?: trim(\Input::post('username'));
-		$password = trim($password) ?: trim(\Input::post('password'));
+		$username_or_email = trim($username_or_email) ?: trim(\Input::post(\Config::get('simpleauth.username_post_key', 'username')));
+		$password = trim($password) ?: trim(\Input::post(\Config::get('simpleauth.password_post_key', 'password')));
 
-		if (empty($username) or empty($password))
+		if (empty($username_or_email) or empty($password))
 		{
 			return false;
 		}
 
 		$password = $this->hash_password($password);
 		$this->user = \DB::select()
-			->where('username', '=', $username)
+			->where_open()
+			->where('username', '=', $username_or_email)
+			->or_where('email', '=', $username_or_email)
+			->where_close()
 			->where('password', '=', $password)
 			->from(\Config::get('simpleauth.table_name'))
 			->execute()->current();
@@ -116,7 +119,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			return false;
 		}
 
-		\Session::set('username', $username);
+		\Session::set('username', $this->user['username']);
 		\Session::set('login_hash', $this->create_login_hash());
 		return true;
 	}
