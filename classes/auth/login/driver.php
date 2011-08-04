@@ -82,7 +82,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver {
 	/**
 	 * Return user info in an array, always includes email & screen_name
 	 * Additional fields can be requested in the first param or set in config,
-	 * all additional fields must have their own method "get_user_" + fieldname
+	 * all additional fields must have their own method "get_" + fieldname
 	 *
 	 * @param   array  additional fields
 	 * @return  array
