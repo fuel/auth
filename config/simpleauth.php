@@ -61,4 +61,14 @@ return array(
 	 * Salt for the login hash
 	 */
 	'login_hash_salt' => 'put_some_salt_in_here',
+	
+	/**
+	 * $_POST key for login username
+	 */
+	'username_post_key' => 'username',
+	
+	/**
+	 * $_POST key for login password
+	 */
+	'password_post_key' => 'password',
 );
