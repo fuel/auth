@@ -231,6 +231,30 @@ class Auth {
 	}
 
 	/**
+	 * Logs a user in.
+	 *
+	 * @param	string			$identifier		username or email
+	 * @param	string			$password		the password
+	 * @param	mixed|array		$specific		specific driver or array of drivers (first succes will be used)
+	 */
+	public static function login($identifier = '', $password = '', $specific = null)
+	{
+		$specific = empty($specific) ? static::$_instances : (array) $specific;
+		
+		foreach ($specific as $driver)
+		{
+			$driver instanceof \Auth_Login_Driver or $driver = static::instance($driver);
+			
+			if($driver->login($identifier, $password))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Logs out all current logged in drivers
 	 */
 	public static function logout()
