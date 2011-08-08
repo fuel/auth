@@ -239,6 +239,11 @@ class Auth {
 	 */
 	public static function login($identifier = '', $password = '', $specific = null)
 	{
+		if(static::$_verify_multiple !== true)
+		{
+			return call_user_func_array(array(static::instance($specific), 'login'), func_get_args());
+		}
+	
 		$specific = empty($specific) ? static::$_instances : (array) $specific;
 		
 		foreach ($specific as $driver)
