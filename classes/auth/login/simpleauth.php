@@ -335,7 +335,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			throw new \SimpleUserUpdateException('User not logged in, can\'t create login hash.');
 		}
 
-		$last_login = \Date::factory()->get_timestamp();
+		$last_login = \Date::forge()->get_timestamp();
 		$login_hash = sha1(\Config::get('simpleauth.login_hash_salt').$this->user['username'].$last_login);
 
 		\DB::update(\Config::get('simpleauth.table_name'))
