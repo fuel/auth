@@ -126,6 +126,43 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	}
 
 	/**
+	 * Force login user
+	 *
+	 * @param   string
+	 * @return  bool
+	 */
+	public function force_login($username_or_email = '')
+	{
+		$username_or_email = trim($username_or_email);
+
+		if (empty($username_or_email))
+		{
+			return false;
+		}
+
+		$this->user = \DB::select()
+			->where_open()
+			->where('username', '=', $username_or_email)
+			->or_where('email', '=', $username_or_email)
+			->where_close()
+			->from(\Config::get('simpleauth.table_name'))
+			->execute()
+			->current();
+
+		if ($this->user == false)
+		{
+			$this->user = \Config::get('simpleauth.guest_login', true) ? static::$guest_login : false;
+			\Session::delete('username');
+			\Session::delete('login_hash');
+			return false;
+		}
+
+		\Session::set('username', $this->user['username']);
+		\Session::set('login_hash', $this->create_login_hash());
+		return true;
+	}
+
+	/**
 	 * Logout user
 	 *
 	 * @return  bool
