@@ -121,6 +121,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 		\Session::set('username', $this->user['username']);
 		\Session::set('login_hash', $this->create_login_hash());
+		\Session::instance()->rotate();
 		return true;
 	}
 
