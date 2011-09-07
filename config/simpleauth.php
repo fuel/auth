@@ -24,7 +24,7 @@ return array(
 	/**
 	 * DB table name for the user table
 	 */
-	'table_name' => 'simpleusers',
+	'table_name' => 'users',
 
 	/**
 	 * This will allow you to use the group & acl driver for non-logged in users
