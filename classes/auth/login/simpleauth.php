@@ -69,7 +69,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			$this->user = \DB::select()
 				->where('username', '=', $username)
 				->from(\Config::get('simpleauth.table_name'))
-				->execute()->current();
+				->execute(\Config::get('simpleauth.db_connection'))->current();
 		}
 
 		if ($this->user and $this->user['login_hash'] === $login_hash)
@@ -109,7 +109,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->where_close()
 			->where('password', '=', $password)
 			->from(\Config::get('simpleauth.table_name'))
-			->execute()->current();
+			->execute(\Config::get('simpleauth.db_connection'))->current();
 
 		if ($this->user == false)
 		{
@@ -146,7 +146,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->or_where('email', '=', $username_or_email)
 			->where_close()
 			->from(\Config::get('simpleauth.table_name'))
-			->execute()
+			->execute(\Config::get('simpleauth.db_connection'))
 			->current();
 
 		if ($this->user == false)
@@ -198,7 +198,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			->where('username', '=', $username)
 			->or_where('email', '=', $email)
 			->from(\Config::get('simpleauth.table_name'))
-			->execute();
+			->execute(\Config::get('simpleauth.db_connection'));
 
 		if ($same_users->count() > 0)
 		{
@@ -221,7 +221,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		);
 		$result = \DB::insert(\Config::get('simpleauth.table_name'))
 			->set($user)
-			->execute();
+			->execute(\Config::get('simpleauth.db_connection'));
 
 		return ($result[1] > 0) ? $result[0] : false;
 	}
@@ -239,7 +239,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$username = $username ?: $this->user['username'];
 		$current_values = \DB::select()
 			->where('username', '=', $username)
-			->from(\Config::get('simpleauth.table_name'))->execute();
+			->from(\Config::get('simpleauth.table_name'))
+			->execute(\Config::get('simpleauth.db_connection'));
 
 		if (empty($current_values))
 		{
@@ -306,7 +307,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$affected_rows = \DB::update(\Config::get('simpleauth.table_name'))
 			->set($update)
 			->where('username', '=', $username)
-			->execute();
+			->execute(\Config::get('simpleauth.db_connection'));
 
 		// Refresh user
 		if ($this->user['username'] == $username)
@@ -314,7 +315,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			$this->user = \DB::select()
 				->where('username', '=', $username)
 				->from(\Config::get('simpleauth.table_name'))
-				->execute()->current();
+				->execute(\Config::get('simpleauth.db_connection'))->current();
 		}
 
 		return $affected_rows > 0;
@@ -356,7 +357,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 		$affected_rows = \DB::delete(\Config::get('simpleauth.table_name'))
 			->where('username', '=', $username)
-			->execute();
+			->execute(\Config::get('simpleauth.db_connection'));
 
 		return $affected_rows > 0;
 	}
@@ -378,7 +379,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 		\DB::update(\Config::get('simpleauth.table_name'))
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
-			->where('username', '=', $this->user['username'])->execute();
+			->where('username', '=', $this->user['username'])
+			->execute(\Config::get('simpleauth.db_connection'));
 
 		$this->user['login_hash'] = $login_hash;
 

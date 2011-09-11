@@ -27,6 +27,11 @@ return array(
 	'table_name' => 'users',
 
 	/**
+	 * DB connection, leave null to use default
+	 */
+	'db_connection' => null,
+
+	/**
 	 * This will allow you to use the group & acl driver for non-logged in users
 	 */
 	'guest_login' => true,
@@ -61,12 +66,12 @@ return array(
 	 * Salt for the login hash
 	 */
 	'login_hash_salt' => 'put_some_salt_in_here',
-	
+
 	/**
 	 * $_POST key for login username
 	 */
 	'username_post_key' => 'username',
-	
+
 	/**
 	 * $_POST key for login password
 	 */
