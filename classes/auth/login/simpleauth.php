@@ -131,19 +131,20 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 * @param   string
 	 * @return  bool
 	 */
-	public function force_login($username_or_email = '')
+	public function force_login($username_or_email_or_id = '')
 	{
-		$username_or_email = trim($username_or_email);
+		$username_or_email_or_id = trim($username_or_email_or_id);
 
-		if (empty($username_or_email))
+		if (empty($username_or_email_or_id))
 		{
 			return false;
 		}
 
 		$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 			->where_open()
-			->where('username', '=', $username_or_email)
-			->or_where('email', '=', $username_or_email)
+			->where('username', '=', $username_or_email_or_id)
+			->or_where('email', '=', $username_or_email_or_id)
+			->or_where('id', '=', $username_or_email_or_id)
 			->where_close()
 			->from(\Config::get('simpleauth.table_name'))
 			->execute(\Config::get('simpleauth.db_connection'))
