@@ -131,19 +131,16 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 * @param   string
 	 * @return  bool
 	 */
-	public function force_login($username_or_email = '')
+	public function force_login($user_id = '')
 	{
-		$username_or_email = trim($username_or_email);
-
-		if (empty($username_or_email))
+		if (empty($user_id))
 		{
 			return false;
 		}
 
 		$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 			->where_open()
-			->where('username', '=', $username_or_email)
-			->or_where('email', '=', $username_or_email)
+			->where('id', '=', $user_id)
 			->where_close()
 			->from(\Config::get('simpleauth.table_name'))
 			->execute(\Config::get('simpleauth.db_connection'))
@@ -191,7 +188,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 		if (empty($username) or empty($password) or empty($email))
 		{
-			throw new \SimpleUserUpdateException('Username, password and emailaddress can\'t be empty.');
+			throw new \SimpleUserUpdateException('Username, password and email address can\'t be empty.');
 		}
 
 		$same_users = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
