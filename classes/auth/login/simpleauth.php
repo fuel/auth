@@ -184,6 +184,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 */
 	public function create_user($username, $password, $email, $group = 1, Array $profile_fields = array())
 	{
+		$username = trim($username);
+		$password = trim($password);
 		$email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
 
 		if (empty($username) or empty($password) or empty($email))
@@ -234,7 +236,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 */
 	public function update_user($values, $username = null)
 	{
-		$username = $username ?: $this->user['username'];
+		$username = trim($username) ?: $this->user['username'];
 		$current_values = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 			->where('username', '=', $username)
 			->from(\Config::get('simpleauth.table_name'))
@@ -252,15 +254,17 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		}
 		if (array_key_exists('password', $values))
 		{
-			if ($current_values->get('password') != $this->hash_password(@$values['old_password']))
+			if ($current_values->get('password') != $this->hash_password(trim(@$values['old_password'])))
 			{
 				throw new \SimpleUserWrongPassword('Old password is invalid');
 			}
 
-			if ( ! empty($values['password']))
+			$password = trim($values['password']);
+			if ( ! $password)
 			{
-				$update['password'] = $this->hash_password($values['password']);
+				throw new \SimpleUserUpdateException('Password can\'t be empty');
 			}
+			$update['password'] = $this->hash_password($password);
 			unset($values['password']);
 		}
 		if (array_key_exists('old_password', $values))
@@ -348,6 +352,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 */
 	public function delete_user($username)
 	{
+		$username = trim($username);
 		if (empty($username))
 		{
 			throw new \SimpleUserUpdateException('Cannot delete user with empty username');
