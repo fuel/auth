@@ -371,7 +371,7 @@ class Auth {
 	 * @param   string  driver type
 	 * @param   mixed   condition for which the driver is checked
 	 * @param   string  driver id or null to check all
-	 * @param   Array   identifier to check, should default to current user or relation therof and be
+	 * @param   Array   identifier to check, should default to current user or relation thereof and be
 	 *                  in the form of array(driver_id, user_id)
 	 * @return bool
 	 */
