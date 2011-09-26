@@ -22,9 +22,20 @@
 return array(
 
 	/**
+	 * DB connection, leave null to use default
+	 */
+	'db_connection' => null,
+
+	/**
 	 * DB table name for the user table
 	 */
-	'table_name' => 'simpleusers',
+	'table_name' => 'users',
+
+	/**
+	 * Choose which columns are selected, must include: username, password, email, last_login,
+	 * login_hash, group & profile_fields
+	 */
+	'table_columns' => array('*'),
 
 	/**
 	 * This will allow you to use the group & acl driver for non-logged in users
@@ -61,12 +72,12 @@ return array(
 	 * Salt for the login hash
 	 */
 	'login_hash_salt' => 'put_some_salt_in_here',
-	
+
 	/**
 	 * $_POST key for login username
 	 */
 	'username_post_key' => 'username',
-	
+
 	/**
 	 * $_POST key for login password
 	 */

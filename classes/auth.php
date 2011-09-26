@@ -64,7 +64,7 @@ class Auth {
 			$config = is_int($driver)
 				? array('driver' => $config)
 				: array_merge($config, array('driver' => $driver));
-			static::factory($config);
+			static::forge($config);
 		}
 		// set the first (or only) as the default instance for static usage
 		if ( ! empty(static::$_instances))
@@ -75,12 +75,23 @@ class Auth {
 	}
 
 	/**
+	 * This method is deprecated...use forge() instead.
+	 * 
+	 * @deprecated until 1.2
+	 */
+	public static function factory($custom = array())
+	{
+		\Log::warning('This method is deprecated.  Please use a forge() instead.', __METHOD__);
+		return static::forge($custom);
+	}
+
+	/**
 	 * Load a login driver to the array of loaded drivers
 	 *
 	 * @param   Array  settings for the new driver
 	 * @throws  AuthException  on driver load failure
 	 */
-	public static function factory($custom = array())
+	public static function forge($custom = array())
 	{
 		// Driver is given as array key or just string in custom
 		$custom = ! is_array($custom) ? array('driver' => $custom) : $custom;
@@ -94,7 +105,7 @@ class Auth {
 		}
 
 		// determine the driver to load
-		$driver = \Auth_Login_Driver::factory($config);
+		$driver = \Auth_Login_Driver::forge($config);
 
 		// get the driver's cookie name
 		$id = $driver->get_id();
@@ -166,7 +177,7 @@ class Auth {
 
 		if (static::$_instance === null)
 		{
-			static::$_instance = static::factory();
+			static::$_instance = static::forge();
 		}
 
 		return static::$_instance;
@@ -360,7 +371,7 @@ class Auth {
 	 * @param   string  driver type
 	 * @param   mixed   condition for which the driver is checked
 	 * @param   string  driver id or null to check all
-	 * @param   Array   identifier to check, should default to current user or relation therof and be
+	 * @param   Array   identifier to check, should default to current user or relation thereof and be
 	 *                  in the form of array(driver_id, user_id)
 	 * @return bool
 	 */
