@@ -59,7 +59,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	 *
 	 * @return  bool
 	 */
-	public function perform_check()
+	protected function perform_check()
 	{
 		$username    = \Session::get('username');
 		$login_hash  = \Session::get('login_hash');
