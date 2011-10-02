@@ -258,17 +258,18 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		}
 		if (array_key_exists('password', $values))
 		{
-			if ($current_values->get('password') != $this->hash_password(trim(@$values['old_password'])))
+			if (empty($values['old_password'])
+				or $current_values->get('password') != $this->hash_password(trim($values['old_password'])))
 			{
 				throw new \SimpleUserWrongPassword('Old password is invalid');
 			}
 
-			$password = trim($values['password']);
-			if ( ! $password)
+			$password = trim(strval($values['password']));
+			if ($password === '')
 			{
-				throw new \SimpleUserUpdateException('Password can\'t be empty.')
+				throw new \SimpleUserUpdateException('Password can\'t be empty.');
 			}
-			$update['password'] = $this->hash_password($values['password']);
+			$update['password'] = $this->hash_password($password);
 			unset($values['password']);
 		}
 		if (array_key_exists('old_password', $values))
