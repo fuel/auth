@@ -64,19 +64,25 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 		$username    = \Session::get('username');
 		$login_hash  = \Session::get('login_hash');
 
-		if (is_null($this->user) or ($this->user['username'] != $username and $this->user != static::$guest_login))
+		// only worth checking if there's both a username and login-hash
+		if ( ! empty($username) and ! empty($login_hash))
 		{
-			$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
-				->where('username', '=', $username)
-				->from(\Config::get('simpleauth.table_name'))
-				->execute(\Config::get('simpleauth.db_connection'))->current();
+			if (is_null($this->user) or ($this->user['username'] != $username and $this->user != static::$guest_login))
+			{
+				$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
+					->where('username', '=', $username)
+					->from(\Config::get('simpleauth.table_name'))
+					->execute(\Config::get('simpleauth.db_connection'))->current();
+			}
+
+			// return true when login was verified
+			if ($this->user and $this->user['login_hash'] === $login_hash)
+			{
+				return true;
+			}
 		}
 
-		if ($this->user and $this->user['login_hash'] === $login_hash)
-		{
-			return true;
-		}
-
+		// no valid login when still here, ensure empty session and optionally set guest_login
 		$this->user = \Config::get('simpleauth.guest_login', true) ? static::$guest_login : false;
 		\Session::delete('username');
 		\Session::delete('login_hash');
