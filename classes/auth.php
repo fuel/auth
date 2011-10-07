@@ -13,7 +13,7 @@
 namespace Auth;
 
 
-class AuthException extends \Fuel_Exception {}
+class AuthException extends \FuelException {}
 
 
 /**

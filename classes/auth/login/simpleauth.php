@@ -13,9 +13,9 @@
 namespace Auth;
 
 
-class SimpleUserUpdateException extends \Fuel_Exception {}
+class SimpleUserUpdateException extends \FuelException {}
 
-class SimpleUserWrongPassword extends \Fuel_Exception {}
+class SimpleUserWrongPassword extends \FuelException {}
 
 /**
  * SimpleAuth basic login driver
