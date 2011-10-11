@@ -23,7 +23,8 @@ class SimpleUserWrongPassword extends \FuelException {}
  * @package     Fuel
  * @subpackage  Auth
  */
-class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
+class Auth_Login_SimpleAuth extends \Auth_Login_Driver
+{
 
 	public static function _init()
 	{

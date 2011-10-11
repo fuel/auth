@@ -13,7 +13,8 @@
 namespace Auth;
 
 
-abstract class Auth_Driver {
+abstract class Auth_Driver
+{
 
 	/**
 	 * @var	Auth_Driver
