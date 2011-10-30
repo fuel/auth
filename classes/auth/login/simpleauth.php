@@ -350,6 +350,31 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 	}
 
 	/**
+	 * Generates new random password, sets it for the given username and returns the new password.
+	 * To be used for resetting a user's forgotten password, should be emailed afterwards.
+	 *
+	 * @param   string  $username
+	 * @return  string
+	 */
+	public function reset_password($username)
+	{
+		$new_password = \Str::random('alnum', 8);
+		$password_hash = $this->hash_password($new_password);
+
+		$affected_rows = \DB::update(\Config::get('simpleauth.table_name'))
+			->set(array('password' => $password_hash))
+			->where('username', '=', $username)
+			->execute(\Config::get('simpleauth.db_connection'));
+
+		if ( ! $affected_rows)
+		{
+			throw new \SimpleUserUpdateException('Failed to reset password, user was invalid.');
+		}
+
+		return $new_password;
+	}
+
+	/**
 	 * Deletes a given user
 	 *
 	 * @param   string
