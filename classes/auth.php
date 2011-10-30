@@ -22,7 +22,8 @@ class AuthException extends \FuelException {}
  * @package     Fuel
  * @subpackage  Auth
  */
-class Auth {
+class Auth
+{
 
 	/**
 	 * @var  Auth_Login_Driver

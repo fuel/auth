@@ -23,7 +23,8 @@ class SimpleUserWrongPassword extends \FuelException {}
  * @package     Fuel
  * @subpackage  Auth
  */
-class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
+class Auth_Login_SimpleAuth extends \Auth_Login_Driver
+{
 
 	public static function _init()
 	{
@@ -221,7 +222,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 			'password'        => $this->hash_password((string) $password),
 			'email'           => $email,
 			'group'           => (int) $group,
-			'profile_fields'  => serialize($profile_fields)
+			'profile_fields'  => serialize($profile_fields),
+			'created_at'      => \Date::forge()->get_timestamp()
 		);
 		$result = \DB::insert(\Config::get('simpleauth.table_name'))
 			->set($user)

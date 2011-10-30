@@ -13,7 +13,8 @@
 namespace Auth;
 
 
-abstract class Auth_Acl_Driver extends \Auth_Driver {
+abstract class Auth_Acl_Driver extends \Auth_Driver
+{
 
 	/**
 	 * @var	Auth_Driver
