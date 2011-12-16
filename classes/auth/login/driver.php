@@ -107,7 +107,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 			'groups'       => $this->get_groups(),
 		);
 
-		$additional_fields = array_merge($this->config['additional_fields'], $additional_fields);
+		$additional_fields = array_merge(\Arr::get($this->config, 'additional_fields', array()), $additional_fields);
 		foreach($additional_fields as $af)
 		{
 			// only works if it actually can be fetched through a get_ method
