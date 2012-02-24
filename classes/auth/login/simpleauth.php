@@ -27,7 +27,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver {
 
 	public static function _init()
 	{
-		\Config::load('simpleauth', true);
+		\Config::load('simpleauth', true, true, true);
 	}
 
 	/**
