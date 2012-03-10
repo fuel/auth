@@ -97,7 +97,7 @@ abstract class Auth_Group_Driver extends \Auth_Driver
 		foreach (\Auth::verified() as $v)
 		{
 			// ... and check all those their groups
-			$gs = $v->get_user_groups();
+			$gs = $v->get_groups();
 			foreach ($gs as $g_id)
 			{
 				// ... and try to validate if its group is this one
