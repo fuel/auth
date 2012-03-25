@@ -212,6 +212,13 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 	abstract protected function perform_check();
 
 	/**
+	 * Perform the actual login check
+	 *
+	 * @return  bool
+	 */
+	abstract public function validate_user();
+
+	/**
 	 * Login method
 	 *
 	 * @return  bool  whether login succeeded

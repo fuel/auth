@@ -92,13 +92,11 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 	}
 
 	/**
-	 * Login user
+	 * Check the user exists before logging in
 	 *
-	 * @param   string
-	 * @param   string
 	 * @return  bool
 	 */
-	public function login($username_or_email = '', $password = '')
+	public function validate_user($username_or_email = '', $password = '')
 	{
 		$username_or_email = trim($username_or_email) ?: trim(\Input::post(\Config::get('simpleauth.username_post_key', 'username')));
 		$password = trim($password) ?: trim(\Input::post(\Config::get('simpleauth.password_post_key', 'password')));
@@ -118,7 +116,19 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 			->from(\Config::get('simpleauth.table_name'))
 			->execute(\Config::get('simpleauth.db_connection'))->current();
 
-		if ($this->user == false)
+		return $this->user ?: false;
+	}
+
+	/**
+	 * Login user
+	 *
+	 * @param   string
+	 * @param   string
+	 * @return  bool
+	 */
+	public function login($username_or_email = '', $password = '')
+	{
+		if ( ! ($this->user = $this->validate_user($username_or_email, $password)))
 		{
 			$this->user = \Config::get('simpleauth.guest_login', true) ? static::$guest_login : false;
 			\Session::delete('username');
