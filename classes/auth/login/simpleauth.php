@@ -503,7 +503,16 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 			return false;
 		}
 
-		return @unserialize($this->user['profile_fields']) ?: array();
+		if (isset($this->user['profile_fields']))
+		{
+			is_array($this->user['profile_fields']) or $this->user['profile_fields'] = @unserialize($this->user['profile_fields']);
+		}
+		else
+		{
+			$this->user['profile_fields'] = array();
+		}
+
+		return $this->user['profile_fields'];
 	}
 
 	/**
