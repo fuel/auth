@@ -206,7 +206,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 
 		if (empty($username) or empty($password) or empty($email))
 		{
-			throw new \SimpleUserUpdateException('Username, password and email address can\'t be empty.');
+			throw new \SimpleUserUpdateException('Username, password and email address can\'t be empty.', 1);
 		}
 
 		$same_users = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
@@ -219,11 +219,11 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 		{
 			if (in_array(strtolower($email), array_map('strtolower', $same_users->current())))
 			{
-				throw new \SimpleUserUpdateException('Email address already exists');
+				throw new \SimpleUserUpdateException('Email address already exists', 2);
 			}
 			else
 			{
-				throw new \SimpleUserUpdateException('Username already exists');
+				throw new \SimpleUserUpdateException('Username already exists', 3);
 			}
 		}
 
@@ -260,13 +260,13 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 
 		if (empty($current_values))
 		{
-			throw new \SimpleUserUpdateException('Username not found');
+			throw new \SimpleUserUpdateException('Username not found', 4);
 		}
 
 		$update = array();
 		if (array_key_exists('username', $values))
 		{
-			throw new \SimpleUserUpdateException('Username cannot be changed.');
+			throw new \SimpleUserUpdateException('Username cannot be changed.', 5);
 		}
 		if (array_key_exists('password', $values))
 		{
@@ -279,7 +279,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 			$password = trim(strval($values['password']));
 			if ($password === '')
 			{
-				throw new \SimpleUserUpdateException('Password can\'t be empty.');
+				throw new \SimpleUserUpdateException('Password can\'t be empty.', 6);
 			}
 			$update['password'] = $this->hash_password($password);
 			unset($values['password']);
@@ -293,7 +293,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 			$email = filter_var(trim($values['email']), FILTER_VALIDATE_EMAIL);
 			if ( ! $email)
 			{
-				throw new \SimpleUserUpdateException('Email address is not valid');
+				throw new \SimpleUserUpdateException('Email address is not valid', 7);
 			}
 			$update['email'] = $email;
 			unset($values['email']);
@@ -380,7 +380,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 
 		if ( ! $affected_rows)
 		{
-			throw new \SimpleUserUpdateException('Failed to reset password, user was invalid.');
+			throw new \SimpleUserUpdateException('Failed to reset password, user was invalid.', 8);
 		}
 
 		return $new_password;
@@ -396,7 +396,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 	{
 		if (empty($username))
 		{
-			throw new \SimpleUserUpdateException('Cannot delete user with empty username');
+			throw new \SimpleUserUpdateException('Cannot delete user with empty username', 9);
 		}
 
 		$affected_rows = \DB::delete(\Config::get('simpleauth.table_name'))
@@ -415,7 +415,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 	{
 		if (empty($this->user))
 		{
-			throw new \SimpleUserUpdateException('User not logged in, can\'t create login hash.');
+			throw new \SimpleUserUpdateException('User not logged in, can\'t create login hash.', 10);
 		}
 
 		$last_login = \Date::forge()->get_timestamp();
