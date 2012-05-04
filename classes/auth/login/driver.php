@@ -25,17 +25,6 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 	 */
 	protected static $_instances = array();
 
-	/**
-	 * This method is deprecated...use forge() instead.
-	 * 
-	 * @deprecated until 1.2
-	 */
-	public static function factory(array $config = array())
-	{
-		\Log::warning('This method is deprecated.  Please use a forge() instead.', __METHOD__);
-		return static::forge($config);
-	}
-
 	public static function forge(array $config = array())
 	{
 		// default driver id to driver name when not given

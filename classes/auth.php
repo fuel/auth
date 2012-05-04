@@ -76,17 +76,6 @@ class Auth
 	}
 
 	/**
-	 * This method is deprecated...use forge() instead.
-	 * 
-	 * @deprecated until 1.2
-	 */
-	public static function factory($custom = array())
-	{
-		\Log::warning('This method is deprecated.  Please use a forge() instead.', __METHOD__);
-		return static::forge($custom);
-	}
-
-	/**
 	 * Load a login driver to the array of loaded drivers
 	 *
 	 * @param   Array  settings for the new driver
