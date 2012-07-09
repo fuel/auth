@@ -182,10 +182,6 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 	 */
 	public function hasher()
 	{
-		if ( ! class_exists('PHPSecLib\\Crypt_Hash', false))
-		{
-			import('phpseclib/Crypt/Hash', 'vendor');
-		}
 		is_null($this->hasher) and $this->hasher = new \PHPSecLib\Crypt_Hash();
 
 		return $this->hasher;
