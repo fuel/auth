@@ -233,6 +233,8 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 			'email'           => $email,
 			'group'           => (int) $group,
 			'profile_fields'  => serialize($profile_fields),
+			'last_login'      => 0,
+			'login_hash'      => '',
 			'created_at'      => \Date::forge()->get_timestamp()
 		);
 		$result = \DB::insert(\Config::get('simpleauth.table_name'))
