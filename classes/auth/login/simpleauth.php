@@ -206,7 +206,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 
 		if (empty($username) or empty($password) or empty($email))
 		{
-			throw new \SimpleUserUpdateException('Username, password and email address can\'t be empty.', 1);
+			throw new \SimpleUserUpdateException('Username, password or email address is not given, or email address is invalid', 1);
 		}
 
 		$same_users = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
