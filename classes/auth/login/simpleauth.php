@@ -136,6 +136,9 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 			return false;
 		}
 
+		// register so Auth::logout() can find us
+		Auth::_register_verified($this);
+
 		\Session::set('username', $this->user['username']);
 		\Session::set('login_hash', $this->create_login_hash());
 		\Session::instance()->rotate();
