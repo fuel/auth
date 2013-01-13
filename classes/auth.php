@@ -26,7 +26,7 @@ class Auth
 {
 
 	/**
-	 * @var  Auth_Login_Driver
+	 * @var  Auth_Login_Driver	default instance
 	 */
 	protected static $_instance = null;
 
