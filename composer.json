@@ -1,0 +1,7 @@
+{
+	"name": "fuel/auth",
+	"type": "fuelphp-package",
+	"require": {
+		"composer/installers": "dev-fuelphp-support"
+	}
+}
