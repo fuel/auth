@@ -172,7 +172,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 	 */
 	public function hash_password($password)
 	{
-		return base64_encode($this->hasher()->pbkdf2($password, \Config::get('auth.salt'), 10000, 32));
+		return base64_encode($this->hasher()->pbkdf2($password, \Config::get('auth.salt'), \Config::get('auth.iterations', 10000), 32));
 	}
 
 	/**
