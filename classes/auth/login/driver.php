@@ -30,7 +30,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 		// default driver id to driver name when not given
 		! array_key_exists('id', $config) && $config['id'] = $config['driver'];
 
-		$class = \Inflector::get_namespace($config['driver']).'Auth_Login_'.ucfirst(\Inflector::denamespace($config['driver']));
+		$class = \Inflector::get_namespace($config['driver']).'Auth_Login_'.\Str::ucwords(\Inflector::denamespace($config['driver']));
 		$driver = new $class($config);
 		static::$_instances[$driver->get_id()] = $driver;
 		is_null(static::$_instance) and static::$_instance = $driver;
@@ -42,7 +42,7 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 				$custom = is_int($d)
 					? array('driver' => $custom)
 					: array_merge($custom, array('driver' => $d));
-				$class = 'Auth_'.ucfirst($type).'_Driver';
+				$class = 'Auth_'.\Str::ucwords($type).'_Driver';
 				$class::forge($custom);
 			}
 		}
