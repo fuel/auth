@@ -23,7 +23,7 @@ class SimpleUserWrongPassword extends \FuelException {}
  * @package     Fuel
  * @subpackage  Auth
  */
-class Auth_Login_SimpleAuth extends \Auth_Login_Driver
+class Auth_Login_Simpleauth extends \Auth_Login_Driver
 {
 
 	public static function _init()
@@ -51,7 +51,7 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 	 * @var  array  SimpleAuth class config
 	 */
 	protected $config = array(
-		'drivers' => array('group' => array('SimpleGroup')),
+		'drivers' => array('group' => array('Simplegroup')),
 		'additional_fields' => array('profile_fields'),
 	);
 
