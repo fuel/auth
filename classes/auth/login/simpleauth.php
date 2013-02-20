@@ -469,18 +469,35 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	}
 
 	/**
+	 * Getter for user data
+	 *
+	 * @param  string  name of the user field to return
+	 * @param  mixed  value to return if the field requested does not exist
+	 *
+	 * @return  mixed
+	 */
+	public function get($field, $default = null)
+	{
+		if (isset($this->user[$field]))
+		{
+			return $this->user[$field];
+		}
+		elseif (isset($this->user['profile_fields']))
+		{
+			return $this->get_profile_fields($field, $default);
+		}
+
+		return $default;
+	}
+
+	/**
 	 * Get the user's emailaddress
 	 *
 	 * @return  string
 	 */
 	public function get_email()
 	{
-		if (empty($this->user))
-		{
-			return false;
-		}
-
-		return $this->user['email'];
+		return $this->get('email', false);
 	}
 
 	/**
