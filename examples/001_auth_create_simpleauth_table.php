@@ -24,7 +24,7 @@ class Auth_Create_Simpleauth_Table
 		), array('id'));
 
 		// add a unique index on username and email
-		\DBUtil::create_index(\Config::get('simpleauth.table_name', 'users'), array('username', 'email'), 'username', 'UNIQUE');
+		\DBUtil::create_index($table, array('username', 'email'), 'username', 'UNIQUE');
 	}
 
 	function down()
