@@ -92,7 +92,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	}
 
 	/**
-	 * Check the user exists before logging in
+	 * Check the user exists
 	 *
 	 * @return  bool
 	 */
@@ -107,7 +107,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 		}
 
 		$password = $this->hash_password($password);
-		$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
+		$user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 			->where_open()
 			->where('username', '=', $username_or_email)
 			->or_where('email', '=', $username_or_email)
@@ -116,7 +116,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			->from(\Config::get('simpleauth.table_name'))
 			->execute(\Config::get('simpleauth.db_connection'))->current();
 
-		return $this->user ?: false;
+		return $user ?: false;
 	}
 
 	/**
