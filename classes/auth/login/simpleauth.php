@@ -300,6 +300,15 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			{
 				throw new \SimpleUserUpdateException('Email address is not valid', 7);
 			}
+			$matches = \DB::select()
+				->where('email', '=', $email)
+				->where('id', '!=', $current_values[0]['id'])
+				->from(\Config::get('simpleauth.table_name'))
+				->execute(\Config::get('simpleauth.db_connection'));
+			if (count($matches))
+			{
+				throw new \SimpleUserUpdateException('Email address is already in use', 11);
+			}
 			$update['email'] = $email;
 			unset($values['email']);
 		}
