@@ -90,7 +90,7 @@ abstract class Auth_Group_Driver extends \Auth_Driver
 			foreach ($gs as $g_id)
 			{
 				// ... and try to validate if its group is this one
-				if ($this instanceof $g_id[0])
+				if ($this->id = $g_id[0])
 				{
 					if ($this->has_access($condition, $driver, $g_id))
 					{
