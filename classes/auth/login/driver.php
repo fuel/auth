@@ -189,6 +189,54 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 		return $this->hasher;
 	}
 
+	/**
+	 * Returns the list of defined groups
+	 *
+	 * @return  array
+	 */
+	public function groups($driver = null)
+	{
+		$result = array();
+
+		if ($driver === null)
+		{
+			foreach (\Auth::group(true) as $group)
+			{
+				method_exists($group, 'groups') and $result = \Arr::merge($result, $group->groups());
+			}
+		}
+		else
+		{
+			$result = \Auth::group($driver)->groups();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns the list of defined roles
+	 *
+	 * @return  array
+	 */
+	public function roles($driver = null)
+	{
+		$result = array();
+
+		if ($driver === null)
+		{
+			foreach (\Auth::acl(true) as $acl)
+			{
+				method_exists($acl, 'roles') and $result = \Arr::merge($result, $acl->roles());
+			}
+		}
+		else
+		{
+			$result = \Auth::acl($driver)->roles();
+		}
+
+		return $result;
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**
