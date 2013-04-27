@@ -630,8 +630,8 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 					->get_one();
 			}
 
-			// return true when login was verified
-			if ($this->user and $this->user->login_hash === $login_hash)
+			// return true when login was verified, and either the hash matches or multiple logins are allowed
+			if ($this->user and (\Config::get('ormauth.multiple_logins', false) or $this->user['login_hash'] === $login_hash))
 			{
 				return true;
 			}

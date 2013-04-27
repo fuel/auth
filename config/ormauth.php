@@ -48,6 +48,14 @@ return array(
 	'guest_login' => true,
 
 	/**
+	 * This will allow the same user to be logged in multiple times.
+	 *
+	 * Note that this is less secure, as session hijacking countermeasures have to
+	 * be disabled for this to work!
+	 */
+	'multiple_logins' => false,
+
+	/**
 	 * Salt for the login hash
 	 */
 	'login_hash_salt' => 'put_some_salt_in_here',

@@ -73,8 +73,8 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 					->execute(\Config::get('simpleauth.db_connection'))->current();
 			}
 
-			// return true when login was verified
-			if ($this->user and $this->user['login_hash'] === $login_hash)
+			// return true when login was verified, and either the hash matches or multiple logins are allowed
+			if ($this->user and (\Config::get('simpleauth.multiple_logins', false) or $this->user['login_hash'] === $login_hash))
 			{
 				return true;
 			}
