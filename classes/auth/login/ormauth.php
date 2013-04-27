@@ -137,14 +137,21 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		}
 
 		// get the user we need to login
-		$this->user = \Model\Auth_User::query()
-			->select(\Config::get('ormauth.table_columns', array()))
-			->related('metadata')
-			->where('id', '=', $user_id)
-			->get_one();
+		if ( ! $user_id instanceOf \Model\Auth_User)
+		{
+			$this->user = \Model\Auth_User::query()
+				->select(\Config::get('ormauth.table_columns', array()))
+				->related('metadata')
+				->where('id', '=', $user_id)
+				->get_one();
+		}
+		else
+		{
+			$this->user = $user_id;
+		}
 
 		// did we find it
-		if ($this->user)
+		if ($this->user and ! $this->user->is_new())
 		{
 			// store the logged-in user and it's hash in the session
 			\Session::set('username', $this->user->username);
@@ -581,7 +588,23 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	 */
 	public function get_profile_fields($field = null, $default = null)
 	{
-		return $this->get($field, false);
+		// collect all meta data
+		$profile_fields = array();
+
+		foreach ($this->user->metadata as $metadata)
+		{
+			if (empty($field))
+			{
+				$profile_fields[$metadata->key] = $metadata->value;
+			}
+			elseif ($field == $metadata->key)
+			{
+				return $metadata->value;
+			}
+		}
+
+		// return the connected data
+		return empty($profile_fields) ? $default : $profile_fields;
 	}
 
 	/**
