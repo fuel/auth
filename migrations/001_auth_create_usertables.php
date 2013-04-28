@@ -10,7 +10,10 @@ class Auth_Create_Usertables
 		// get the driver used
 		\Config::load('auth', true);
 
-		if (\Config::get('auth.driver') == 'Simpleauth')
+		$drivers = \Config::get('auth.driver', array());
+		is_array($drivers) or $drivers = array($drivers);
+
+		if (in_array('Simpleauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('simpleauth', true);
@@ -38,7 +41,7 @@ class Auth_Create_Usertables
 			}
 		}
 
-		elseif (\Config::get('auth.driver') == 'Ormauth')
+		elseif (in_array('Ormauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('ormauth', true);
@@ -92,7 +95,10 @@ class Auth_Create_Usertables
 		// get the driver used
 		\Config::load('auth', true);
 
-		if (\Config::get('auth.driver') == 'Simpleauth')
+		$drivers = \Config::get('auth.driver', array());
+		is_array($drivers) or $drivers = array($drivers);
+
+		if (in_array('Simpleauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('simpleauth', true);
@@ -102,7 +108,7 @@ class Auth_Create_Usertables
 			\DBUtil::drop_table($table);
 		}
 
-		elseif (\Config::get('auth.driver') == 'Ormauth')
+		elseif (in_array('Ormauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('ormauth', true);

@@ -10,7 +10,10 @@ class Auth_Create_Authdefaults
 		// get the driver used
 		\Config::load('auth', true);
 
-		if (\Config::get('auth.driver') == 'Ormauth')
+		$drivers = \Config::get('auth.driver', array());
+		is_array($drivers) or $drivers = array($drivers);
+
+		if (in_array('Ormauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('ormauth', true);
@@ -83,7 +86,10 @@ class Auth_Create_Authdefaults
 		// get the driver used
 		\Config::load('auth', true);
 
-		if (\Config::get('auth.driver') == 'Ormauth')
+		$drivers = \Config::get('auth.driver', array());
+		is_array($drivers) or $drivers = array($drivers);
+
+		if (in_array('Ormauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('ormauth', true);
