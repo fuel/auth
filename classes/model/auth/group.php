@@ -31,21 +31,24 @@ class Auth_Group extends \Orm\Model
 		'id',
 		'name'     => array(
 			'label'		  => 'auth_model_group.name',
-			'default' 	  => 0,
+			'default' 	  => '',
 			'null'		  => false,
 			'validation'  => array('required', 'max_length' => array(255))
 		),
 		'user_id'         => array(
 			'default' 	  => 0,
 			'null'		  => false,
+			'form'  	  => array('type' => false),
 		),
 		'created_at'      => array(
 			'default' 	  => 0,
 			'null'		  => false,
+			'form'  	  => array('type' => false),
 		),
 		'updated_at'      => array(
 			'default' 	  => 0,
 			'null'		  => false,
+			'form'  	  => array('type' => false),
 		),
 	);
 
@@ -133,7 +136,7 @@ class Auth_Group extends \Orm\Model
 	public function _event_before_insert()
 	{
 		// assign the user id that lasted updated this record
-		$this->user_id = $this->user_id = \Auth::get_user_id() ? $this->user_id[1] : 0;
+		$this->user_id = ($this->user_id = \Auth::get_user_id()) ? $this->user_id[1] : 0;
 	}
 
 	/**

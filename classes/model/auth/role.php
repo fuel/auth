@@ -48,14 +48,17 @@ class Auth_Role extends \Orm\Model
 		'user_id'         => array(
 			'default' 	  => 0,
 			'null'		  => false,
+			'form'  	  => array('type' => false),
 		),
 		'created_at'      => array(
 			'default' 	  => 0,
 			'null'		  => false,
+			'form'  	  => array('type' => false),
 		),
 		'updated_at'      => array(
 			'default' 	  => 0,
 			'null'		  => false,
+			'form'  	  => array('type' => false),
 		),
 	);
 
