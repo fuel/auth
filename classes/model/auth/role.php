@@ -42,7 +42,7 @@ class Auth_Role extends \Orm\Model
 			'default' 	  => 0,
 			'null'		  => false,
 			'form'		  => array('type' => 'select'),
-			'validation'  => array('required'),
+			'validation'  => array(),
 			'default'	  => '',
 		),
 		'user_id'         => array(
