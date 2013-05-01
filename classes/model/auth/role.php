@@ -38,7 +38,7 @@ class Auth_Role extends \Orm\Model
 		'filter'          => array(
 			'label'		  => 'auth_model_role.filter',
 			'data_type'	  => 'enum',
-			'options'	  => array('', 'A', 'D'),
+			'options'	  => array('', 'A', 'D', 'R'),
 			'default' 	  => 0,
 			'null'		  => false,
 			'form'		  => array('type' => 'select'),

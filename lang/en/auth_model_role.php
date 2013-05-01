@@ -8,5 +8,6 @@ return array(
 		''          => 'None',
 		'A'         => 'Allow all access',
 		'D'         => 'Deny all access',
+		'R'         => 'Revoke assigned permissions',
 	),
 );

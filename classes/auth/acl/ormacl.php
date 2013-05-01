@@ -85,11 +85,16 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 		// fetch the current user object
 		$user = Auth::get_user();
 
+		// some storage to collect the current rights and revoked rights, and the global flag
+		$current_rights = array();
+		$revoked_rights = array();
+		$global_access = null;
+
 		// assemble the current users effective rights
 		$cache_key = \Config::get('ormauth.cache_prefix', 'auth').'.permissions.user_'.($user ? $user->id : 0);
 		try
 		{
-			$current_rights = \Cache::get($cache_key);
+			list($current_rights, $revoked_rights, $global_access) = \Cache::get($cache_key);
 		}
 		catch (\CacheNotFoundException $e)
 		{
@@ -102,25 +107,45 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 				$current_roles = \Arr::merge($current_roles, Auth::get_user()->roles);
 			}
 
-			// some storage to collect the current rights
-			$current_rights = array();
-
 			foreach ($current_roles as $role)
 			{
-				// if one of the roles has a global Allowed or Denied filter, we're done
-				if ( ! empty($role->filter))
+				// role grants all access
+				if ($role->filter == 'A')
 				{
-					$current_rights = ($role->filter == 'A' ? true : false);
-					break;
+					$global_access = true;
 				}
 
-				// fetch the permissions of this role
-				foreach ($role->permissions as $permission)
+				// role denies all access
+				elseif ($role->filter == 'D')
 				{
-					isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
-					if ( ! in_array($permission->permission, $current_rights[$permission->area]))
+					$global_access = false;
+				}
+
+				// role defines a permission revocation
+				elseif ($role->filter == 'R')
+				{
+					// fetch the permissions of this role
+					foreach ($role->permissions as $permission)
 					{
-						$current_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->actions;
+						isset($revoked_rights[$permission->area]) or $revoked_rights[$permission->area] = array();
+						if ( ! in_array($permission->permission, $revoked_rights[$permission->area]))
+						{
+							$revoked_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->actions;
+						}
+					}
+				}
+
+				// standard role, add it to the current rights set
+				else
+				{
+					// fetch the permissions of this role
+					foreach ($role->permissions as $permission)
+					{
+						isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
+						if ( ! in_array($permission->permission, $current_rights[$permission->area]))
+						{
+							$current_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->actions;
+						}
 					}
 				}
 			}
@@ -156,14 +181,40 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 			}
 
 			// save the rights in the cache
-			\Cache::set($cache_key, $current_rights);
+			\Cache::set($cache_key, array($current_rights, $revoked_rights, $global_access));
+		}
+
+		// check for a revocation first
+		foreach ($rights as $right)
+		{
+			// check revocation permissions
+			if ( isset($revoked_rights[$area]) and array_key_exists($right, $revoked_rights[$area]))
+			{
+				$revoked = true;
+
+				// need to check any actions?
+				foreach ($actions as $action)
+				{
+					if ( ! in_array($action, $revoked_rights[$area][$right]))
+					{
+						$revoked = false;
+						break;
+					}
+				}
+
+				// right revoked?
+				if ($revoked)
+				{
+					return false;
+				}
+			}
 		}
 
 		// was a global filter applied?
-		if (is_bool($current_rights))
+		if (is_bool($global_access))
 		{
 			// we're done here
-			return $current_rights;
+			return $global_access;
 		}
 
 		// start checking rights, terminate false when right not found
