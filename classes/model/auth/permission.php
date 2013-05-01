@@ -44,6 +44,12 @@ class Auth_Permission extends \Orm\Model
 			'null'		  => false,
 			'validation'  => array('required', 'max_length' => array(255))
 		),
+		'actions'         => array(
+			'data_type'	  => 'serialize',
+			'default' 	  => array(),
+			'null'		  => false,
+			'form'  	  => array('type' => false),
+		),
 		'user_id'         => array(
 			'default' 	  => 0,
 			'null'		  => false,

@@ -86,6 +86,18 @@ class Auth_Role extends \Orm\Model
 	);
 
 	/**
+	 * @var array	has_many relationships
+	 */
+	protected static $_has_many = array(
+		'rolepermission' => array(
+			'model_to' => 'Model\\Auth_Rolepermission',
+			'key_from' => 'id',
+			'key_to'   => 'role_id',
+			'cascade_delete' => false,
+		),
+	);
+
+	/**
 	 * @var array	many_many relationships
 	 */
 	protected static $_many_many = array(

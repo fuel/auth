@@ -69,7 +69,18 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 
 		// get the permission area and the permission rights to be checked
 		$area    = $condition[0];
-		$rights  = (array) $condition[1];
+
+		// any actions defined?
+		if (preg_match('#(.*)?\[(.*)?\]#', $condition[1], $matches))
+		{
+			$rights = (array) $matches[1];
+			$actions = explode(',', $matches[2]);
+		}
+		else
+		{
+			$rights  = (array) $condition[1];
+			$actions = array();
+		}
 
 		// fetch the current user object
 		$user = Auth::get_user();
@@ -107,20 +118,39 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 				foreach ($role->permissions as $permission)
 				{
 					isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
-					in_array($permission->permission, $current_rights[$permission->area]) or $current_rights[$permission->area][] = $permission->permission;
+					if ( ! in_array($permission->permission, $current_rights[$permission->area]))
+					{
+						$current_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->actions;
+					}
 				}
 			}
 
 			// if this user doesn't have a global filter applied...
 			if (is_array($current_rights))
 			{
-				// add the users personal rights
 				if ($user)
 				{
-					foreach ($user->permissions as $permission)
+					// add the users group rights
+					foreach ($user->group->permissions as $permission)
 					{
 						isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
-						in_array($permission->permission, $current_rights[$permission->area]) or $current_rights[$permission->area][] = $permission->permission;
+						if ( ! in_array($permission->permission, $current_rights[$permission->area]))
+						{
+							$current_rights[$permission->area][$permission->permission] = $user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->actions;
+						}
+					}
+
+					// add the users personal rights
+						if ($user)
+					{
+						foreach ($user->permissions as $permission)
+						{
+							isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
+							if ( ! in_array($permission->permission, $current_rights[$permission->area]))
+							{
+								$current_rights[$permission->area][$permission->permission] = $user->userpermission['['.$user->id.']['.$permission->id.']']->actions;
+							}
+						}
 					}
 				}
 			}
@@ -139,9 +169,19 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 		// start checking rights, terminate false when right not found
 		foreach ($rights as $right)
 		{
-			if ( ! isset($current_rights[$area]) or ! in_array($right, $current_rights[$area]))
+			// check basic permissions
+			if ( ! isset($current_rights[$area]) or ! array_key_exists($right, $current_rights[$area]))
 			{
 				return false;
+			}
+
+			// need to check any actions?
+			foreach ($actions as $action)
+			{
+				if ( ! in_array($action, $current_rights[$area][$right]))
+				{
+					return false;
+				}
 			}
 		}
 

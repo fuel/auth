@@ -84,6 +84,12 @@ class Auth_Group extends \Orm\Model
 			'key_from' => 'id',
 			'key_to'   => 'group',
 		),
+		'grouppermission' => array(
+			'model_to' => 'Model\\Auth_Grouppermission',
+			'key_from' => 'id',
+			'key_to'   => 'group_id',
+			'cascade_delete' => false,
+		),
 	);
 
 	/**
