@@ -113,9 +113,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		\Session::set('username', $this->user->username);
 		\Session::set('login_hash', $this->create_login_hash());
 
-		// re-assemble the permissions
-		$this->load_permissions();
-
 		// and rotate the session id, we've elevated rights
 		\Session::instance()->rotate();
 
@@ -160,9 +157,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			// and rotate the session id, we've elevated rights
 			\Session::instance()->rotate();
 
-			// re-assemble the permissions
-			$this->load_permissions();
-
 			return true;
 		}
 
@@ -191,9 +185,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		{
 			$this->user = false;
 		}
-
-		// and the permissions
-		$this->load_permissions();
 
 		// delete the session data identifying this user
 		\Session::delete('username');
@@ -664,49 +655,5 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		$this->logout();
 
 		return false;
-	}
-
-	/**
-	 * Assemble the rights array for the current user
-	 *
-	 * @return  bool
-	 */
-	protected function load_permissions()
-	{
-		// reset the permissions
-		$this->permissions = array();
-
-		// construct the permissions array for this user
-		if ($this->user)
-		{
-			try
-			{
-				$this->permissions = \Cache::get(\Config::get('ormauth.cache_prefix', 'auth').'.permissions.user_'.$this->user->id);
-			}
-			catch (\CacheNotFoundException $e)
-			{
-				// collect the roles and permissions
-				$roles = array_merge($this->user->roles, $this->user->group->roles);
-				foreach ($roles as $role)
-				{
-					$perms = array();
-					foreach ($role->permissions as $permission)
-					{
-						isset($perms[$permission->area]) or $perms[$permission->area] = array();
-						$perms[$permission->area][] = $permission->permission;
-					}
-					$this->permissions[$role->name] = $perms;
-				}
-
-				// add the users direct permissions
-				foreach ($this->user->permissions as $permission)
-				{
-					isset($this->permissions[$permission->area]) or $this->permissions[$permission->area] = array();
-					$this->permissions[$permission->area][] = $permission->permission;
-				}
-
-				\Cache::set('auth.permissions.user_'.$this->user->id, $this->permissions);
-			}
-		}
 	}
 }
