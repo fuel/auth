@@ -59,25 +59,39 @@ class Auth_Create_Authdefaults
 			 */
 
 			// create the guest account
-			\DB::insert($table)->set(
+			list($guest_id, $affected) = \DB::insert($table)->set(
 				array(
 					'username' => 'guest',
-					'password' => '',
-					'group_id' => $group_id_guest,
-					'login_hash' => '',
-					'last_login' => 0,
+					'password' => 'YOU CAN NOT USE THIS TO LOGIN',
 					'email' => '',
+					'group_id' => $group_id_guest,
+					'last_login' => 0,
+					'previous_login' => 0,
+					'login_hash' => '',
+					'user_id' => 0,
+					'created_at' => 0,
+					'updated_at' => 0,
 				)
 			)->execute();
 
-			// create the administrator account, and assign it the superadmin group so it has all access
-			\Auth::instance()->create_user('admin', 'admin', 'admin@example.org', $group_id_admin, array('fullname' => 'System administrator'));
-
 			// adjust the id's, auto_increment doesn't want to create a key with value 0
-			\DB::update($table)->set(array('id' => 0))->where('id', '=', 1)->execute();
-			\DB::update($table)->set(array('id' => 1))->where('id', '=', 2)->execute();
-			\DB::update($table.'_metadata')->set(array('parent_id' => 0))->where('parent_id', '=', 1)->execute();
-			\DB::update($table.'_metadata')->set(array('parent_id' => 1))->where('parent_id', '=', 2)->execute();
+			\DB::update($table)->set(array('id' => 0))->where('id', '=', $guest_id)->execute();
+
+			// add guests full name to the metadata
+			\DB::insert($table.'_metadata')->set(
+				array(
+					'parent_id' => 0,
+					'key' => 'fullname',
+					'value' => 'Guest',
+				)
+			)->execute();
+
+			// create the administrator account if needed, and assign it the superadmin group so it has all access
+			$result = \DB::select('id')->from($table)->where('username','=','admin')->execute();
+			if (count($result) == 0)
+			{
+				\Auth::instance()->create_user('admin', 'admin', 'admin@example.org', $group_id_admin, array('fullname' => 'System administrator'));
+			}
 		}
 	}
 

@@ -47,23 +47,87 @@ class Auth_Create_Usertables
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// table users
-			\DBUtil::create_table($table, array(
-				'id' => array('type' => 'int', 'constraint' => 11, 'auto_increment' => true),
-				'username' => array('type' => 'varchar', 'constraint' => 50),
-				'password' => array('type' => 'varchar', 'constraint' => 255),
-				'group_id' => array('type' => 'int', 'constraint' => 11, 'default' => 1),
-				'email' => array('type' => 'varchar', 'constraint' => 255),
-				'last_login' => array('type' => 'varchar', 'constraint' => 25),
-				'previous_login' => array('type' => 'varchar', 'constraint' => 25, 'default' => 0),
-				'login_hash' => array('type' => 'varchar', 'constraint' => 255),
-				'user_id' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
-				'created_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
-				'updated_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
-			), array('id'));
+			if ( ! \DBUtil::table_exists($table))
+			{
+				// get the simpleauth tablename, maybe that exists
+				\Config::load('simpleauth', true);
+				$simpletable = \Config::get('simpleauth.table_name', 'users');
 
-			// add a unique index on username and email
-			\DBUtil::create_index($table, array('username', 'email'), 'username', 'UNIQUE');
+				if ( ! \DBUtil::table_exists($simpletable))
+				{
+					// table users
+					\DBUtil::create_table($table, array(
+						'id' => array('type' => 'int', 'constraint' => 11, 'auto_increment' => true),
+						'username' => array('type' => 'varchar', 'constraint' => 50),
+						'password' => array('type' => 'varchar', 'constraint' => 255),
+						'group_id' => array('type' => 'int', 'constraint' => 11, 'default' => 1),
+						'email' => array('type' => 'varchar', 'constraint' => 255),
+						'last_login' => array('type' => 'varchar', 'constraint' => 25),
+						'previous_login' => array('type' => 'varchar', 'constraint' => 25, 'default' => 0),
+						'login_hash' => array('type' => 'varchar', 'constraint' => 255),
+						'user_id' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
+						'created_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
+						'updated_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
+					), array('id'));
+
+					// add a unique index on username and email
+					\DBUtil::create_index($table, array('username', 'email'), 'username', 'UNIQUE');
+				}
+				else
+				{
+					\DBUtil::rename_table($simpletable, $table);
+				}
+			}
+
+			// run a check on required fields, and deal with missing ones. we might be migrating from simpleauth
+			if (\DBUtil::field_exists($table, 'group'))
+			{
+				\DBUtil::modify_fields($table, array(
+					'group' => array('name' => 'group_id', 'type' => 'int', 'constraint' => 11),
+				));
+			}
+			if ( ! \DBUtil::field_exists($table, 'group_id'))
+			{
+				\DBUtil::add_fields($table, array(
+					'group_id' => array('type' => 'int', 'constraint' => 11, 'default' => 1, 'after' => 'password'),
+				));
+			}
+			if ( ! \DBUtil::field_exists($table, 'previous_login'))
+			{
+				\DBUtil::add_fields($table, array(
+					'previous_login' => array('type' => 'varchar', 'constraint' => 25, 'default' => 0, 'after' => 'last_login'),
+				));
+			}
+			if ( ! \DBUtil::field_exists($table, 'user_id'))
+			{
+				\DBUtil::add_fields($table, array(
+					'user_id' => array('type' => 'int', 'constraint' => 11, 'default' => 0, 'after' => 'login_hash'),
+				));
+			}
+			if (\DBUtil::field_exists($table, 'created'))
+			{
+				\DBUtil::modify_fields($table, array(
+					'created' => array('name' => 'created_at', 'type' => 'int', 'constraint' => 11),
+				));
+			}
+			if ( ! \DBUtil::field_exists($table, 'created_at'))
+			{
+				\DBUtil::add_fields($table, array(
+					'created_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0, 'after' => 'user_id'),
+				));
+			}
+			if (\DBUtil::field_exists($table, 'updated'))
+			{
+				\DBUtil::modify_fields($table, array(
+					'updated' => array('name' => 'updated_at', 'type' => 'int', 'constraint' => 11),
+				));
+			}
+			if ( ! \DBUtil::field_exists($table, 'updated_at'))
+			{
+				\DBUtil::add_fields($table, array(
+					'updated_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0, 'after' => 'created_at'),
+				));
+			}
 
 			// table users_meta
 			\DBUtil::create_table($table.'_metadata', array(
@@ -75,6 +139,32 @@ class Auth_Create_Usertables
 				'created_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
 				'updated_at' => array('type' => 'int', 'constraint' => 11, 'default' => 0),
 			), array('id'));
+
+			// convert profile fields to metadata, and drop the column
+			if (\DBUtil::field_exists($table, 'profile_fields'))
+			{
+				$result = \DB::select('id', 'profile_fields')->from($table)->execute();
+				foreach ($result as $row)
+				{
+					$profile_fields = empty($row['profile_fields']) ? array() : unserialize($row['profile_fields']);
+					foreach ($profile_fields as $field => $value)
+					{
+						if ( ! is_numeric($field))
+						{
+							\DB::insert($table.'_metadata')->set(
+								array(
+									'parent_id' => $row['id'],
+									'key' => $field,
+									'value' => $value,
+								)
+							)->execute();
+						}
+					}
+				}
+				\DBUtil::drop_fields($table, array(
+					'profile_fields',
+				));
+			}
 
 			// table users_user_role
 			\DBUtil::create_table($table.'_user_roles', array(
