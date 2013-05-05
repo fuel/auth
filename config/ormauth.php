@@ -48,6 +48,26 @@ return array(
 	'guest_login' => true,
 
 	/**
+	 * Remember-me functionality
+	 */
+	'remember_me' => array(
+		/**
+		 * Whether or not remember me functionality is enabled
+		 */
+		'enabled' => false,
+
+		/**
+		 * Name of the cookie used to record this functionality
+		 */
+		'cookie_name' => 'rmcookie',
+
+		/**
+		 * Remember me expiration (default: 31 days)
+		 */
+		'expiration' => 86400 * 31,
+	),
+
+	/**
 	 * This will allow the same user to be logged in multiple times.
 	 *
 	 * Note that this is less secure, as session hijacking countermeasures have to

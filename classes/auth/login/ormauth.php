@@ -33,6 +33,20 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		{
 			\Config::set('ormauth.table_columns', array());
 		}
+
+		// setup the remember-me session object if needed
+		if (\Config::get('ormauth.remember_me.enabled', false))
+		{
+			static::$remember_me = \Session::forge(array(
+				'driver' => 'cookie',
+				'cookie' => array(
+					'cookie_name' => \Config::get('ormauth.remember_me.cookie_name', 'rmcookie'),
+				),
+				'encrypt_cookie' => true,
+				'expire_on_close' => false,
+				'expiration_time' => \Config::get('ormauth.remember_me.expiration', 86400 * 31),
+			));
+		}
 	}
 
 	/**
@@ -651,6 +665,12 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			}
 		}
 
+		// not logged in, do we have remember-me active and a stored user_id?
+		elseif (static::$remember_me and $user_id = static::$remember_me->get('user_id', null))
+		{
+			return $this->force_login($user_id);
+		}
+//var_dump(static::$remember_me);die();
 		// force a logout
 		$this->logout();
 
