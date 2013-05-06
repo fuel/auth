@@ -385,7 +385,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		}
 
 		// load the updated values into the object
-		$current_values->from_array($updated);
+		$current_values->from_array($update);
 
 		// check if this changes anything
 		if ($updated = $current_values->is_changed())
