@@ -21,6 +21,8 @@ Autoloader::add_classes(array(
 
 	'Auth\\Auth_Driver'                  => __DIR__.'/classes/auth/driver.php',
 
+	'Auth\\Auth_Opauth'                  => __DIR__.'/classes/auth/opauth.php',
+
 	'Auth\\Auth_Acl_Driver'              => __DIR__.'/classes/auth/acl/driver.php',
 	'Auth\\Auth_Acl_Simpleacl'           => __DIR__.'/classes/auth/acl/simpleacl.php',
 	'Auth\\Auth_Acl_Ormacl'              => __DIR__.'/classes/auth/acl/ormacl.php',
@@ -35,6 +37,7 @@ Autoloader::add_classes(array(
 
 	'Auth\\SimpleUserUpdateException'    => __DIR__.'/classes/auth/exceptions.php',
 	'Auth\\SimpleUserWrongPassword'      => __DIR__.'/classes/auth/exceptions.php',
+	'Auth\\OpauthException'              => __DIR__.'/classes/auth/exceptions.php',
 
 	'Auth\\Model\\Auth_User'             => __DIR__.'/classes/model/auth/user.php',
 	'Auth\\Model\\Auth_Userpermission'   => __DIR__.'/classes/model/auth/userpermission.php',
