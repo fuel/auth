@@ -162,7 +162,7 @@ class Auth_Opauth
 		$this->callback();
 
 		// if there is no UID we don't know who this is
-		if (empty($this->response['auth']['uid']))
+		if ($this->get('auth.uid', null) === null)
 		{
 			throw new \OpauthException('No uid in response from the provider, so we have no idea who you are.');
 		}
@@ -181,12 +181,12 @@ class Auth_Opauth
 				// attach this account to the logged in user
 				$this->link_provider(array(
 					'parent_id'		=> $user_id,
-					'provider' 		=> $this->response['auth']['provider'],
-					'uid' 			=> $this->response['auth']['uid'],
-					'access_token' 	=> isset($this->response['credentials']['token']) ? $this->response['credentials']['token'] : null,
-					'secret' 		=> isset($this->response['credentials']['secret']) ? $this->response['credentials']['secret'] : null,
-					'expires' 		=> isset($this->response['credentials']['expires']) ? $this->response['credentials']['expires'] : null,
-					'refresh_token' => isset($this->response['credentials']['refresh_token']) ? $this->response['credentials']['refresh_token'] : null,
+					'provider' 		=> $this->get('auth.provider'),
+					'uid' 			=> $this->get('auth.uid'),
+					'access_token' 	=> $this->get('credentials.token', null),
+					'secret' 		=> $this->get('credentials.secret', null),
+					'expires' 		=> $this->get('credentials.expires', null),
+					'refresh_token' => $this->get('credentials.refresh_token', null),
 					'created_at' 	=> time(),
 				));
 
@@ -203,7 +203,7 @@ class Auth_Opauth
 		}
 
 		// the user exists, so send him on his merry way as a user
-		elseif ($authentication = \DB::select()->from($this->config['table'])->where('uid', '=', $this->response['auth']['uid'])->where('provider', '=', $this->response['auth']['provider'])->as_object()->execute() and $authentication->count())
+		elseif ($authentication = \DB::select()->from($this->config['table'])->where('uid', '=', $this->get('auth.uid'))->where('provider', '=', $this->get('auth.provider'))->as_object()->execute() and $authentication->count())
 		{
 			// force a login with this username
 			$authentication = $authentication->current();
@@ -220,7 +220,7 @@ class Auth_Opauth
 		else
 		{
 			// did the provider return enough information to log the user in?
-			if (isset($this->response['auth']['nickname']) and isset($this->response['auth']['email']) and isset($this->response['auth']['password']))
+			if ($this->get('auth.nickname') and $this->get('auth.email') and $this->get('auth.password'))
 			{
 				// make a user with what we have
 				$user_id = $this->create_user($this->response['auth']);
@@ -228,12 +228,12 @@ class Auth_Opauth
 				// attach this authentication to the new user
 				$insert_id = $this->link_provider(array(
 					'parent_id'		=> $user_id,
-					'provider' 		=> $this->response['auth']['provider'],
-					'uid' 			=> $this->response['auth']['uid'],
-					'access_token' 	=> isset($this->response['credentials']['token']) ? $this->response['credentials']['token'] : null,
-					'secret' 		=> isset($this->response['credentials']['secret']) ? $this->response['credentials']['secret'] : null,
-					'expires' 		=> isset($this->response['credentials']['expires']) ? $this->response['credentials']['expires'] : null,
-					'refresh_token' => isset($this->response['credentials']['refresh_token']) ? $this->response['credentials']['refresh_token'] : null,
+					'provider' 		=> $this->get('auth.provider'),
+					'uid' 			=> $this->get('auth.uid'),
+					'access_token' 	=> $this->get('credentials.token', null),
+					'secret' 		=> $this->get('credentials.secret', null),
+					'expires' 		=> $this->get('credentials.expires', null),
+					'refresh_token' => $this->get('credentials.refresh_token', null),
 					'created_at' 	=> time(),
 				));
 
@@ -251,14 +251,14 @@ class Auth_Opauth
 			else
 			{
 				\Session::set('auth-strategy', array(
-					'user' => $this->response['auth']['info'],
+					'user' => $this->get('auth.info'),
 					'authentication' => array(
-						'provider' 		=> $this->response['auth']['provider'],
-						'uid' 			=> $this->response['auth']['uid'],
-						'access_token' 	=> isset($this->response['credentials']['token']) ? $this->response['credentials']['token'] : null,
-						'secret' 		=> isset($this->response['credentials']['secret']) ? $this->response['credentials']['secret'] : null,
-						'expires' 		=> isset($this->response['credentials']['expires']) ? $this->response['credentials']['expires'] : null,
-						'refresh_token' => isset($this->response['credentials']['refresh_token']) ? $this->response['credentials']['refresh_token'] : null,
+						'provider' 		=> $this->get('auth.provider'),
+						'uid' 			=> $this->get('auth.uid'),
+						'access_token' 	=> $this->get('credentials.token', null),
+						'secret' 		=> $this->get('credentials.secret', null),
+						'expires' 		=> $this->get('credentials.expires', null),
+						'refresh_token' => $this->get('credentials.refresh_token', null),
 					),
 				));
 
@@ -297,15 +297,23 @@ class Auth_Opauth
 		}
 
 		// validate the response
-		if (empty($this->response['auth']) or empty($this->response['timestamp']) or empty($this->response['signature']) or
-			empty($this->response['auth']['provider']) or empty($this->response['auth']['uid']))
+		if ($this->get('auth') === null or $this->get('timestamp') === null or
+			$this->get('signature') === null or $this->get('auth.provider') === null or $this->get('auth.uid') === null)
 		{
 			throw new \OpauthException('Invalid auth response: Missing key auth response components');
 		}
-		elseif ( ! $this->opauth->validate(sha1(print_r($this->response['auth'], true)), $this->response['timestamp'], $this->response['signature'], $reason))
+		elseif ( ! $this->opauth->validate(sha1(print_r($this->get('auth'), true)), $this->get('timestamp'), $this->get('signature'), $reason))
 		{
 			throw new \OpauthException('Invalid auth response: '.$reason);
 		}
+	}
+
+	/**
+	 * Get a response value
+	 */
+	public function get($key, $default = null)
+	{
+		return is_array($this->response) ? \Arr::get($this->response, $key, $default) : $default;
 	}
 
 	/**
