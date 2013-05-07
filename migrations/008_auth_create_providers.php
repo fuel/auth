@@ -2,7 +2,7 @@
 
 namespace Fuel\Migrations;
 
-class Auth_Create_Remotes
+class Auth_Create_Providers
 {
 
 	function up()
@@ -17,14 +17,14 @@ class Auth_Create_Remotes
 		{
 			// get the tablename
 			\Config::load('simpleauth', true);
-			$table = \Config::get('simpleauth.table_name', 'users').'_remotes';
+			$table = \Config::get('simpleauth.table_name', 'users').'_providers';
 		}
 
 		elseif (in_array('Ormauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('ormauth', true);
-			$table = \Config::get('ormauth.table_name', 'users').'_remotes';
+			$table = \Config::get('ormauth.table_name', 'users').'_providers';
 		}
 
 		if (isset($table))
@@ -59,14 +59,14 @@ class Auth_Create_Remotes
 		{
 			// get the tablename
 			\Config::load('simpleauth', true);
-			$table = \Config::get('simpleauth.table_name', 'users').'_remotes';
+			$table = \Config::get('simpleauth.table_name', 'users').'_providers';
 		}
 
 		elseif (in_array('Ormauth', $drivers))
 		{
 			// get the tablename
 			\Config::load('ormauth', true);
-			$table = \Config::get('ormauth.table_name', 'users').'_remotes';
+			$table = \Config::get('ormauth.table_name', 'users').'_providers';
 		}
 
 		if (isset($table))
