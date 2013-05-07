@@ -17,6 +17,11 @@ namespace Auth;
 class Auth_Opauth
 {
 	/**
+	 * @var  string  name of the providers table
+	 */
+	protected static $provider_table = null;
+
+	/**
 	 * Class initialisation
 	 */
 	public static function _init()
@@ -29,6 +34,24 @@ class Auth_Opauth
 
 		// load the opauth config
 		\Config::load('opauth', true);
+
+		// determine the auth driver we're going to use
+		$drivers = \Config::get('auth.driver', array());
+		is_array($drivers) or $drivers = array($drivers);
+
+		if (in_array('Simpleauth', $drivers))
+		{
+			// get the tablename
+			\Config::load('simpleauth', true);
+			static::$provider_table = \Config::get('simpleauth.table_name', 'users').'_providers';
+		}
+
+		elseif (in_array('Ormauth', $drivers))
+		{
+			// get the tablename
+			\Config::load('ormauth', true);
+			static::$provider_table = \Config::get('ormauth.table_name', 'users').'_providers';
+		}
 	}
 
 	/**
@@ -80,28 +103,10 @@ class Auth_Opauth
 		// define the transport system we use
 		$config['callback_transport'] = 'get';
 
-		// determine the auth driver we're going to use
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
-
-		if (in_array('Simpleauth', $drivers))
-		{
-			// get the tablename
-			\Config::load('simpleauth', true);
-			$config['table'] = \Config::get('simpleauth.table_name', 'users').'_remotes';
-		}
-
-		elseif (in_array('Ormauth', $drivers))
-		{
-			// get the tablename
-			\Config::load('ormauth', true);
-			$config['table'] = \Config::get('ormauth.table_name', 'users').'_remotes';
-		}
-
 		// make sure we have a remotes table
-		if ( ! isset($config['table']))
+		if ( ! isset($config['table']) and ($config['table'] = static::$provider_table) === null)
 		{
-			throw new \OpauthException('At the moment, only SimpleAuth and OrmAuth are supported.');
+			throw new \OpauthException('No providers table configured. At the moment, only SimpleAuth and OrmAuth can be auto-configured.');
 		}
 
 		// and a security salt
@@ -174,7 +179,7 @@ class Auth_Opauth
 			if ($num_linked === 0 or \Config::get('opauth.link_multiple_providers') === true)
 			{
 				// attach this account to the logged in user
-				$this->create_remote(array(
+				$this->link_provider(array(
 					'parent_id'		=> $user_id,
 					'provider' 		=> $this->response['auth']['provider'],
 					'uid' 			=> $this->response['auth']['uid'],
@@ -221,7 +226,7 @@ class Auth_Opauth
 				$user_id = $this->create_user($this->response['auth']);
 
 				// attach this authentication to the new user
-				$insert_id = $this->create_remote(array(
+				$insert_id = $this->link_provider(array(
 					'parent_id'		=> $user_id,
 					'provider' 		=> $this->response['auth']['provider'],
 					'uid' 			=> $this->response['auth']['uid'],
@@ -265,7 +270,7 @@ class Auth_Opauth
 	/**
 	 * create a remote entry for this login
 	 */
-	public function create_remote(array $data)
+	public function link_provider(array $data)
 	{
 		list($insert_id, $rows_affected) = \DB::insert($this->config['table'])->set($data)->execute();
 		return $rows_affected ? $insert_id : false;
