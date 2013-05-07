@@ -148,9 +148,9 @@ class Auth_Create_Oauth2tables
 			$basetable = 'users';
 		}
 
-		\DBUtil::drop_table($basetable.'_clients');
+		\DBUtil::drop_table($basetable.'_sessionscopes');
 		\DBUtil::drop_table($basetable.'_sessions');
 		\DBUtil::drop_table($basetable.'_scopes');
-		\DBUtil::drop_table($basetable.'_sessionscopes');
+		\DBUtil::drop_table($basetable.'_clients');
 	}
 }
