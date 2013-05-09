@@ -72,41 +72,13 @@ class Auth_Opauth
 		// merge the default config with the runtime config
 		$config = \Arr::merge(\Config::get('opauth'), $config);
 
-		// construct the path
-		$path = \Request::active()->uri->segments();
-		$params = count(\Request::active()->route->method_params);
-		while ($params-- > 0)
-		{
-			array_pop($path);
-		}
-		$config['path'] = '/'.(implode('/', $path)).'/';
-
-		$provider = explode('/', substr(\Request::active()->uri->get(), strlen($config['path']) - 1));
-		$config['provider'] = ucfirst($provider[0]);
-		array_pop($path);
-		$config['callback_url'] = '/'.implode('/', $path).'/callback/';
-
-		if ( ! $autorun)
-		{
-			// we're processing a callback
-			$config['provider'] = 'Callback';
-		}
-		else
-		{
-			// check if we have a strategy defined for this provider
-			if ( ! \Config::get('opauth.Strategy.'.$config['provider'], false))
-			{
-				throw new \OpauthException('Opauth strategy "'.$config['provider'].'" is not supported');
-			}
-		}
-
 		// define the transport system we use
 		$config['callback_transport'] = 'get';
 
 		// make sure we have a remotes table
 		if ( ! isset($config['table']) and ($config['table'] = static::$provider_table) === null)
 		{
-			throw new \OpauthException('No providers table configured. At the moment, only SimpleAuth and OrmAuth can be auto-configured.');
+			throw new \OpauthException('No providers table configured. At the moment, only SimpleAuth and OrmAuth can be auto-detected.');
 		}
 
 		// and a security salt
@@ -118,6 +90,50 @@ class Auth_Opauth
 		// set some defaults, just in case
 		isset($config['security_iteration']) or $config['security_iteration'] = 300;
 		isset($config['security_timeout']) or $config['security_timeout'] = '2 minutes';
+
+		if (empty($config['path']))
+		{
+			// construct the path if needed
+			$path = \Request::active()->uri->segments();
+			$params = count(\Request::active()->route->method_params);
+			while ($params-- > 0)
+			{
+				array_pop($path);
+			}
+			$config['path'] = '/'.(implode('/', $path)).'/';
+		}
+
+		// and construct the callback URL if needed
+		if (empty($config['callback_url']))
+		{
+			// pop the method name from the path
+			$path = explode('/', trim($config['path'], '/'));
+			array_pop($path);
+
+			// and add 'callback' as the controller callback action
+			$config['callback_url'] = '/'.implode('/', $path).'/callback/';
+		}
+
+		// determine the name of the provider we want to call
+		if ( ! $autorun)
+		{
+			// we're processing a callback
+			$config['provider'] = 'Callback';
+		}
+		else
+		{
+			if (empty($config['provider']))
+			{
+				$provider = explode('/', substr(\Request::active()->uri->get(), strlen($config['path']) - 1));
+				$config['provider'] = ucfirst($provider[0]);
+			}
+
+			// check if we have a strategy defined for this provider
+			if ( ! \Config::get('opauth.Strategy.'.$config['provider'], false))
+			{
+				throw new \OpauthException('Opauth strategy "'.$config['provider'].'" is not supported');
+			}
+		}
 
 		// return the created Auth_Opauth object
 		return new static($config, $autorun);
@@ -277,6 +293,14 @@ class Auth_Opauth
 	}
 
 	/**
+	 * Get a response value
+	 */
+	public function get($key, $default = null)
+	{
+		return is_array($this->response) ? \Arr::get($this->response, $key, $default) : $default;
+	}
+
+	/**
 	 * fetch the callback response
 	 */
 	protected function callback()
@@ -306,14 +330,6 @@ class Auth_Opauth
 		{
 			throw new \OpauthException('Invalid auth response: '.$reason);
 		}
-	}
-
-	/**
-	 * Get a response value
-	 */
-	public function get($key, $default = null)
-	{
-		return is_array($this->response) ? \Arr::get($this->response, $key, $default) : $default;
 	}
 
 	/**
