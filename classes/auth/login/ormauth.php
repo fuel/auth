@@ -387,8 +387,24 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		// load the updated values into the object
 		$current_values->from_array($update);
 
-		// check if this changes anything
-		if ($updated = $current_values->is_changed())
+		$updated = false;
+
+		// any values remaining?
+		if ( ! empty($values))
+		{
+			// set them as EAV values
+			foreach ($values as $key => $value)
+			{
+				if ( ! $updated and (! isset($current_values->{$key}) or $current_values->{$key} != $value))
+				{
+					$updated = true;
+				}
+				$current_values->{$key} = $value;
+			}
+		}
+
+		// check if this has changed anything
+		if ($updated or $updated = $current_values->is_changed())
 		{
 			// and onlys save if it did
 			$current_values->save();
