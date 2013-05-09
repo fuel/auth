@@ -27,7 +27,7 @@ class Auth_Create_Usertables
 					'id' => array('type' => 'int', 'constraint' => 11, 'auto_increment' => true),
 					'username' => array('type' => 'varchar', 'constraint' => 50),
 					'password' => array('type' => 'varchar', 'constraint' => 255),
-					'group_id' => array('type' => 'int', 'constraint' => 11, 'default' => 1),
+					'group' => array('type' => 'int', 'constraint' => 11, 'default' => 1),
 					'email' => array('type' => 'varchar', 'constraint' => 255),
 					'last_login' => array('type' => 'varchar', 'constraint' => 25),
 					'login_hash' => array('type' => 'varchar', 'constraint' => 255),
