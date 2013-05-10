@@ -395,18 +395,27 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			// set them as EAV values
 			foreach ($values as $key => $value)
 			{
-				if ( ! $updated and (! isset($current_values->{$key}) or $current_values->{$key} != $value))
+				if ( ! isset($current_values->{$key}) or $current_values->{$key} != $value)
 				{
+					if ($value === null)
+					{
+						unset($current_values->{$key});
+					}
+					else
+					{
+						$current_values->{$key} = $value;
+					}
+
+					// mark we've updated something
 					$updated = true;
 				}
-				$current_values->{$key} = $value;
 			}
 		}
 
 		// check if this has changed anything
 		if ($updated or $updated = $current_values->is_changed())
 		{
-			// and onlys save if it did
+			// and only save if it did
 			$current_values->save();
 		}
 
