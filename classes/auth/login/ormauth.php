@@ -493,6 +493,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 
 		// get the user object
 		$user = \Model\Auth_User::query()
+			->related('metadata')
 			->select(\Config::get('ormauth.table_columns', array()))
 			->where('username', '=', $username)
 			->get_one();
