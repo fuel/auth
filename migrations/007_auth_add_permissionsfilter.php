@@ -41,6 +41,8 @@ class Auth_Add_Permissionsfilter
 			$table = \Config::get('ormauth.table_name', 'users');
 
 			// modify the filter field to add the 'remove' filter
+			\DB::update($table.'_roles')->set(array('filter' => 'D'))->where('filter', '=', 'R')->execute();
+
 			\DBUtil::modify_fields($table.'_roles', array(
 				'filter' => array('type' => 'enum', 'constraint' => "'', 'A', 'D'", 'default' => ''),
 			));
