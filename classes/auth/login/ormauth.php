@@ -696,7 +696,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		{
 			return $this->force_login($user_id);
 		}
-//var_dump(static::$remember_me);die();
+
 		// force a logout
 		$this->logout();
 
