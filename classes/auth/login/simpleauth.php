@@ -22,10 +22,26 @@ namespace Auth;
  */
 class Auth_Login_Simpleauth extends \Auth_Login_Driver
 {
-
+	/**
+	 * Load the config and setup the remember-me session if needed
+	 */
 	public static function _init()
 	{
 		\Config::load('simpleauth', true, true, true);
+
+		// setup the remember-me session object if needed
+		if (\Config::get('simpleauth.remember_me.enabled', false))
+		{
+			static::$remember_me = \Session::forge(array(
+				'driver' => 'cookie',
+				'cookie' => array(
+					'cookie_name' => \Config::get('simpleauth.remember_me.cookie_name', 'rmcookie'),
+				),
+				'encrypt_cookie' => true,
+				'expire_on_close' => false,
+				'expiration_time' => \Config::get('simpleauth.remember_me.expiration', 86400 * 31),
+			));
+		}
 	}
 
 	/**
@@ -59,6 +75,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 */
 	protected function perform_check()
 	{
+		// fetch the username and login hash from the session
 		$username    = \Session::get('username');
 		$login_hash  = \Session::get('login_hash');
 
@@ -78,6 +95,12 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			{
 				return true;
 			}
+		}
+
+		// not logged in, do we have remember-me active and a stored user_id?
+		elseif (static::$remember_me and $user_id = static::$remember_me->get('user_id', null))
+		{
+			return $this->force_login($user_id);
 		}
 
 		// no valid login when still here, ensure empty session and optionally set guest_login
@@ -231,7 +254,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			'username'        => (string) $username,
 			'password'        => $this->hash_password((string) $password),
 			'email'           => $email,
-			'group'           => (int) $group,
+			'group_id'        => (int) $group,
 			'profile_fields'  => serialize($profile_fields),
 			'last_login'      => 0,
 			'login_hash'      => '',

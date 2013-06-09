@@ -30,6 +30,8 @@ class Auth_Create_Authdefaults
 
 			// create the 'Guests' group
 			list($group_id_guest, $rows_affected) = \DB::insert($table.'_groups')->set(array('name' => 'Guests'))->execute();
+			list($role_id_guest, $rows_affected) = \DB::insert($table.'_roles')->set(array('name' => 'public'))->execute();
+			\DB::insert($table.'_group_roles')->set(array('group_id' => $group_id_guest, 'role_id' => $role_id_guest))->execute();
 
 			// create the 'Users' group
 			list($group_id, $rows_affected) = \DB::insert($table.'_groups')->set(array('name' => 'Users'))->execute();
@@ -51,7 +53,7 @@ class Auth_Create_Authdefaults
 
 			// create the 'Superadmins' group
 			list($group_id_admin, $rows_affected) = \DB::insert($table.'_groups')->set(array('name' => 'Super Admins'))->execute();
-			list($role_id_admin, $rows_affected) = \DB::insert($table.'_roles')->set(array('name' => 'Super administrator', 'filter' => 'A'))->execute();
+			list($role_id_admin, $rows_affected) = \DB::insert($table.'_roles')->set(array('name' => 'superadmin', 'filter' => 'A'))->execute();
 			\DB::insert($table.'_group_roles')->set(array('group_id' => $group_id_admin, 'role_id' => $role_id_admin))->execute();
 
 			/*

@@ -23,6 +23,11 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 	protected static $_instance = null;
 
 	/**
+	 * @var  Session_Cookie  session object for the remember-me feature
+	 */
+	protected static $remember_me = null;
+
+	/**
 	 * @var  array  contains references if multiple were loaded
 	 */
 	protected static $_instances = array();
@@ -235,6 +240,41 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 		}
 
 		return $result;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Set a remember-me cookie for the passed user id, or for the current
+	 * logged-in user if no id was given
+	 *
+	 * @return  bool  wether or not the cookie was set
+	 */
+	public function remember_me($user_id = null)
+	{
+		// if no user-id is given, get the current user's id
+		if ($user_id === null and isset($this->user['id']))
+		{
+			$user_id = $this->user['id'];
+		}
+
+		// if we have a session and an id, set it
+		if (static::$remember_me and $user_id)
+		{
+			static::$remember_me->set('user_id', $user_id);
+			return true;
+		}
+
+		// remember-me not enabled, or no user id available
+		return false;
+	}
+
+	/**
+	 * Remove any remember-me cookie stored
+	 */
+	public function dont_remember_me()
+	{
+		static::$remember_me and static::$remember_me->destroy();
 	}
 
 	// ------------------------------------------------------------------------
