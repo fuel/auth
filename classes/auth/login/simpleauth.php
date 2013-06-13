@@ -254,7 +254,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			'username'        => (string) $username,
 			'password'        => $this->hash_password((string) $password),
 			'email'           => $email,
-			'group_id'        => (int) $group,
+			'group'           => (int) $group,
 			'profile_fields'  => serialize($profile_fields),
 			'last_login'      => 0,
 			'login_hash'      => '',
