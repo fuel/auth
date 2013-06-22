@@ -32,7 +32,8 @@ class Auth_Opauth
 			throw new \OpauthException('Opauth composer package not installed. Add "opauth/opauth" to composer.json and run a composer update.');
 		}
 
-		// load the opauth config
+		// load the auth and opauth config
+		\Config::load('auth', true);
 		\Config::load('opauth', true);
 
 		// determine the auth driver we're going to use
@@ -94,8 +95,9 @@ class Auth_Opauth
 		if (empty($config['path']))
 		{
 			// construct the path if needed
-			$path = \Request::active()->uri->segments();
+			$path = \Request::main()->uri->get_segments();
 			$params = count(\Request::active()->route->method_params);
+
 			while ($params-- > 0)
 			{
 				array_pop($path);
@@ -124,7 +126,7 @@ class Auth_Opauth
 		{
 			if (empty($config['provider']))
 			{
-				$provider = explode('/', substr(\Request::active()->uri->get(), strlen($config['path']) - 1));
+				$provider = explode('/', substr(\Request::main()->uri->get(), strlen($config['path']) - 1));
 				$config['provider'] = ucfirst($provider[0]);
 			}
 
