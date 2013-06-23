@@ -71,7 +71,7 @@ class Auth_Create_Authdefaults
 					'previous_login' => 0,
 					'login_hash' => '',
 					'user_id' => 0,
-					'created_at' => 0,
+					'created_at' => time(),
 					'updated_at' => 0,
 				)
 			)->execute();
