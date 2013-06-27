@@ -201,10 +201,10 @@ class Auth_Opauth
 					'parent_id'		=> $user_id,
 					'provider' 		=> $this->get('auth.provider'),
 					'uid' 			=> $this->get('auth.uid'),
-					'access_token' 	=> $this->get('credentials.token', null),
-					'secret' 		=> $this->get('credentials.secret', null),
-					'expires' 		=> $this->get('credentials.expires', null),
-					'refresh_token' => $this->get('credentials.refresh_token', null),
+					'access_token' 	=> $this->get('auth.credentials.token', null),
+					'secret' 		=> $this->get('auth.credentials.secret', null),
+					'expires' 		=> $this->get('auth.credentials.expires', null),
+					'refresh_token' => $this->get('auth.credentials.refresh_token', null),
 					'created_at' 	=> time(),
 				));
 
@@ -248,10 +248,10 @@ class Auth_Opauth
 					'parent_id'		=> $user_id,
 					'provider' 		=> $this->get('auth.provider'),
 					'uid' 			=> $this->get('auth.uid'),
-					'access_token' 	=> $this->get('credentials.token', null),
-					'secret' 		=> $this->get('credentials.secret', null),
-					'expires' 		=> $this->get('credentials.expires', null),
-					'refresh_token' => $this->get('credentials.refresh_token', null),
+					'access_token' 	=> $this->get('auth.credentials.token', null),
+					'secret' 		=> $this->get('auth.credentials.secret', null),
+					'expires' 		=> $this->get('auth.credentials.expires', null),
+					'refresh_token' => $this->get('auth.credentials.refresh_token', null),
 					'created_at' 	=> time(),
 				));
 
@@ -273,10 +273,10 @@ class Auth_Opauth
 					'authentication' => array(
 						'provider' 		=> $this->get('auth.provider'),
 						'uid' 			=> $this->get('auth.uid'),
-						'access_token' 	=> $this->get('credentials.token', null),
-						'secret' 		=> $this->get('credentials.secret', null),
-						'expires' 		=> $this->get('credentials.expires', null),
-						'refresh_token' => $this->get('credentials.refresh_token', null),
+						'access_token' 	=> $this->get('auth.credentials.token', null),
+						'secret' 		=> $this->get('auth.credentials.secret', null),
+						'expires' 		=> $this->get('auth.credentials.expires', null),
+						'refresh_token' => $this->get('auth.credentials.refresh_token', null),
 					),
 				));
 
@@ -290,6 +290,27 @@ class Auth_Opauth
 	 */
 	public function link_provider(array $data)
 	{
+		// do some validation
+		if ( ! is_numeric($data['expires']))
+		{
+			if ($date = \DateTime::createFromFormat(\DateTime::ISO8601, $data['expires']))
+			{
+				$data['expires'] = $date->getTimestamp();
+			}
+			elseif ($date = \DateTime::createFromFormat('Y-m-d H:i:s', $data['expires']))
+			{
+				$data['expires'] = $date->getTimestamp();
+			}
+			else
+			{
+				$data['expires'] = time();
+			}
+		}
+
+		// get rid of old registrations to prevent duplicates
+		\DB::delete($this->config['table'])->where('uid', '=', $data['uid'])->where('provider', '=', $data['provider'])->execute();
+
+		// insert the new provider UID
 		list($insert_id, $rows_affected) = \DB::insert($this->config['table'])->set($data)->execute();
 		return $rows_affected ? $insert_id : false;
 	}
