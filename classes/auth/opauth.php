@@ -94,8 +94,11 @@ class Auth_Opauth
 
 		if (empty($config['path']))
 		{
+			$parsed_url = parse_url(\Uri::base().\Request::main()->uri->get());
+			$path = explode('/', trim($parsed_url['path'], '/'));
+
 			// construct the path if needed
-			$path = \Request::main()->uri->get_segments();
+//			$path = \Request::main()->uri->get_segments();
 			$params = count(\Request::active()->route->method_params);
 
 			while ($params-- > 0)
@@ -126,7 +129,8 @@ class Auth_Opauth
 		{
 			if (empty($config['provider']))
 			{
-				$provider = explode('/', substr(\Request::main()->uri->get(), strlen($config['path']) - 1));
+				$parsed_url = parse_url(\Uri::base().\Request::main()->uri->get());
+				$provider = explode('/', substr($parsed_url['path'], strlen($config['path'])));
 				$config['provider'] = ucfirst($provider[0]);
 			}
 
