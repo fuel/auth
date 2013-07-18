@@ -135,7 +135,8 @@ class Auth_Opauth
 			}
 
 			// check if we have a strategy defined for this provider
-			if ( ! \Config::get('opauth.Strategy.'.$config['provider'], false))
+			$strategies = \Config::get('opauth.Strategy', array());
+			if ( ! array_key_exists(strtolower($config['provider']), array_change_key_case($strategies)))
 			{
 				throw new \OpauthException('Opauth strategy "'.$config['provider'].'" is not supported');
 			}
