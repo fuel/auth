@@ -71,7 +71,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 		$area    = $condition[0];
 
 		// any actions defined?
-		if (preg_match('#(.*)?\[(.*)?\]#', $condition[1], $matches))
+		if ( ! is_array($condition[1] and preg_match('#(.*)?\[(.*)?\]#', $condition[1], $matches))
 		{
 			$rights = (array) $matches[1];
 			$actions = explode(',', $matches[2]);
