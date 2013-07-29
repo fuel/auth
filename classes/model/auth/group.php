@@ -82,7 +82,7 @@ class Auth_Group extends \Orm\Model
 		'users' => array(
 			'model_to' => 'Model\\Auth_User',
 			'key_from' => 'id',
-			'key_to'   => 'group',
+			'key_to'   => 'group_id',
 		),
 		'grouppermission' => array(
 			'model_to' => 'Model\\Auth_Grouppermission',
