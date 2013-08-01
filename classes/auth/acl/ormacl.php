@@ -130,7 +130,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($revoked_rights[$permission->area]) or $revoked_rights[$permission->area] = array();
 						if ( ! in_array($permission->permission, $revoked_rights[$permission->area]))
 						{
-							$revoked_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->actions;
+							$revoked_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->permission->actions;
 						}
 					}
 				}
@@ -144,7 +144,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
 						if ( ! in_array($permission->permission, $current_rights[$permission->area]))
 						{
-							$current_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->actions;
+							$current_rights[$permission->area][$permission->permission] = $role->rolepermission['['.$role->id.']['.$permission->id.']']->permission->actions;
 						}
 					}
 				}
@@ -161,7 +161,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
 						if ( ! in_array($permission->permission, $current_rights[$permission->area]))
 						{
-							$current_rights[$permission->area][$permission->permission] = $user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->actions;
+							$current_rights[$permission->area][$permission->permission] = $user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->permission->actions;
 						}
 					}
 
@@ -173,7 +173,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 							isset($current_rights[$permission->area]) or $current_rights[$permission->area] = array();
 							if ( ! in_array($permission->permission, $current_rights[$permission->area]))
 							{
-								$current_rights[$permission->area][$permission->permission] = $user->userpermission['['.$user->id.']['.$permission->id.']']->actions;
+								$current_rights[$permission->area][$permission->permission] = $user->userpermission['['.$user->id.']['.$permission->id.']']->permission->actions;
 							}
 						}
 					}
