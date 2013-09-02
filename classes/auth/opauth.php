@@ -242,6 +242,12 @@ class Auth_Opauth
 		// not an existing user of any type, so we need to create a user somehow
 		else
 		{
+			// generate a dummy password if we don't have one, and want auto registration for this user
+			if ($this->config['auto_registration'])
+			{
+				$this->get('auth.password') or $this->response['auth']['password'] = \Str::random('sha1');
+			}
+
 			// did the provider return enough information to log the user in?
 			if ($this->get('auth.nickname') and $this->get('auth.email') and $this->get('auth.password'))
 			{

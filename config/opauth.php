@@ -29,6 +29,15 @@ return array(
 	'link_multiple_providers' => true,
 
 	/**
+	 * auto_registration
+	 *
+	 * If true, a login via a provider will automatically create a dummy
+	 * local user account with a random password, if a nickname and an
+	 * email address is present
+	 */
+	'auto_registration' => false,
+
+	/**
 	 * default_group
 	 *
 	 * Group id to be assigned to newly created users
