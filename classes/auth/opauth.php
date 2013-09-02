@@ -245,14 +245,14 @@ class Auth_Opauth
 			// generate a dummy password if we don't have one, and want auto registration for this user
 			if ($this->config['auto_registration'])
 			{
-				$this->get('auth.password') or $this->response['auth']['password'] = \Str::random('sha1');
+				$this->get('auth.info.password') or $this->response['auth']['info']['password'] = \Str::random('sha1');
 			}
 
 			// did the provider return enough information to log the user in?
-			if ($this->get('auth.nickname') and $this->get('auth.email') and $this->get('auth.password'))
+			if ($this->get('auth.info.nickname') and $this->get('auth.info.email') and $this->get('auth.info.password'))
 			{
 				// make a user with what we have
-				$user_id = $this->create_user($this->response['auth']);
+				$user_id = $this->create_user($this->response['auth.info']);
 
 				// attach this authentication to the new user
 				$insert_id = $this->link_provider(array(
