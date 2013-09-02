@@ -252,7 +252,7 @@ class Auth_Opauth
 			if ($this->get('auth.info.nickname') and $this->get('auth.info.email') and $this->get('auth.info.password'))
 			{
 				// make a user with what we have
-				$user_id = $this->create_user($this->response['auth.info']);
+				$user_id = $this->create_user($this->response['auth']['info']);
 
 				// attach this authentication to the new user
 				$insert_id = $this->link_provider(array(
