@@ -558,7 +558,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		if (isset($this->user['profile_fields']))
 		{
-			is_array($this->user['profile_fields']) or $this->user['profile_fields'] = @unserialize($this->user['profile_fields']);
+			is_array($this->user['profile_fields']) or $this->user['profile_fields'] = (@unserialize($this->user['profile_fields']) ?: array());
 		}
 		else
 		{
