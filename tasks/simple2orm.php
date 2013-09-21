@@ -114,7 +114,7 @@ HELP;
 		$errors = array();
 
 		// validate the auth configuration file
-		if ( ! file_exists($file = APPPATH.'config'.DS.'auth.php'))
+		if ( ! is_file($file = APPPATH.'config'.DS.'auth.php'))
 		{
 			$errors[] = \Fuel::clean_path($file).' does not exist.';
 		}
@@ -132,7 +132,7 @@ HELP;
 		}
 
 		// validate the simpleauth configuration file
-		if ( ! file_exists($file = APPPATH.'config'.DS.'simpleauth.php'))
+		if ( ! is_file($file = APPPATH.'config'.DS.'simpleauth.php'))
 		{
 			$errors[] = \Fuel::clean_path($file).' does not exist.';
 		}
@@ -155,7 +155,7 @@ HELP;
 		}
 
 		// validate the ormauth configuration file
-		if ( ! file_exists($file = APPPATH.'config'.DS.'ormauth.php'))
+		if ( ! is_file($file = APPPATH.'config'.DS.'ormauth.php'))
 		{
 			$errors[] = \Fuel::clean_path($file).' does not exist.';
 		}
