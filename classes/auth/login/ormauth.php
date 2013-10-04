@@ -253,7 +253,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		}
 
 		// do we have a logged-in user?
-		if ($currentuser = \Auth::get_user_id())
+		if ($currentuser = \Auth::instance()->get_user_id())
 		{
 			$currentuser = $currentuser[1];
 		}
