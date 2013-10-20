@@ -351,7 +351,7 @@ class Auth_Opauth
 				break;
 
 			case 'session':
-				$this->response = \Session::get('opauth', false);
+				$this->response = \Arr::get($_SESSION, 'opauth');
 				break;
 		}
 
