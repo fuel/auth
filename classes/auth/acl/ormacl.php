@@ -131,8 +131,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						$revoked_rights[$permission->area][$permission->permission] = array_merge(
 							$revoked_rights[$permission->area][$permission->permission],
 							array_intersect_key(
-								$role->rolepermission['['.$role->id.']['.$permission->id.']']->permission->actions,
-								array_flip($role->rolepermission['['.$role->id.']['.$permission->id.']']->actions)
+								$role->rolepermission['['.$role->id.']['.$permission->id.']']->permission->actions ?: array(),
+								array_flip($role->rolepermission['['.$role->id.']['.$permission->id.']']->actions ?: array())
 							)
 						);
 					}
@@ -148,8 +148,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						$current_rights[$permission->area][$permission->permission] = array_merge(
 							$current_rights[$permission->area][$permission->permission],
 							array_intersect_key(
-								$role->rolepermission['['.$role->id.']['.$permission->id.']']->permission->actions,
-								array_flip($role->rolepermission['['.$role->id.']['.$permission->id.']']->actions)
+								$role->rolepermission['['.$role->id.']['.$permission->id.']']->permission->actions ?: array(),
+								array_flip($role->rolepermission['['.$role->id.']['.$permission->id.']']->actions ?: array())
 							)
 						);
 					}
@@ -168,26 +168,23 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						$current_rights[$permission->area][$permission->permission] = array_merge(
 							$current_rights[$permission->area][$permission->permission],
 							array_intersect_key(
-								$user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->permission->actions,
-								array_flip($user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->actions)
+								$user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->permission->actions ?: array(),
+								array_flip($user->group->grouppermission['['.$user->group_id.']['.$permission->id.']']->actions ?: array())
 							)
 						);
 					}
 
 					// add the users personal rights
-					if ($user)
+					foreach ($user->permissions as $permission)
 					{
-						foreach ($user->permissions as $permission)
-						{
-							isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
-							$current_rights[$permission->area][$permission->permission] = array_merge(
-								$current_rights[$permission->area][$permission->permission],
-								array_intersect_key(
-									$user->userpermission['['.$user->id.']['.$permission->id.']']->permission->actions,
-									array_flip($user->userpermission['['.$user->id.']['.$permission->id.']']->actions)
-								)
-							);
-						}
+						isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
+						$current_rights[$permission->area][$permission->permission] = array_merge(
+							$current_rights[$permission->area][$permission->permission],
+							array_intersect_key(
+								$user->userpermission['['.$user->id.']['.$permission->id.']']->permission->actions ?: array(),
+								array_flip($user->userpermission['['.$user->id.']['.$permission->id.']']->actions ?: array())
+							)
+						);
 					}
 				}
 			}
