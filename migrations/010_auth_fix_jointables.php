@@ -59,20 +59,17 @@ class Auth_Fix_Jointables
 			// make sure the configured DB is used
 			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
 
-			\DBUtil::drop_index($basetable.'_user_permissions', 'primary');
 			\DBUtil::drop_fields($basetable.'_user_permissions', array(
 				'id',
 			));
 			\DBUtil::create_index($basetable.'_user_permissions', array('user_id', 'perms_id'), '', 'PRIMARY');
 
 
-			\DBUtil::drop_index($basetable.'_group_permissions', 'primary');
 			\DBUtil::drop_fields($basetable.'_group_permissions', array(
 				'id',
 			));
 			\DBUtil::create_index($basetable.'_group_permissions', array('group_id', 'perms_id'), '', 'PRIMARY');
 
-			\DBUtil::drop_index($basetable.'_role_permissions', 'primary');
 			\DBUtil::drop_fields($basetable.'_role_permissions', array(
 				'id',
 			));
