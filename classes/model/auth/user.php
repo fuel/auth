@@ -41,6 +41,13 @@ class Auth_User extends \Orm\Model
 			'null'		  => false,
 			'validation'  => array('required', 'valid_email')
 		),
+		'group'	          => array(
+			'label'		  => 'auth_model_user.group_id',
+			'default' 	  => 0,
+			'null'		  => false,
+			'form'  	  => array('type' => 'select'),
+			'validation'  => array('required', 'is_numeric')
+		),
 		'group_id'        => array(
 			'label'		  => 'auth_model_user.group_id',
 			'default' 	  => 0,
@@ -54,6 +61,11 @@ class Auth_User extends \Orm\Model
 			'null'		  => false,
 			'form'  	  => array('type' => 'password'),
 			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm'))
+		),
+		'profile_fields'  => array(
+			'default' 	  => array(),
+			'data_type'	  => 'serialize',
+			'form'  	  => array('type' => false),
 		),
 		'last_login'	  => array(
 			'form'  	  => array('type' => false),
@@ -170,17 +182,58 @@ class Auth_User extends \Orm\Model
    	public static function _init()
 	{
 		// auth config
-		\Config::load('ormauth', true);
+		\Config::load('auth', true);
 
-		// set the connection this model should use
-		static::$_connection = \Config::get('ormauth.db_connection');
+		// get the auth driver in use
+		$drivers = \Config::get('auth.driver', array());
+		is_array($drivers) or $drivers = array($drivers);
 
-		// set the models table name
-		static::$_table_name = \Config::get('ormauth.table_name', 'users');
+		// modify the model definition based on the driver used
+		if (in_array('Simpleauth', $drivers))
+		{
+			// remove properties not in use
+			unset(static::$_properties['group_id']);
+			unset(static::$_properties['previous_login']);
+			unset(static::$_properties['user_id']);
 
-		// set the relations through table names
-		static::$_many_many['roles']['table_through'] = \Config::get('ormauth.table_name', 'users').'_user_roles';
-		static::$_many_many['permissions']['table_through'] = \Config::get('ormauth.table_name', 'users').'_user_permissions';
+			// remove relations
+			static::$_eav        = array();
+			static::$_belongs_to = array();
+			static::$_has_many   = array();
+			static::$_many_many  = array();
+
+			// remove observers
+			unset(static::$_observers['Orm\\Observer_Self']);
+
+			// simpleauth config
+			\Config::load('simpleauth', true);
+
+			// set the connection this model should use
+			static::$_connection = \Config::get('simpleauth.db_connection');
+
+			// set the models table name
+			static::$_table_name = \Config::get('simpleauth.table_name', 'users');
+		}
+
+		elseif (in_array('Ormauth', $drivers))
+		{
+			// remove properties not in use
+			unset(static::$_properties['group']);
+			unset(static::$_properties['profile_fields']);
+
+			// ormauth config
+			\Config::load('ormauth', true);
+
+			// set the connection this model should use
+			static::$_connection = \Config::get('ormauth.db_connection');
+
+			// set the models table name
+			static::$_table_name = \Config::get('ormauth.table_name', 'users');
+
+			// set the relations through table names
+			static::$_many_many['roles']['table_through'] = \Config::get('ormauth.table_name', 'users').'_user_roles';
+			static::$_many_many['permissions']['table_through'] = \Config::get('ormauth.table_name', 'users').'_user_permissions';
+		}
 
 		// model language file
 		\Lang::load('auth_model_user', true);
