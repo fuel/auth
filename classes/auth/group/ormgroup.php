@@ -60,7 +60,7 @@ class Auth_Group_Ormgroup extends \Auth_Group_Driver
 	/*
 	 * check for group membership
 	 */
-	public function member($group, $user = null)
+	public function member($group_id, $user = null)
 	{
 		// if no user is given
 		if ($user === null)
@@ -80,14 +80,22 @@ class Auth_Group_Ormgroup extends \Auth_Group_Driver
 			return false;
 		}
 
-		// if it's a group id, find the corresponding object
-		if (is_numeric($group) and isset(static::$_valid_groups[$group]))
+		// if it's not a group id, fetch it from the object
+		if ( ! is_numeric($group_id))
 		{
-			$group = static::$_valid_groups[$group];
+			$group_id = $group_id->id;
 		}
 
-		// return the result
-		return in_array(array($this->id, $group), $groups);
+		// check for membership
+		foreach($groups as $group)
+		{
+			if ($group[0] === $this->id and $group[1]->id === $group_id)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/*
