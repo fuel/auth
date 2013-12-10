@@ -62,36 +62,40 @@ class Auth_Group_Ormgroup extends \Auth_Group_Driver
 	 */
 	public function member($group_id, $user = null)
 	{
-		// if no user is given
-		if ($user === null)
-		{
-			// get the groups of the logged-in user
-			$groups = \Auth::instance()->get_groups();
-		}
-		else
-		{
-			// get the groups if the given user instance
-			$groups = \Auth::instance($user[0])->get_groups();
-		}
-
-		// if no group info could be retrieved, the user can't be a member
-		if ( ! $groups)
-		{
-			return false;
-		}
-
 		// if it's not a group id, fetch it from the object
 		if ( ! is_numeric($group_id))
 		{
 			$group_id = $group_id->id;
 		}
 
-		// check for membership
-		foreach($groups as $group)
+		// do we know this group?
+		if (isset(static::$_valid_groups[$group_id]))
 		{
-			if ($group[0] === $this->id and $group[1]->id === $group_id)
+			// if no user is given
+			if ($user === null)
 			{
-				return true;
+				// get the groups of the logged-in user
+				$groups = \Auth::instance()->get_groups();
+			}
+			else
+			{
+				// get the groups if the given user instance
+				$groups = \Auth::instance($user[0])->get_groups();
+			}
+
+			// if no group info could be retrieved, the user can't be a member
+			if ( ! $groups)
+			{
+				return false;
+			}
+
+			// check for membership
+			foreach($groups as $group)
+			{
+				if ($group[0] === $this->id and $group_id === (int) $group[1]->id)
+				{
+					return true;
+				}
 			}
 		}
 
