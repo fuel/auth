@@ -130,7 +130,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($revoked_rights[$permission->area][$permission->permission]) or $revoked_rights[$permission->area][$permission->permission] = array();
 						foreach ($role->rolepermission as $rolepermission)
 						{
-							if ($rolepermission->role_id == $role->id and $rolepermission->perms_id = $permission->id)
+							if ($rolepermission->role_id == $role->id and $rolepermission->perms_id == $permission->id)
 							{
 								$revoked_rights[$permission->area][$permission->permission] = array_merge(
 									$revoked_rights[$permission->area][$permission->permission],
@@ -154,7 +154,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
 						foreach ($role->rolepermission as $rolepermission)
 						{
-							if ($rolepermission->role_id == $role->id and $rolepermission->perms_id = $permission->id)
+							if ($rolepermission->role_id == $role->id and $rolepermission->perms_id == $permission->id)
 							{
 								$current_rights[$permission->area][$permission->permission] = array_merge(
 									$current_rights[$permission->area][$permission->permission],
@@ -181,7 +181,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
 						foreach ($user->group->grouppermission as $grouppermission)
 						{
-							if ($grouppermission->group_id == $user->group_id and $grouppermission->perms_id = $permission->id)
+							if ($grouppermission->group_id == $user->group_id and $grouppermission->perms_id == $permission->id)
 							{
 								$current_rights[$permission->area][$permission->permission] = array_merge(
 									$current_rights[$permission->area][$permission->permission],
@@ -201,7 +201,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 						isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
 						foreach ($user->userpermission as $userpermission)
 						{
-							if ($userpermission->user_id == $user->id and $userpermission->perms_id = $permission->id)
+							if ($userpermission->user_id == $user->id and $userpermission->perms_id == $permission->id)
 							{
 								$current_rights[$permission->area][$permission->permission] = array_merge(
 									$current_rights[$permission->area][$permission->permission],
