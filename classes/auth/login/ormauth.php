@@ -26,7 +26,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	public static function _init()
 	{
 		// load the auth config
-		\Config::load('ormauth', true, true, true);
+		\Config::load('ormauth', true);
 
 		// deal with invalid column selections
 		if ($columns = \Config::get('ormauth.table_columns', array()) == array('*') or ! is_array($columns))

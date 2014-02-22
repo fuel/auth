@@ -27,7 +27,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 */
 	public static function _init()
 	{
-		\Config::load('simpleauth', true, true, true);
+		\Config::load('simpleauth', true);
 
 		// setup the remember-me session object if needed
 		if (\Config::get('simpleauth.remember_me.enabled', false))
