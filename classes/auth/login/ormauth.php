@@ -276,11 +276,8 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			'updated_at'      => 0,
 		));
 
-		// we don't use profile fields, store the data in the metadata table instead
-		foreach($profile_fields as $field => $value)
-		{
-			$user->metadata[] = \Model\Auth_Metadata::forge(array('key' => $field, 'value' => $value));
-		}
+		// load all additional data, passed as profile fields
+		$user->from_array($profile_fields);
 
 		// save the new user record
 		try
