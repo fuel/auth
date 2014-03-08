@@ -249,8 +249,14 @@ class Auth_Opauth
 			}
 
 			// did the provider return enough information to log the user in?
-			if ($this->get('auth.info.nickname') and $this->get('auth.info.email') and $this->get('auth.info.password'))
+			if (($this->get('auth.info.nickname') or $this->get('auth.info.email')) and $this->get('auth.info.password'))
 			{
+				// make sure we have a nickname, if not, use the email address
+				if (empty($this->response['auth']['info']['nickname']))
+				{
+					$this->response['auth']['info']['nickname'] = $this->response['auth']['info']['email'];
+				}
+
 				// make a user with what we have
 				$user_id = $this->create_user($this->response['auth']['info']);
 
