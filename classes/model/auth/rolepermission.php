@@ -18,6 +18,11 @@ class Auth_Rolepermission extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
+	
+	/**
+	 * @var  string  write connection to use
+	 */
+    protected static $_write_connection = null;
 
 	/**
 	 * @var  string  table name to overwrite assumption
@@ -79,6 +84,9 @@ class Auth_Rolepermission extends \Orm\Model
 
 		// set the connection this model should use
 		static::$_connection = \Config::get('ormauth.db_connection');
+		
+		// set the write connection this model should use
+		static::$_connection = \Config::get('ormauth.db_write_connection');
 
 		// set the models table name
 		static::$_table_name = \Config::get('ormauth.table_name', 'users').'_role_permissions';
