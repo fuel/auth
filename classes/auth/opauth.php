@@ -22,6 +22,11 @@ class Auth_Opauth
 	protected static $provider_table = null;
 
 	/**
+	 * @var  string  name of the database connection to use
+	 */
+	protected static $db_connection = null;
+
+	/**
 	 * Class initialisation
 	 */
 	public static function _init()
@@ -45,6 +50,7 @@ class Auth_Opauth
 			// get the tablename
 			\Config::load('simpleauth', true);
 			static::$provider_table = \Config::get('simpleauth.table_name', 'users').'_providers';
+			static::$db_connection = \Config::get('simpleauth.db_connection', null);
 		}
 
 		elseif (in_array('Ormauth', $drivers))
@@ -52,6 +58,11 @@ class Auth_Opauth
 			// get the tablename
 			\Config::load('ormauth', true);
 			static::$provider_table = \Config::get('ormauth.table_name', 'users').'_providers';
+			static::$db_connection = \Config::get('ormauth.db_connection', null);
+		}
+		else
+		{
+			throw new \OpauthException('No supported driver found. Opauth currently only supports Simpleauth and Ormauth.');
 		}
 	}
 
@@ -195,7 +206,7 @@ class Auth_Opauth
 		{
 			list(, $user_id) = \Auth::instance()->get_user_id();
 
-			$result = \DB::select(\DB::expr('COUNT(*) as count'))->from($this->config['table'])->where('parent_id', '=', $user_id)->execute();
+			$result = \DB::select(\DB::expr('COUNT(*) as count'))->from($this->config['table'])->where('parent_id', '=', $user_id)->execute(static::$db_connection);
 			$num_linked = ($result and $result = $result->current()) ? $result['count'] : 0;
 
 			// allowed multiple providers, or not authed yet?
@@ -219,14 +230,14 @@ class Auth_Opauth
 
 			else
 			{
-				$result = \DB::select()->from($this->config['table'])->where('parent_id', '=', $user_id)->limit(1)->as_object()->execute();
+				$result = \DB::select()->from($this->config['table'])->where('parent_id', '=', $user_id)->limit(1)->as_object()->execute(static::$db_connection);
 				$auth = $result ? $result->current() : null;
 				throw new \OpauthException(sprintf('This user is already linked to "%s" and can\'t be linked to another provider.', $auth->provider));
 			}
 		}
 
 		// the user exists, so send him on his merry way as a user
-		elseif ($authentication = \DB::select()->from($this->config['table'])->where('uid', '=', $this->get('auth.uid'))->where('provider', '=', $this->get('auth.provider'))->as_object()->execute() and $authentication->count())
+		elseif ($authentication = \DB::select()->from($this->config['table'])->where('uid', '=', $this->get('auth.uid'))->where('provider', '=', $this->get('auth.provider'))->as_object()->execute(static::$db_connection) and $authentication->count())
 		{
 			// force a login with this username
 			$authentication = $authentication->current();
@@ -325,10 +336,10 @@ class Auth_Opauth
 		}
 
 		// get rid of old registrations to prevent duplicates
-		\DB::delete($this->config['table'])->where('uid', '=', $data['uid'])->where('provider', '=', $data['provider'])->execute();
+		\DB::delete($this->config['table'])->where('uid', '=', $data['uid'])->where('provider', '=', $data['provider'])->execute(static::$db_connection);
 
 		// insert the new provider UID
-		list($insert_id, $rows_affected) = \DB::insert($this->config['table'])->set($data)->execute();
+		list($insert_id, $rows_affected) = \DB::insert($this->config['table'])->set($data)->execute(static::$db_connection);
 		return $rows_affected ? $insert_id : false;
 	}
 
