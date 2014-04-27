@@ -27,6 +27,11 @@ return array(
 	 * DB connection, leave null to use default
 	 */
 	'db_connection' => null,
+	
+	/**
+	 * DB write connection, leave null to use default
+	 */
+	'db_write_connection' 	=> null,
 
 	/**
 	 * DB table name for the user table
