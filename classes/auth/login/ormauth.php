@@ -498,12 +498,9 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		// if it was found, delete it
 		if ($user)
 		{
-			return $user->delete();
+			return (bool) $user->delete();
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	/**
