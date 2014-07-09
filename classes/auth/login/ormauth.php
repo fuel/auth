@@ -500,10 +500,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		{
 			return (bool) $user->delete();
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	/**
