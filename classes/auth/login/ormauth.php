@@ -6,7 +6,7 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2013 Fuel Development Team
+ * @copyright  2010 - 2014 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -26,7 +26,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	public static function _init()
 	{
 		// load the auth config
-		\Config::load('ormauth', true, true, true);
+		\Config::load('ormauth', true);
 
 		// deal with invalid column selections
 		if ($columns = \Config::get('ormauth.table_columns', array()) == array('*') or ! is_array($columns))
@@ -276,11 +276,8 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			'updated_at'      => 0,
 		));
 
-		// we don't use profile fields, store the data in the metadata table instead
-		foreach($profile_fields as $field => $value)
-		{
-			$user->metadata[] = \Model\Auth_Metadata::forge(array('key' => $field, 'value' => $value));
-		}
+		// load all additional data, passed as profile fields
+		$user->from_array($profile_fields);
 
 		// save the new user record
 		try
@@ -501,12 +498,9 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		// if it was found, delete it
 		if ($user)
 		{
-			return $user->delete();
+			return (bool) $user->delete();
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	/**

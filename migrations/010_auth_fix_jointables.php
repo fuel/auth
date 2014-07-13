@@ -20,7 +20,7 @@ class Auth_Fix_Jointables
 			$basetable = \Config::get('ormauth.table_name', 'users');
 
 			// make sure the configured DB is used
-			\DBUtil::set_connection(\Config::get('simpleauth.db_connection', null));
+			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
 
 			\DBUtil::drop_index($basetable.'_user_permissions', 'primary');
 			\DBUtil::add_fields($basetable.'_user_permissions', array(
