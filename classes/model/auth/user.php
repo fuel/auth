@@ -217,7 +217,7 @@ class Auth_User extends \Orm\Model
 			static::$_connection = \Config::get('simpleauth.db_connection');
 		
 			// set the write connection this model should use
-			static::$_write_connection = \Config::get('simpleauth.db_write_connection');
+			static::$_write_connection = \Config::get('simpleauth.db_write_connection', static::$_connection);
 
 			// set the models table name
 			static::$_table_name = \Config::get('simpleauth.table_name', 'users');
@@ -236,7 +236,7 @@ class Auth_User extends \Orm\Model
 			static::$_connection = \Config::get('ormauth.db_connection');
 		
 			// set the write connection this model should use
-			static::$_write_connection = \Config::get('ormauth.db_write_connection');
+			static::$_write_connection = \Config::get('ormauth.db_write_connection', static::$_connection);
 
 			// set the models table name
 			static::$_table_name = \Config::get('ormauth.table_name', 'users');
