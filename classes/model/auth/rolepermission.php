@@ -86,7 +86,7 @@ class Auth_Rolepermission extends \Orm\Model
 		static::$_connection = \Config::get('ormauth.db_connection');
 		
 		// set the write connection this model should use
-		static::$_connection = \Config::get('ormauth.db_write_connection');
+		static::$_write_connection = \Config::get('ormauth.db_write_connection');
 
 		// set the models table name
 		static::$_table_name = \Config::get('ormauth.table_name', 'users').'_role_permissions';
