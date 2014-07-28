@@ -207,7 +207,7 @@ class Auth_Opauth
 			list(, $user_id) = \Auth::instance()->get_user_id();
 
 			$result = \DB::select(\DB::expr('COUNT(*) as count'))->from($this->config['table'])->where('parent_id', '=', $user_id)->execute(static::$db_connection);
-			$num_linked = ($result and $result = $result->current()) ? $result['count'] : 0;
+			$num_linked = ($result and $result = $result->current()) ? (int) $result['count'] : 0;
 
 			// allowed multiple providers, or not authed yet?
 			if ($num_linked === 0 or \Config::get('opauth.link_multiple_providers') === true)
