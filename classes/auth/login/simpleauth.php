@@ -196,6 +196,10 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		\Session::set('username', $this->user['username']);
 		\Session::set('login_hash', $this->create_login_hash());
+
+		// register so Auth::logout() can find us
+		Auth::_register_verified($this);
+
 		return true;
 	}
 
