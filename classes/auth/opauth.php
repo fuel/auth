@@ -85,7 +85,8 @@ class Auth_Opauth
 		$config = \Arr::merge(\Config::get('opauth'), $config);
 
 		// define the transport system we use
-		$config['callback_transport'] = 'get';
+		if(empty($config['callback_transport']))
+			$config['callback_transport'] = 'get';
 
 		// make sure we have a remotes table
 		if ( ! isset($config['table']) and ($config['table'] = static::$provider_table) === null)
@@ -357,7 +358,20 @@ class Auth_Opauth
 	protected function callback()
 	{
 		// fetch the response and decode it
-		$this->response = \Input::get('opauth', false) and $this->response = unserialize(base64_decode($this->response));
+		switch($this->config['callback_transport']) {
+			case 'get':
+				$this->response = \Input::get('opauth', false) and $this->response = unserialize(base64_decode($this->response));
+				break;
+
+			case 'post':
+				$this->response = \Input::post('opauth', false) and $this->response = unserialize(base64_decode($this->response));
+				break;
+
+			case 'session':
+				$this->response = \Arr::get($_SESSION, 'opauth');
+				break;
+		}
+
 
 		// did we receive a response at all?
 		if ( ! $this->response)
