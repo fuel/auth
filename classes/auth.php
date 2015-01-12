@@ -189,30 +189,41 @@ class Auth
 	public static function check($specific = null)
 	{
 		$drivers = $specific === null ? static::$_instances : (array) $specific;
+		$verified = static::$_verified;
+		
+		if ($specific !== null)
+		{
+			$verified = array();
+			foreach ($drivers as $i)
+			{
+				$key = $i->get_id();
+				if (isset(static::$_verified[$key])) $verified[$key] = static::$_verified[$key];
+			}
+		}
 
 		foreach ($drivers as $i)
 		{
-			if ( ! static::$_verify_multiple && ! empty(static::$_verified))
+			if ( ! static::$_verify_multiple && ! empty($verified))
 			{
 				return true;
 			}
 
 			$i = $i instanceof Auth_Login_Driver ? $i : static::instance($i);
-			if ( ! array_key_exists($i->get_id(), static::$_verified))
+			if ( ! array_key_exists($i->get_id(), $verified))
 			{
 				$i->check();
 			}
 
 			if ($specific)
 			{
-				if (array_key_exists($i->get_id(), static::$_verified))
+				if (array_key_exists($i->get_id(), $verified))
 				{
 					return true;
 				}
 			}
 		}
 
-		return $specific === null && ! empty(static::$_verified);
+		return $specific === null && ! empty($verified);
 	}
 
 	/**
