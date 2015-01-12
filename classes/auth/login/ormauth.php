@@ -171,6 +171,9 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			// and rotate the session id, we've elevated rights
 			\Session::instance()->rotate();
 
+			// register so Auth::logout() can find us
+			Auth::_register_verified($this);
+
 			return true;
 		}
 
