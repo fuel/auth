@@ -127,6 +127,12 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		\Session::set('username', $this->user->username);
 		\Session::set('login_hash', $this->create_login_hash());
 
+		// store the logged-in user's user_id in the remember me cookie
+		if (static::$remember_me)
+		{
+			static::$remember_me->set('user_id', $this->user->id);
+		}
+
 		// and rotate the session id, we've elevated rights
 		\Session::instance()->rotate();
 
@@ -167,6 +173,12 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			// store the logged-in user and it's hash in the session
 			\Session::set('username', $this->user->username);
 			\Session::set('login_hash', $this->create_login_hash());
+
+			// store the logged-in user's user_id in the remember me cookie
+			if (static::$remember_me)
+			{
+				static::$remember_me->set('user_id', $this->user->id);
+			}
 
 			// and rotate the session id, we've elevated rights
 			\Session::instance()->rotate();
