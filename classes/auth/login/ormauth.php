@@ -29,7 +29,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		\Config::load('ormauth', true);
 
 		// deal with invalid column selections
-		if ($columns = \Config::get('ormauth.table_columns', array()) == array('*') or ! is_array($columns))
+		if (($columns = \Config::get('ormauth.table_columns', array())) == array('*') or ! is_array($columns))
 		{
 			\Config::set('ormauth.table_columns', array());
 		}
