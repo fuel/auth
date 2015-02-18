@@ -2,16 +2,15 @@
 
 namespace Fuel\Migrations;
 
+include "normalizedrivertypes.php";
+
 class Auth_Create_Authdefaults
 {
 
 	function up()
 	{
-		// get the driver used
-		\Config::load('auth', true);
-
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the drivers defined
+		$drivers = normalize_driver_types();
 
 		if (in_array('Ormauth', $drivers))
 		{
@@ -105,11 +104,8 @@ class Auth_Create_Authdefaults
 
 	function down()
 	{
-		// get the driver used
-		\Config::load('auth', true);
-
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the drivers defined
+		$drivers = normalize_driver_types();
 
 		if (in_array('Ormauth', $drivers))
 		{
