@@ -18,7 +18,7 @@ class Auth_User extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
-	
+
 	/**
 	 * @var  string  write connection to use
 	 */
@@ -157,6 +157,12 @@ class Auth_User extends \Orm\Model
 			'key_to'   => 'user_id',
 			'cascade_delete' => false,
 		),
+		'providers' => array(
+			'model_to' => 'Model\\Auth_Provider',
+			'key_from' => 'id',
+			'key_to'   => 'parent_id',
+			'cascade_delete' => true,
+		),
 	);
 
 	/**
@@ -215,7 +221,7 @@ class Auth_User extends \Orm\Model
 
 			// set the connection this model should use
 			static::$_connection = \Config::get('simpleauth.db_connection');
-		
+
 			// set the write connection this model should use
 			static::$_write_connection = \Config::get('simpleauth.db_write_connection') ?: static::$_connection;
 
@@ -234,7 +240,7 @@ class Auth_User extends \Orm\Model
 
 			// set the connection this model should use
 			static::$_connection = \Config::get('ormauth.db_connection');
-		
+
 			// set the write connection this model should use
 			static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 
