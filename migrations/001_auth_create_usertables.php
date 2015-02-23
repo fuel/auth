@@ -2,7 +2,7 @@
 
 namespace Fuel\Migrations;
 
-include "normalizedrivertypes.php";
+include __DIR__."/../normalizedrivertypes.php";
 
 class Auth_Create_Usertables
 {

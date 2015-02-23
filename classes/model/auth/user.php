@@ -12,6 +12,8 @@
 
 namespace Auth\Model;
 
+require_once __DIR__.'/../../../normalizedrivertypes.php';
+
 class Auth_User extends \Orm\Model
 {
 	/**
@@ -196,8 +198,7 @@ class Auth_User extends \Orm\Model
 		\Config::load('auth', true);
 
 		// get the auth driver in use
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		$drivers = normalize_driver_types();
 
 		// modify the model definition based on the driver used
 		if (in_array('Simpleauth', $drivers))
