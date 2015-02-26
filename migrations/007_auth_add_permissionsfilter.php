@@ -6,7 +6,6 @@ include __DIR__."/../normalizedrivertypes.php";
 
 class Auth_Add_Permissionsfilter
 {
-
 	function up()
 	{
 		// get the drivers defined

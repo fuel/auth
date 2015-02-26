@@ -17,7 +17,7 @@ if ( ! function_exists('normalize_driver_types'))
 
 		$results = array();
 
-		foreach($drivers as $driver)
+		foreach ($drivers as $driver)
 		{
 			// determine the driver classname
 			$class = \Inflector::get_namespace($driver).'Auth_Login_'.\Str::ucwords(\Inflector::denamespace($driver));

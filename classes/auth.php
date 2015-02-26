@@ -14,9 +14,7 @@
 
 namespace Auth;
 
-
 class AuthException extends \FuelException {}
-
 
 /**
  * Auth
@@ -26,7 +24,6 @@ class AuthException extends \FuelException {}
  */
 class Auth
 {
-
 	/**
 	 * @var  Auth_Login_Driver	default instance
 	 */
@@ -322,7 +319,7 @@ class Auth
 	 */
 	public static function unregister_driver_type($type)
 	{
-		if (in_array($type,array('login', 'group', 'acl')))
+		if (in_array($type, array('login', 'group', 'acl')))
 		{
 			\Error::notice('Cannot remove driver type, included drivers login, group and acl cannot be removed.');
 			return false;

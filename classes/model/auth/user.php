@@ -40,34 +40,34 @@ class Auth_User extends \Orm\Model
 			'label'		  => 'auth_model_user.name',
 			'default' 	  => 0,
 			'null'		  => false,
-			'validation'  => array('required', 'max_length' => array(255))
+			'validation'  => array('required', 'max_length' => array(255)),
 		),
 		'email'           => array(
 			'label'		  => 'auth_model_user.email',
 			'default' 	  => 0,
 			'null'		  => false,
-			'validation'  => array('required', 'valid_email')
+			'validation'  => array('required', 'valid_email'),
 		),
 		'group'	          => array(
 			'label'		  => 'auth_model_user.group_id',
 			'default' 	  => 0,
 			'null'		  => false,
 			'form'  	  => array('type' => 'select'),
-			'validation'  => array('required', 'is_numeric')
+			'validation'  => array('required', 'is_numeric'),
 		),
 		'group_id'        => array(
 			'label'		  => 'auth_model_user.group_id',
 			'default' 	  => 0,
 			'null'		  => false,
 			'form'  	  => array('type' => 'select'),
-			'validation'  => array('required', 'is_numeric')
+			'validation'  => array('required', 'is_numeric'),
 		),
 		'password'        => array(
 			'label'		  => 'auth_model_user.password',
 			'default' 	  => 0,
 			'null'		  => false,
 			'form'  	  => array('type' => 'password'),
-			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm'))
+			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm')),
 		),
 		'profile_fields'  => array(
 			'default' 	  => array(),
@@ -107,19 +107,19 @@ class Auth_User extends \Orm\Model
 		'Orm\\Observer_CreatedAt' => array(
 			'events' => array('before_insert'),
 			'property' => 'created_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_UpdatedAt' => array(
 			'events' => array('before_update'),
 			'property' => 'updated_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_Typing' => array(
-			'events' => array('after_load', 'before_save', 'after_save')
+			'events' => array('after_load', 'before_save', 'after_save'),
 		),
 		'Orm\\Observer_Self' => array(
 			'events' => array('before_insert', 'before_update'),
-			'property' => 'user_id'
+			'property' => 'user_id',
 		),
 	);
 

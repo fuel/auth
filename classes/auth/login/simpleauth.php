@@ -57,7 +57,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 		'username' => 'guest',
 		'group' => '0',
 		'login_hash' => false,
-		'email' => false
+		'email' => false,
 	);
 
 	/**
@@ -265,7 +265,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			'profile_fields'  => serialize($profile_fields),
 			'last_login'      => 0,
 			'login_hash'      => '',
-			'created_at'      => \Date::forge()->get_timestamp()
+			'created_at'      => \Date::forge()->get_timestamp(),
 		);
 		$result = \DB::insert(\Config::get('simpleauth.table_name'))
 			->set($user)

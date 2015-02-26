@@ -357,7 +357,6 @@ HELP;
 		return true;
 	}
 
-
 	/*
 	 * Deal with potential changes in users table layout between simpleauth and ormauth
 	 */

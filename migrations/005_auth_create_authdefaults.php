@@ -6,7 +6,6 @@ include __DIR__."/../normalizedrivertypes.php";
 
 class Auth_Create_Authdefaults
 {
-
 	function up()
 	{
 		// get the drivers defined
@@ -63,7 +62,7 @@ class Auth_Create_Authdefaults
 			 */
 
 			// create the administrator account if needed, and assign it the superadmin group so it has all access
-			$result = \DB::select('id')->from($table)->where('username','=','admin')->execute($connection);
+			$result = \DB::select('id')->from($table)->where('username', '=', 'admin')->execute($connection);
 			if (count($result) == 0)
 			{
 				\Auth::instance()->create_user('admin', 'admin', 'admin@example.org', $group_id_admin, array('fullname' => 'System administrator'));

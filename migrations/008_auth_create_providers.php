@@ -6,7 +6,6 @@ include __DIR__."/../normalizedrivertypes.php";
 
 class Auth_Create_Providers
 {
-
 	function up()
 	{
 		// get the drivers defined

@@ -54,7 +54,7 @@ class Auth_Rolepermission extends \Orm\Model
 	 */
 	protected static $_observers = array(
 		'Orm\\Observer_Typing' => array(
-			'events' => array('after_load', 'before_save', 'after_save')
+			'events' => array('after_load', 'before_save', 'after_save'),
 		),
 	);
 
