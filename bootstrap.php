@@ -12,7 +12,6 @@
  * @link       http://fuelphp.com
  */
 
-
 Autoloader::add_core_namespace('Auth');
 
 Autoloader::add_classes(array(

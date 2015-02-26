@@ -14,10 +14,8 @@
 
 namespace Auth;
 
-
 class Auth_Group_Simplegroup extends \Auth_Group_Driver
 {
-
 	protected static $_valid_groups = array();
 
 	public static function _init()
@@ -26,7 +24,7 @@ class Auth_Group_Simplegroup extends \Auth_Group_Driver
 	}
 
 	protected $config = array(
-		'drivers' => array('acl' => array('Simpleacl'))
+		'drivers' => array('acl' => array('Simpleacl')),
 	);
 
 	public function groups()

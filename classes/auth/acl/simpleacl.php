@@ -14,10 +14,8 @@
 
 namespace Auth;
 
-
 class Auth_Acl_Simpleacl extends \Auth_Acl_Driver
 {
-
 	protected static $_valid_roles = array();
 
 	public static function _init()

@@ -14,10 +14,8 @@
 
 namespace Auth;
 
-
 abstract class Auth_Group_Driver extends \Auth_Driver
 {
-
 	/**
 	 * @var	Auth_Driver
 	 */

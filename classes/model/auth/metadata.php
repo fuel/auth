@@ -61,19 +61,19 @@ class Auth_Metadata extends \Orm\Model
 		'Orm\\Observer_CreatedAt' => array(
 			'events' => array('before_insert'),
 			'property' => 'created_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_UpdatedAt' => array(
 			'events' => array('before_update'),
 			'property' => 'updated_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_Typing' => array(
-			'events' => array('after_load', 'before_save', 'after_save')
+			'events' => array('after_load', 'before_save', 'after_save'),
 		),
 		'Orm\\Observer_Self' => array(
 			'events' => array('before_insert', 'before_update'),
-			'property' => 'user_id'
+			'property' => 'user_id',
 		),
 	);
 

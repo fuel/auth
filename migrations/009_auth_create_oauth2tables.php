@@ -6,7 +6,6 @@ include __DIR__."/../normalizedrivertypes.php";
 
 class Auth_Create_Oauth2tables
 {
-
 	function up()
 	{
 		// get the drivers defined

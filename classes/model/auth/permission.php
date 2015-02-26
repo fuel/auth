@@ -37,17 +37,17 @@ class Auth_Permission extends \Orm\Model
 		'area'           => array(
 			'label'		  => 'auth_model_permission.area',
 			'null'		  => false,
-			'validation'  => array('required', 'max_length' => array(25))
+			'validation'  => array('required', 'max_length' => array(25)),
 		),
 		'permission'      => array(
 			'label'		  => 'auth_model_permission.permission',
 			'null'		  => false,
-			'validation'  => array('required', 'max_length' => array(25))
+			'validation'  => array('required', 'max_length' => array(25)),
 		),
 		'description'     => array(
 			'label'		  => 'auth_model_permission.description',
 			'null'		  => false,
-			'validation'  => array('required', 'max_length' => array(255))
+			'validation'  => array('required', 'max_length' => array(255)),
 		),
 		'actions'         => array(
 			'data_type'	  => 'serialize',
@@ -79,19 +79,19 @@ class Auth_Permission extends \Orm\Model
 		'Orm\\Observer_CreatedAt' => array(
 			'events' => array('before_insert'),
 			'property' => 'created_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_UpdatedAt' => array(
 			'events' => array('before_update'),
 			'property' => 'updated_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_Typing' => array(
-			'events' => array('after_load', 'before_save', 'after_save')
+			'events' => array('after_load', 'before_save', 'after_save'),
 		),
 		'Orm\\Observer_Self' => array(
 			'events' => array('before_insert', 'before_update'),
-			'property' => 'user_id'
+			'property' => 'user_id',
 		),
 	);
 

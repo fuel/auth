@@ -6,7 +6,6 @@ include __DIR__."/../normalizedrivertypes.php";
 
 class Auth_Fix_Jointables
 {
-
 	function up()
 	{
 		// get the drivers defined
@@ -59,7 +58,6 @@ class Auth_Fix_Jointables
 				'id',
 			));
 			\DBUtil::create_index($basetable.'_user_permissions', array('user_id', 'perms_id'), '', 'PRIMARY');
-
 
 			\DBUtil::drop_fields($basetable.'_group_permissions', array(
 				'id',

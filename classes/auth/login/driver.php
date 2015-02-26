@@ -16,7 +16,6 @@ namespace Auth;
 
 abstract class Auth_Login_Driver extends \Auth_Driver
 {
-
 	/**
 	 * @var  Auth_Driver	default instance
 	 */

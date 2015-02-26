@@ -14,10 +14,8 @@
 
 namespace Auth;
 
-
 abstract class Auth_Driver
 {
-
 	/**
 	 * @var	Auth_Driver
 	 * THIS MUST BE DEFINED IN THE BASE EXTENSION
