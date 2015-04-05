@@ -18,7 +18,7 @@ class Auth_Metadata extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
-	
+
 	/**
 	 * @var  string  write connection to use
 	 */
@@ -33,24 +33,24 @@ class Auth_Metadata extends \Orm\Model
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
-		'id',
-		'parent_id',
-		'key',
-		'value',
+		'id'              => array(),
+		'parent_id'       => array(),
+		'key'             => array(),
+		'value'           => array(),
 		'user_id'         => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'created_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'updated_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 	);
 
@@ -98,7 +98,7 @@ class Auth_Metadata extends \Orm\Model
 
 		// set the connection this model should use
 		static::$_connection = \Config::get('ormauth.db_connection');
-		
+
 		// set the write connection this model should use
 		static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 

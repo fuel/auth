@@ -18,7 +18,7 @@ class Auth_Group extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
-	
+
 	/**
 	 * @var  string  write connection to use
 	 */
@@ -33,27 +33,27 @@ class Auth_Group extends \Orm\Model
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
-		'id',
-		'name'     => array(
-			'label'		  => 'auth_model_group.name',
-			'default' 	  => '',
-			'null'		  => false,
+		'id'              => array(),
+		'name'            => array(
+			'label'	      => 'auth_model_group.name',
+			'default'     => '',
+			'null'        => false,
 			'validation'  => array('required', 'max_length' => array(255)),
 		),
 		'user_id'         => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'created_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'updated_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 	);
 
@@ -129,7 +129,7 @@ class Auth_Group extends \Orm\Model
 
 		// set the connection this model should use
 		static::$_connection = \Config::get('ormauth.db_connection');
-		
+
 		// set the write connection this model should use
 		static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 

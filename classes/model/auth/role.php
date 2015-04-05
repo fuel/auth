@@ -18,7 +18,7 @@ class Auth_Role extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
-	
+
 	/**
 	 * @var  string  write connection to use
 	 */
@@ -33,37 +33,37 @@ class Auth_Role extends \Orm\Model
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
-		'id',
+		'id'              => array(),
 		'name'            => array(
-			'label'		  => 'auth_model_role.name',
-			'default' 	  => 0,
-			'null'		  => false,
+			'label'       => 'auth_model_role.name',
+			'default'     => 0,
+			'null'        => false,
 			'validation'  => array('required', 'max_length' => array(255)),
 		),
 		'filter'          => array(
-			'label'		  => 'auth_model_role.filter',
-			'data_type'	  => 'enum',
-			'options'	  => array('', 'A', 'D', 'R'),
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'		  => array('type' => 'select'),
+			'label'       => 'auth_model_role.filter',
+			'data_type'   => 'enum',
+			'options'     => array('', 'A', 'D', 'R'),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => 'select'),
 			'validation'  => array(),
-			'default'	  => '',
+			'default'     => '',
 		),
 		'user_id'         => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'created_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'updated_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 	);
 
@@ -142,7 +142,7 @@ class Auth_Role extends \Orm\Model
 
 		// set the connection this model should use
 		static::$_connection = \Config::get('ormauth.db_connection');
-		
+
 		// set the write connection this model should use
 		static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 

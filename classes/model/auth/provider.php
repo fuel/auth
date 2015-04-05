@@ -38,17 +38,17 @@ class Auth_Provider extends \Orm\Model
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
-		'id',
-		'parent_id',
-		'provider',
-		'uid',
-		'secret',
-		'access_token',
-		'expires',
-		'refresh_token',
-		'user_id',
-		'created_at',
-		'updated_at',
+		'id'              => array(),
+		'parent_id'       => array(),
+		'provider'        => array(),
+		'uid'             => array(),
+		'secret'          => array(),
+		'access_token'    => array(),
+		'expires'         => array(),
+		'refresh_token'   => array(),
+		'user_id'         => array(),
+		'created_at'      => array(),
+		'updated_at'      => array(),
 	);
 
 	/**

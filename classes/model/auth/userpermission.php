@@ -18,7 +18,7 @@ class Auth_Userpermission extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
-	
+
 	/**
 	 * @var  string  write connection to use
 	 */
@@ -38,14 +38,14 @@ class Auth_Userpermission extends \Orm\Model
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
-		'id',
-		'user_id',
-		'perms_id',
+		'id'              => array(),
+		'user_id'         => array(),
+		'perms_id'        => array(),
 		'actions'         => array(
-			'data_type'	  => 'serialize',
-			'default' 	  => array(),
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'data_type'   => 'serialize',
+			'default'     => array(),
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 	);
 
@@ -84,7 +84,7 @@ class Auth_Userpermission extends \Orm\Model
 
 		// set the connection this model should use
 		static::$_connection = \Config::get('ormauth.db_connection');
-		
+
 		// set the write connection this model should use
 		static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 
