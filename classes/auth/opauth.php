@@ -127,7 +127,7 @@ class Auth_Opauth
 			array_pop($path);
 
 			// and add 'callback' as the controller callback action
-			$config['callback_url'] = '/'.implode('/', $path).'/callback/';
+			$config['callback_url'] = (empty($path)?'':'/'.implode('/', $path)).'/callback/';
 		}
 
 		// determine the name of the provider we want to call
