@@ -55,7 +55,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	protected static $guest_login = array(
 		'id' => 0,
 		'username' => 'guest',
-		'group' => '0',
+		'usergroup' => '0',
 		'login_hash' => false,
 		'email' => false,
 	);
@@ -64,7 +64,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 * @var  array  SimpleAuth class config
 	 */
 	protected $config = array(
-		'drivers' => array('group' => array('Simplegroup')),
+		'drivers' => array('usergroup' => array('Simplegroup')),
 		'additional_fields' => array('profile_fields'),
 	);
 
@@ -261,7 +261,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			'username'        => (string) $username,
 			'password'        => $this->hash_password((string) $password),
 			'email'           => $email,
-			'group'           => (int) $group,
+			'usergroup'           => (int) $group,
 			'profile_fields'  => serialize($profile_fields),
 			'last_login'      => 0,
 			'login_hash'      => '',
@@ -339,13 +339,13 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			$update['email'] = $email;
 			unset($values['email']);
 		}
-		if (array_key_exists('group', $values))
+		if (array_key_exists('usergroup', $values))
 		{
-			if (is_numeric($values['group']))
+			if (is_numeric($values['usergroup']))
 			{
-				$update['group'] = (int) $values['group'];
+				$update['usergroup'] = (int) $values['usergroup'];
 			}
-			unset($values['group']);
+			unset($values['usergroup']);
 		}
 		if ( ! empty($values))
 		{
@@ -501,7 +501,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			return false;
 		}
 
-		return array(array('Simplegroup', $this->user['group']));
+		return array(array('Simplegroup', $this->user['usergroup']));
 	}
 
 	/**

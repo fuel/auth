@@ -48,7 +48,7 @@ class Auth
 	 * @var  Array  subdriver registry, takes driver name and method for checking it
 	 */
 	protected static $_drivers = array(
-		'group'  => 'member',
+		'usergroup'  => 'member',
 		'acl'    => 'has_access',
 	);
 
@@ -291,7 +291,7 @@ class Auth
 		$driver_exists = ! is_string($type)
 						|| array_key_exists($type, static::$_drivers)
 						|| method_exists(get_called_class(), $check_method)
-						|| in_array($type, array('login', 'group', 'acl'));
+						|| in_array($type, array('login', 'usergroup', 'acl'));
 		$method_exists = ! is_string($type)
 						|| array_search($check_method, static::$_drivers)
 						|| method_exists(get_called_class(), $type);
@@ -319,7 +319,7 @@ class Auth
 	 */
 	public static function unregister_driver_type($type)
 	{
-		if (in_array($type, array('login', 'group', 'acl')))
+		if (in_array($type, array('login', 'usergroup', 'acl')))
 		{
 			\Error::notice('Cannot remove driver type, included drivers login, group and acl cannot be removed.');
 			return false;

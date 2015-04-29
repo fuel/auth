@@ -63,7 +63,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	 * @var  array  Ormauth class config
 	 */
 	protected $config = array(
-		'drivers' => array('group' => array('Ormgroup')),
+		'drivers' => array('usergroup' => array('Ormgroup')),
 		'additional_fields' => array(),
 	);
 
@@ -369,10 +369,10 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			unset($values['email']);
 		}
 		// deal with some simpleauth compatibility
-		if (array_key_exists('group', $values))
+		if (array_key_exists('usergroup', $values))
 		{
-			array_key_exists('group_id', $values) or $values['group_id'] = $values['group'];
-			unset($values['group']);
+			array_key_exists('group_id', $values) or $values['group_id'] = $values['usergroup'];
+			unset($values['usergroup']);
 		}
 		if (array_key_exists('group_id', $values))
 		{
