@@ -48,7 +48,7 @@ class Auth_User extends \Orm\Model
 			'null'        => false,
 			'validation'  => array('required', 'valid_email'),
 		),
-		'group'	          => array(
+		'usergroup'	          => array(
 			'label'       => 'auth_model_user.group_id',
 			'default'     => 0,
 			'null'        => false,
@@ -135,7 +135,7 @@ class Auth_User extends \Orm\Model
 	 * @var array	belongs_to relationships
 	 */
 	protected static $_belongs_to = array(
-		'group' => array(
+		'usergroup' => array(
 			'model_to' => 'Model\\Auth_Group',
 			'key_from' => 'group_id',
 			'key_to'   => 'id',
@@ -233,7 +233,7 @@ class Auth_User extends \Orm\Model
 		elseif (in_array('Ormauth', $drivers))
 		{
 			// remove properties not in use
-			unset(static::$_properties['group']);
+			unset(static::$_properties['usergroup']);
 			unset(static::$_properties['profile_fields']);
 
 			// ormauth config

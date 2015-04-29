@@ -28,7 +28,7 @@ class Auth_Create_Usertables
 					'id' => array('type' => 'int', 'constraint' => 11, 'auto_increment' => true),
 					'username' => array('type' => 'varchar', 'constraint' => 50),
 					'password' => array('type' => 'varchar', 'constraint' => 255),
-					'group' => array('type' => 'int', 'constraint' => 11, 'default' => 1),
+					'usergroup' => array('type' => 'int', 'constraint' => 11, 'default' => 1),
 					'email' => array('type' => 'varchar', 'constraint' => 255),
 					'last_login' => array('type' => 'varchar', 'constraint' => 25),
 					'login_hash' => array('type' => 'varchar', 'constraint' => 255),
@@ -84,10 +84,10 @@ class Auth_Create_Usertables
 			}
 
 			// run a check on required fields, and deal with missing ones. we might be migrating from simpleauth
-			if (\DBUtil::field_exists($table, 'group'))
+			if (\DBUtil::field_exists($table, 'usergroup'))
 			{
 				\DBUtil::modify_fields($table, array(
-					'group' => array('name' => 'group_id', 'type' => 'int', 'constraint' => 11),
+					'usergroup' => array('name' => 'group_id', 'type' => 'int', 'constraint' => 11),
 				));
 			}
 			if ( ! \DBUtil::field_exists($table, 'group_id'))

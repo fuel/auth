@@ -62,7 +62,7 @@ class Auth_Grouppermission extends \Orm\Model
 	 * @var array	belongs_to relationships
 	 */
 	protected static $_belongs_to = array(
-		'group' => array(
+		'usergroup' => array(
 			'key_from' => 'group_id',
 			'model_to' => 'Model\\Auth_Group',
 			'key_to' => 'id',

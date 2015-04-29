@@ -391,10 +391,10 @@ HELP;
 		}
 
 		// run a check on required fields, and deal with missing ones. we might be migrating from simpleauth
-		if (\DBUtil::field_exists(static::$data['ormauth_table'], 'group'))
+		if (\DBUtil::field_exists(static::$data['ormauth_table'], 'usergroup'))
 		{
 			\DBUtil::modify_fields(static::$data['ormauth_table'], array(
-				'group' => array('name' => 'group_id', 'type' => 'int', 'constraint' => 11),
+				'usergroup' => array('name' => 'group_id', 'type' => 'int', 'constraint' => 11),
 			));
 		}
 		if ( ! \DBUtil::field_exists(static::$data['ormauth_table'], 'group_id'))
