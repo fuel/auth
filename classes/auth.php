@@ -187,7 +187,7 @@ class Auth
 	{
 		$drivers = $specific === null ? static::$_instances : (array) $specific;
 		$verified = static::$_verified;
-		
+
 		if ($specific !== null)
 		{
 			$verified = array();
@@ -244,6 +244,35 @@ class Auth
 		}
 
 		return static::$_verified[$driver];
+	}
+
+	/**
+	 * Login user
+	 *
+	 * @param   string
+	 * @param   string
+	 * @return  bool
+	 */
+	public static function login($username_or_email = '', $password = '')
+	{
+		$loggedin = false;
+
+		foreach (static::$_instances as $i)
+		{
+			if ($i instanceof Auth_Login_Driver)
+			{
+				if ($i->login($username_or_email, $password))
+				{
+					$loggedin = true;
+					if ( ! static::$_verify_multiple)
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		return $loggedin;
 	}
 
 	/**
