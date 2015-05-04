@@ -14,6 +14,8 @@
 
 namespace Auth;
 
+require_once __DIR__.'/../../normalizedrivertypes.php';
+
 class Auth_Opauth
 {
 	/**
@@ -41,10 +43,10 @@ class Auth_Opauth
 		\Config::load('auth', true);
 		\Config::load('opauth', true);
 
-		// determine the auth driver we're going to use
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the auth driver in use
+		$drivers = normalize_driver_types();
 
+		// determine the auth driver we're going to use
 		if (in_array('Simpleauth', $drivers))
 		{
 			// get the tablename
