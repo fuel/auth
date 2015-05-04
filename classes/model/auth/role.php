@@ -167,7 +167,15 @@ class Auth_Role extends \Orm\Model
 	public function _event_before_insert()
 	{
 		// assign the user id that lasted updated this record
-		$this->user_id = ($this->user_id = \Auth::get_user_id()) ? $this->user_id[1] : 0;
+		$this->user_id = 0;
+		foreach (\Auth::verified() as $driver)
+		{
+			if (($id = $driver->get_user_id()) !== false)
+			{
+				$this->user_id = $id[1];
+				break;
+			}
+		}
 	}
 
 	/**
