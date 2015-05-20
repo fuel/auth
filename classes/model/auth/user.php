@@ -55,13 +55,6 @@ class Auth_User extends \Orm\Model
 			'form'        => array('type' => 'select'),
 			'validation'  => array('required', 'is_numeric'),
 		),
-		'group'	          => array(
-			'label'		  => 'auth_model_user.group_id',
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => 'select'),
-			'validation'  => array('required', 'is_numeric')
-		),
 		'group_id'        => array(
 			'label'       => 'auth_model_user.group_id',
 			'default'     => 0,

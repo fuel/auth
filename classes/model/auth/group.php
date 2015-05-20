@@ -129,9 +129,6 @@ class Auth_Group extends \Orm\Model
 
 		// set the connection this model should use
 		static::$_connection = \Config::get('ormauth.db_connection');
-		
-		// set the write connection this model should use
-		static::$_connection = \Config::get('ormauth.db_write_connection');
 
 		// set the write connection this model should use
 		static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;

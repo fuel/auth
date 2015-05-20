@@ -12,7 +12,7 @@
 
 namespace Auth\Model;
 
-class Auth_Metadata extends \Orm\Model
+class Auth_Provider extends \Orm\Model
 {
 	/**
 	 * @var  string  connection to use
@@ -30,28 +30,25 @@ class Auth_Metadata extends \Orm\Model
 	protected static $_table_name;
 
 	/**
+	 * @var  array  name or names of the primary keys
+	 */
+	protected static $_primary_key = array('id');
+
+	/**
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
 		'id'              => array(),
 		'parent_id'       => array(),
-		'key'             => array(),
-		'value'           => array(),
-		'user_id'         => array(
-			'default'     => 0,
-			'null'        => false,
-			'form'        => array('type' => false),
-		),
-		'created_at'      => array(
-			'default'     => 0,
-			'null'        => false,
-			'form'        => array('type' => false),
-		),
-		'updated_at'      => array(
-			'default'     => 0,
-			'null'        => false,
-			'form'        => array('type' => false),
-		),
+		'provider'        => array(),
+		'uid'             => array(),
+		'secret'          => array(),
+		'access_token'    => array(),
+		'expires'         => array(),
+		'refresh_token'   => array(),
+		'user_id'         => array(),
+		'created_at'      => array(),
+		'updated_at'      => array(),
 	);
 
 	/**
@@ -71,10 +68,6 @@ class Auth_Metadata extends \Orm\Model
 		'Orm\\Observer_Typing' => array(
 			'events' => array('after_load', 'before_save', 'after_save'),
 		),
-		'Orm\\Observer_Self' => array(
-			'events' => array('before_insert', 'before_update'),
-			'property' => 'user_id',
-		),
 	);
 
 	/**
@@ -82,9 +75,14 @@ class Auth_Metadata extends \Orm\Model
 	 */
 	protected static $_belongs_to = array(
 		'user' => array(
-			'model_to' => 'Model\\Auth_User',
 			'key_from' => 'parent_id',
-			'key_to'   => 'id',
+			'model_to' => 'Model\\Auth_User',
+			'key_to' => 'id',
+		),
+		'createdby' => array(
+			'key_from' => 'user_id',
+			'model_to' => 'Model\\Auth_User',
+			'key_to' => 'id',
 		),
 	);
 
@@ -103,31 +101,6 @@ class Auth_Metadata extends \Orm\Model
 		static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 
 		// set the models table name
-		static::$_table_name = \Config::get('ormauth.table_name', 'users').'_metadata';
-	}
-
-	/**
-	 * before_insert observer event method
-	 */
-	public function _event_before_insert()
-	{
-		// assign the user id that lasted updated this record
-		$this->user_id = 0;
-		foreach (\Auth::verified() as $driver)
-		{
-			if (($id = $driver->get_user_id()) !== false)
-			{
-				$this->user_id = $id[1];
-				break;
-			}
-		}
-	}
-
-	/**
-	 * before_update observer event method
-	 */
-	public function _event_before_update()
-	{
-		$this->_event_before_insert();
+		static::$_table_name = \Config::get('ormauth.table_name', 'users').'_providers';
 	}
 }
