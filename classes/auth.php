@@ -8,15 +8,13 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
 namespace Auth;
 
-
 class AuthException extends \FuelException {}
-
 
 /**
  * Auth
@@ -26,7 +24,6 @@ class AuthException extends \FuelException {}
  */
 class Auth
 {
-
 	/**
 	 * @var  Auth_Login_Driver	default instance
 	 */
@@ -189,30 +186,41 @@ class Auth
 	public static function check($specific = null)
 	{
 		$drivers = $specific === null ? static::$_instances : (array) $specific;
+		$verified = static::$_verified;
+
+		if ($specific !== null)
+		{
+			$verified = array();
+			foreach ($drivers as $i)
+			{
+				$key = $i->get_id();
+				if (isset(static::$_verified[$key])) $verified[$key] = static::$_verified[$key];
+			}
+		}
 
 		foreach ($drivers as $i)
 		{
-			if ( ! static::$_verify_multiple && ! empty(static::$_verified))
+			if ( ! static::$_verify_multiple && ! empty($verified))
 			{
 				return true;
 			}
 
 			$i = $i instanceof Auth_Login_Driver ? $i : static::instance($i);
-			if ( ! array_key_exists($i->get_id(), static::$_verified))
+			if ( ! array_key_exists($i->get_id(), $verified))
 			{
 				$i->check();
 			}
 
 			if ($specific)
 			{
-				if (array_key_exists($i->get_id(), static::$_verified))
+				if (array_key_exists($i->get_id(), $verified))
 				{
 					return true;
 				}
 			}
 		}
 
-		return $specific === null && ! empty(static::$_verified);
+		return $specific === null && ! empty($verified);
 	}
 
 	/**
@@ -236,6 +244,35 @@ class Auth
 		}
 
 		return static::$_verified[$driver];
+	}
+
+	/**
+	 * Login user
+	 *
+	 * @param   string
+	 * @param   string
+	 * @return  bool
+	 */
+	public static function login($username_or_email = '', $password = '')
+	{
+		$loggedin = false;
+
+		foreach (static::$_instances as $i)
+		{
+			if ($i instanceof Auth_Login_Driver)
+			{
+				if ($i->login($username_or_email, $password))
+				{
+					$loggedin = true;
+					if ( ! static::$_verify_multiple)
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		return $loggedin;
 	}
 
 	/**
@@ -311,7 +348,7 @@ class Auth
 	 */
 	public static function unregister_driver_type($type)
 	{
-		if (in_array($type,array('login', 'group', 'acl')))
+		if (in_array($type, array('login', 'group', 'acl')))
 		{
 			\Error::notice('Cannot remove driver type, included drivers login, group and acl cannot be removed.');
 			return false;

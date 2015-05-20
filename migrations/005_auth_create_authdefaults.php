@@ -2,16 +2,14 @@
 
 namespace Fuel\Migrations;
 
+include __DIR__."/../normalizedrivertypes.php";
+
 class Auth_Create_Authdefaults
 {
-
 	function up()
 	{
-		// get the driver used
-		\Config::load('auth', true);
-
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the drivers defined
+		$drivers = normalize_driver_types();
 
 		if (in_array('Ormauth', $drivers))
 		{
@@ -64,7 +62,7 @@ class Auth_Create_Authdefaults
 			 */
 
 			// create the administrator account if needed, and assign it the superadmin group so it has all access
-			$result = \DB::select('id')->from($table)->where('username','=','admin')->execute($connection);
+			$result = \DB::select('id')->from($table)->where('username', '=', 'admin')->execute($connection);
 			if (count($result) == 0)
 			{
 				\Auth::instance()->create_user('admin', 'admin', 'admin@example.org', $group_id_admin, array('fullname' => 'System administrator'));
@@ -105,11 +103,8 @@ class Auth_Create_Authdefaults
 
 	function down()
 	{
-		// get the driver used
-		\Config::load('auth', true);
-
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the drivers defined
+		$drivers = normalize_driver_types();
 
 		if (in_array('Ormauth', $drivers))
 		{

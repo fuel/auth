@@ -8,16 +8,14 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
 namespace Auth;
 
-
 abstract class Auth_Driver
 {
-
 	/**
 	 * @var	Auth_Driver
 	 * THIS MUST BE DEFINED IN THE BASE EXTENSION

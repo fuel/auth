@@ -2,16 +2,14 @@
 
 namespace Fuel\Migrations;
 
+include __DIR__."/../normalizedrivertypes.php";
+
 class Auth_Create_Oauth2tables
 {
-
 	function up()
 	{
-		// get the driver used
-		\Config::load('auth', true);
-
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the drivers defined
+		$drivers = normalize_driver_types();
 
 		if (in_array('Simpleauth', $drivers))
 		{
@@ -132,11 +130,8 @@ class Auth_Create_Oauth2tables
 
 	function down()
 	{
-		// get the driver used
-		\Config::load('auth', true);
-
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the drivers defined
+		$drivers = normalize_driver_types();
 
 		if (in_array('Simpleauth', $drivers))
 		{

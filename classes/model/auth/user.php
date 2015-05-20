@@ -6,11 +6,13 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
 namespace Auth\Model;
+
+require_once __DIR__.'/../../../normalizedrivertypes.php';
 
 class Auth_User extends \Orm\Model
 {
@@ -18,7 +20,7 @@ class Auth_User extends \Orm\Model
 	 * @var  string  connection to use
 	 */
 	protected static $_connection = null;
-	
+
 	/**
 	 * @var  string  write connection to use
 	 */
@@ -33,18 +35,25 @@ class Auth_User extends \Orm\Model
 	 * @var array	model properties
 	 */
 	protected static $_properties = array(
-		'id',
+		'id'              => array(),
 		'username'        => array(
-			'label'		  => 'auth_model_user.name',
-			'default' 	  => 0,
-			'null'		  => false,
-			'validation'  => array('required', 'max_length' => array(255))
+			'label'       => 'auth_model_user.name',
+			'default'     => 0,
+			'null'        => false,
+			'validation'  => array('required', 'max_length' => array(255)),
 		),
 		'email'           => array(
-			'label'		  => 'auth_model_user.email',
-			'default' 	  => 0,
-			'null'		  => false,
-			'validation'  => array('required', 'valid_email')
+			'label'       => 'auth_model_user.email',
+			'default'     => 0,
+			'null'        => false,
+			'validation'  => array('required', 'valid_email'),
+		),
+		'group'	          => array(
+			'label'       => 'auth_model_user.group_id',
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => 'select'),
+			'validation'  => array('required', 'is_numeric'),
 		),
 		'group'	          => array(
 			'label'		  => 'auth_model_user.group_id',
@@ -54,47 +63,47 @@ class Auth_User extends \Orm\Model
 			'validation'  => array('required', 'is_numeric')
 		),
 		'group_id'        => array(
-			'label'		  => 'auth_model_user.group_id',
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => 'select'),
-			'validation'  => array('required', 'is_numeric')
+			'label'       => 'auth_model_user.group_id',
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => 'select'),
+			'validation'  => array('required', 'is_numeric'),
 		),
 		'password'        => array(
-			'label'		  => 'auth_model_user.password',
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => 'password'),
-			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm'))
+			'label'       => 'auth_model_user.password',
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => 'password'),
+			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm')),
 		),
 		'profile_fields'  => array(
-			'default' 	  => array(),
-			'data_type'	  => 'serialize',
-			'form'  	  => array('type' => false),
+			'default'     => array(),
+			'data_type'   => 'serialize',
+			'form'        => array('type' => false),
 		),
-		'last_login'	  => array(
-			'form'  	  => array('type' => false),
+		'last_login'      => array(
+			'form'        => array('type' => false),
 		),
 		'previous_login'  => array(
-			'form'  	  => array('type' => false),
+			'form'        => array('type' => false),
 		),
-		'login_hash'	  => array(
-			'form'  	  => array('type' => false),
+		'login_hash'      => array(
+			'form'        => array('type' => false),
 		),
 		'user_id'         => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'created_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 		'updated_at'      => array(
-			'default' 	  => 0,
-			'null'		  => false,
-			'form'  	  => array('type' => false),
+			'default'     => 0,
+			'null'        => false,
+			'form'        => array('type' => false),
 		),
 	);
 
@@ -105,19 +114,19 @@ class Auth_User extends \Orm\Model
 		'Orm\\Observer_CreatedAt' => array(
 			'events' => array('before_insert'),
 			'property' => 'created_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_UpdatedAt' => array(
 			'events' => array('before_update'),
 			'property' => 'updated_at',
-			'mysql_timestamp' => false
+			'mysql_timestamp' => false,
 		),
 		'Orm\\Observer_Typing' => array(
-			'events' => array('after_load', 'before_save', 'after_save')
+			'events' => array('after_load', 'before_save', 'after_save'),
 		),
 		'Orm\\Observer_Self' => array(
 			'events' => array('before_insert', 'before_update'),
-			'property' => 'user_id'
+			'property' => 'user_id',
 		),
 	);
 
@@ -157,6 +166,12 @@ class Auth_User extends \Orm\Model
 			'key_to'   => 'user_id',
 			'cascade_delete' => false,
 		),
+		'providers' => array(
+			'model_to' => 'Model\\Auth_Provider',
+			'key_from' => 'id',
+			'key_to'   => 'parent_id',
+			'cascade_delete' => true,
+		),
 	);
 
 	/**
@@ -190,8 +205,7 @@ class Auth_User extends \Orm\Model
 		\Config::load('auth', true);
 
 		// get the auth driver in use
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		$drivers = normalize_driver_types();
 
 		// modify the model definition based on the driver used
 		if (in_array('Simpleauth', $drivers))
@@ -215,9 +229,9 @@ class Auth_User extends \Orm\Model
 
 			// set the connection this model should use
 			static::$_connection = \Config::get('simpleauth.db_connection');
-		
+
 			// set the write connection this model should use
-			static::$_connection = \Config::get('simpleauth.db_write_connection');
+			static::$_write_connection = \Config::get('simpleauth.db_write_connection') ?: static::$_connection;
 
 			// set the models table name
 			static::$_table_name = \Config::get('simpleauth.table_name', 'users');
@@ -234,9 +248,9 @@ class Auth_User extends \Orm\Model
 
 			// set the connection this model should use
 			static::$_connection = \Config::get('ormauth.db_connection');
-		
+
 			// set the write connection this model should use
-			static::$_connection = \Config::get('ormauth.db_write_connection');
+			static::$_write_connection = \Config::get('ormauth.db_write_connection') ?: static::$_connection;
 
 			// set the models table name
 			static::$_table_name = \Config::get('ormauth.table_name', 'users');
@@ -256,7 +270,15 @@ class Auth_User extends \Orm\Model
 	public function _event_before_insert()
 	{
 		// assign the user id that lasted updated this record
-		$this->user_id = ($this->user_id = \Auth::get_user_id()) ? $this->user_id[1] : 0;
+		$this->user_id = 0;
+		foreach (\Auth::verified() as $driver)
+		{
+			if (($id = $driver->get_user_id()) !== false)
+			{
+				$this->user_id = $id[1];
+				break;
+			}
+		}
 	}
 
 	/**

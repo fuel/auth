@@ -1,5 +1,5 @@
 <?php
 
 return array(
-	'name'			=> 'Group name',
+    'name' => 'Group name',
 );

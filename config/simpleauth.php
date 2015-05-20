@@ -8,7 +8,7 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -32,6 +32,11 @@ return array(
 	 * DB write connection, leave null to use default
 	 */
 	'db_write_connection' 	=> null,
+
+	/**
+	 * DB write connection, leave null to use same value as db_connection
+	 */
+	'db_write_connection' => null,
 
 	/**
 	 * DB table name for the user table

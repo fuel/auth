@@ -8,16 +8,14 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
 namespace Auth;
 
-
 class Auth_Acl_Simpleacl extends \Auth_Acl_Driver
 {
-
 	protected static $_valid_roles = array();
 
 	public static function _init()

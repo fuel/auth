@@ -6,7 +6,7 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -29,7 +29,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		\Config::load('ormauth', true);
 
 		// deal with invalid column selections
-		if ($columns = \Config::get('ormauth.table_columns', array()) == array('*') or ! is_array($columns))
+		if (($columns = \Config::get('ormauth.table_columns', array())) == array('*') or ! is_array($columns))
 		{
 			\Config::set('ormauth.table_columns', array());
 		}
@@ -171,6 +171,9 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			// and rotate the session id, we've elevated rights
 			\Session::instance()->rotate();
 
+			// register so Auth::logout() can find us
+			Auth::_register_verified($this);
+
 			return true;
 		}
 
@@ -192,6 +195,8 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		if (\Config::get('ormauth.guest_login', true))
 		{
 			$this->user = \Model\Auth_User::query()
+				->select(\Config::get('ormauth.table_columns', array()))
+				->related('metadata')
 				->where('id', '=', 0)
 				->get_one();
 		}
@@ -233,7 +238,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 
 		// check if we already have an account with this email address or username
 		$duplicate = \Model\Auth_User::query()
-			->select(\Config::get('ormauth.table_columns', array()))
 			->where('username', '=', $username)
 			->or_where('email', '=', $email)
 			->get_one();
@@ -308,7 +312,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 
 		// get the current user record
 		$current_values = \Model\Auth_User::query()
-			->select(\Config::get('ormauth.table_columns', array()))
 			->where('username', '=', $username)
 			->get_one();
 
@@ -353,7 +356,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			}
 
 			$matches = \Model\Auth_User::query()
-				->select(\Config::get('ormauth.table_columns', array()))
 				->where('email', '=', $email)
 				->where('id', '!=', $current_values->id)
 				->get_one();
@@ -453,7 +455,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	{
 		// get the user object
 		$user = \Model\Auth_User::query()
-			->select(\Config::get('ormauth.table_columns', array()))
 			->where('username', '=', $username)
 			->get_one();
 
@@ -491,7 +492,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		// get the user object
 		$user = \Model\Auth_User::query()
 			->related('metadata')
-			->select(\Config::get('ormauth.table_columns', array()))
+			->related('providers')
 			->where('username', '=', $username)
 			->get_one();
 
@@ -639,7 +640,10 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	{
 		if (is_null($user))
 		{
-			$groups = $this->get_groups();
+			if ( ! is_array($groups = $this->get_groups()))
+			{
+				return false;
+			}
 			$user = reset($groups);
 		}
 		return parent::has_access($condition, $driver, $user);

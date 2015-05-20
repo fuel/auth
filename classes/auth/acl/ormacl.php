@@ -6,7 +6,7 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -43,6 +43,11 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 	}
 
 	/*
+	 * @var  array  cached user ACLs
+	 */
+	protected $_acl_cache = array();
+
+	/*
 	 * Return the list of defined roles
 	 */
 	public function roles()
@@ -68,7 +73,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 		}
 
 		// get the permission area and the permission rights to be checked
-		$area    = $condition[0];
+		$area = $condition[0];
 
 		// any actions defined?
 		if ( ! is_array($condition[1]) and preg_match('#(.*)?\[(.*)?\]#', $condition[1], $matches))
@@ -94,7 +99,12 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 		$cache_key = \Config::get('ormauth.cache_prefix', 'auth').'.permissions.user_'.($user ? $user->id : 0);
 		try
 		{
-			list($current_rights, $revoked_rights, $global_access) = \Cache::get($cache_key);
+			// cache in memory to avoid multiple cache hits for the same cache key
+			if ( ! isset($this->_acl_cache[$cache_key]))
+			{
+				$this->_acl_cache[$cache_key] = \Cache::get($cache_key);
+			}
+			list($current_rights, $revoked_rights, $global_access) = $this->_acl_cache[$cache_key];
 		}
 		catch (\CacheNotFoundException $e)
 		{
@@ -218,7 +228,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 			}
 
 			// save the rights in the cache
-			\Cache::set($cache_key, array($current_rights, $revoked_rights, $global_access));
+			$this->_acl_cache[$cache_key] = array($current_rights, $revoked_rights, $global_access);
+			\Cache::set($cache_key, $this->_acl_cache[$cache_key]);
 		}
 
 		// check for a revocation first

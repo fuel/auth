@@ -8,11 +8,13 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
 namespace Auth;
+
+require_once __DIR__.'/../../normalizedrivertypes.php';
 
 class Auth_Opauth
 {
@@ -41,10 +43,10 @@ class Auth_Opauth
 		\Config::load('auth', true);
 		\Config::load('opauth', true);
 
-		// determine the auth driver we're going to use
-		$drivers = \Config::get('auth.driver', array());
-		is_array($drivers) or $drivers = array($drivers);
+		// get the auth driver in use
+		$drivers = normalize_driver_types();
 
+		// determine the auth driver we're going to use
 		if (in_array('Simpleauth', $drivers))
 		{
 			// get the tablename
@@ -127,7 +129,7 @@ class Auth_Opauth
 			array_pop($path);
 
 			// and add 'callback' as the controller callback action
-			$config['callback_url'] = '/'.implode('/', $path).'/callback/';
+			$config['callback_url'] = (empty($path)?'':'/'.implode('/', $path)).'/callback/';
 		}
 
 		// determine the name of the provider we want to call
@@ -207,7 +209,7 @@ class Auth_Opauth
 			list(, $user_id) = \Auth::instance()->get_user_id();
 
 			$result = \DB::select(\DB::expr('COUNT(*) as count'))->from($this->config['table'])->where('parent_id', '=', $user_id)->execute(static::$db_connection);
-			$num_linked = ($result and $result = $result->current()) ? $result['count'] : 0;
+			$num_linked = ($result and $result = $result->current()) ? (int) $result['count'] : 0;
 
 			// allowed multiple providers, or not authed yet?
 			if ($num_linked === 0 or \Config::get('opauth.link_multiple_providers') === true)

@@ -8,7 +8,7 @@
  * @version    1.7
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2014 Fuel Development Team
+ * @copyright  2010 - 2015 Fuel Development Team
  * @link       http://fuelphp.com
  */
 
@@ -22,8 +22,8 @@
  */
 
 return array(
-	'driver' => 'Simpleauth',
-	'verify_multiple_logins' => false,
-	'salt' => 'put_your_salt_here',
-	'iterations' => 10000,
+    'driver'                 => 'Simpleauth',
+    'verify_multiple_logins' => false,
+    'salt'                   => 'put_your_salt_here',
+    'iterations'             => 10000,
 );
