@@ -406,7 +406,7 @@ class Auth_Opauth
 			isset($user['email']) ? $user['email'] : null,
 
 			// which group are they in?
-			\Config::get('opauth.default_group', -1),
+			isset($user['group_id']) ? $user['group_id'] : \Config::get('opauth.default_group', -1),
 
 			// extra information
 			array(
