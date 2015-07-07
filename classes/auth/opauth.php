@@ -423,4 +423,14 @@ class Auth_Opauth
 		return $user_id ?: false;
 	}
 
+	/**
+	 * Returns the Opauth instance for interaction with the core library.
+	 *
+	 * @return \Opauth
+	 */
+	public function get_instance()
+	{
+		return $this->opauth;
+	}
+
 }
