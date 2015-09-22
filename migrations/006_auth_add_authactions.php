@@ -17,8 +17,8 @@ class Auth_Add_Authactions
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// make sure the configured DB is used
-			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
 
 			// add the actions field to the permission and permission through tables
 			\DBUtil::add_fields($table.'_permissions', array(
@@ -36,7 +36,7 @@ class Auth_Add_Authactions
 		}
 
 		// reset any DBUtil connection set
-		\DBUtil::set_connection(null);
+		$this->dbconnection(false);
 	}
 
 	function down()
@@ -50,8 +50,8 @@ class Auth_Add_Authactions
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// make sure the configured DB is used
-			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
 
 			\DBUtil::drop_fields($table.'_permissions', array(
 				'actions',
@@ -68,6 +68,37 @@ class Auth_Add_Authactions
 		}
 
 		// reset any DBUtil connection set
-		\DBUtil::set_connection(null);
+		$this->dbconnection(false);
+	}
+
+	/**
+	 * check if we need to override the db connection for auth tables
+	 */
+	protected function dbconnection($type = null)
+	{
+		static $connection;
+
+		switch ($type)
+		{
+			// switch to the override connection
+			case 'simpleauth':
+			case 'ormauth':
+				if ($connection = \Config::get($type.'.db_connection', null))
+				{
+					\DBUtil::set_connection($connection);
+				}
+				break;
+
+			// switch back to the configured migration connection, or the default one
+			case false:
+				if ($connection)
+				{
+					\DBUtil::set_connection(\Config::get('migrations.connection', null));
+				}
+				break;
+
+			default:
+				// noop
+		}
 	}
 }

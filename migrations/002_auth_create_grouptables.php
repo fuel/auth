@@ -17,8 +17,8 @@ class Auth_Create_Grouptables
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// make sure the configured DB is used
-			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
 
 			// table users_group
 			\DBUtil::create_table($table.'_groups', array(
@@ -43,7 +43,7 @@ class Auth_Create_Grouptables
 		}
 
 		// reset any DBUtil connection set
-		\DBUtil::set_connection(null);
+		$this->dbconnection(false);
 	}
 
 	function down()
@@ -57,8 +57,8 @@ class Auth_Create_Grouptables
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// make sure the configured DB is used
-			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
 
 			// drop the admin_users_group table
 			\DBUtil::drop_table($table.'_groups');
@@ -71,7 +71,37 @@ class Auth_Create_Grouptables
 		}
 
 		// reset any DBUtil connection set
-		\DBUtil::set_connection(null);
+		$this->dbconnection(false);
 	}
 
+	/**
+	 * check if we need to override the db connection for auth tables
+	 */
+	protected function dbconnection($type = null)
+	{
+		static $connection;
+
+		switch ($type)
+		{
+			// switch to the override connection
+			case 'simpleauth':
+			case 'ormauth':
+				if ($connection = \Config::get($type.'.db_connection', null))
+				{
+					\DBUtil::set_connection($connection);
+				}
+				break;
+
+			// switch back to the configured migration connection, or the default one
+			case false:
+				if ($connection)
+				{
+					\DBUtil::set_connection(\Config::get('migrations.connection', null));
+				}
+				break;
+
+			default:
+				// noop
+		}
+	}
 }

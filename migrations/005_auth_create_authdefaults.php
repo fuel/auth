@@ -17,8 +17,8 @@ class Auth_Create_Authdefaults
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// get the configured DB
-			$connection = \Config::get('ormauth.db_connection', null);
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
 
 			/*
 			 * create the default Groups and roles, to be compatible with standard Auth
@@ -98,7 +98,7 @@ class Auth_Create_Authdefaults
 		}
 
 		// reset any DBUtil connection set
-		\DBUtil::set_connection(null);
+		$this->dbconnection(false);
 	}
 
 	function down()
@@ -112,8 +112,8 @@ class Auth_Create_Authdefaults
 			\Config::load('ormauth', true);
 			$table = \Config::get('ormauth.table_name', 'users');
 
-			// make sure the configured DB is used
-			\DBUtil::set_connection(\Config::get('ormauth.db_connection', null));
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
 
 			// empty the user, group and role tables
 			\DBUtil::truncate_table($table);
@@ -123,6 +123,37 @@ class Auth_Create_Authdefaults
 		}
 
 		// reset any DBUtil connection set
-		\DBUtil::set_connection(null);
+		$this->dbconnection(false);
+	}
+
+	/**
+	 * check if we need to override the db connection for auth tables
+	 */
+	protected function dbconnection($type = null)
+	{
+		static $connection;
+
+		switch ($type)
+		{
+			// switch to the override connection
+			case 'simpleauth':
+			case 'ormauth':
+				if ($connection = \Config::get($type.'.db_connection', null))
+				{
+					\DBUtil::set_connection($connection);
+				}
+				break;
+
+			// switch back to the configured migration connection, or the default one
+			case false:
+				if ($connection)
+				{
+					\DBUtil::set_connection(\Config::get('migrations.connection', null));
+				}
+				break;
+
+			default:
+				// noop
+		}
 	}
 }
