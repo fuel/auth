@@ -18,7 +18,7 @@ class Auth_Create_Authdefaults
 			$table = \Config::get('ormauth.table_name', 'users');
 
 			// make sure the correct connection is used
-			$this->dbconnection('ormauth');
+			$connection = $this->dbconnection('ormauth');
 
 			/*
 			 * create the default Groups and roles, to be compatible with standard Auth
@@ -155,5 +155,7 @@ class Auth_Create_Authdefaults
 			default:
 				// noop
 		}
+
+		return $connection;
 	}
 }

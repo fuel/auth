@@ -42,7 +42,7 @@ class Auth_Add_Permissionsfilter
 			$table = \Config::get('ormauth.table_name', 'users');
 
 			// make sure the correct connection is used
-			$this->dbconnection('ormauth');
+			$connection = $this->dbconnection('ormauth');
 
 			// modify the filter field to add the 'remove' filter
 			\DB::update($table.'_roles')->set(array('filter' => 'D'))->where('filter', '=', 'R')->execute($connection);
@@ -85,5 +85,7 @@ class Auth_Add_Permissionsfilter
 			default:
 				// noop
 		}
+
+		return $connection;
 	}
 }
