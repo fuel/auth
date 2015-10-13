@@ -193,6 +193,7 @@ class Auth
 			$verified = array();
 			foreach ($drivers as $i)
 			{
+				$i = $i instanceof Auth_Login_Driver ? $i : static::instance($i);
 				$key = $i->get_id();
 				if (isset(static::$_verified[$key])) $verified[$key] = static::$_verified[$key];
 			}
