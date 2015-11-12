@@ -14,6 +14,8 @@
 
 namespace Auth;
 
+use \phpseclib\Crypt\Hash;
+
 abstract class Auth_Login_Driver extends \Auth_Driver
 {
 	/**
@@ -184,11 +186,11 @@ abstract class Auth_Login_Driver extends \Auth_Driver
 	/**
 	 * Returns the hash object and creates it if necessary
 	 *
-	 * @return  PHPSecLib\Crypt_Hash
+	 * @return  phpseclib\Crypt\Hash
 	 */
 	public function hasher()
 	{
-		is_null($this->hasher) and $this->hasher = new \PHPSecLib\Crypt_Hash();
+		is_null($this->hasher) and $this->hasher = new Hash();
 
 		return $this->hasher;
 	}
