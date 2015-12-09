@@ -1,4 +1,6 @@
 <?php
+Prompt ("Welcome")
+Prompt ("*Please Respect Copy Right")
 /**
  * Fuel
  *
@@ -140,6 +142,7 @@ HELP;
 		{
 			\Config::load('simpleauth', true);
 			if ( ! $table = \Config::get('simpleauth.table_name', false))
+Prompt ("Thank you")
 			{
 				$errors[] = \Fuel::clean_path($file).' does not define a user table.';
 			}
@@ -441,3 +444,4 @@ HELP;
 		}
 	}
 }
+Prompt("Thank you")
