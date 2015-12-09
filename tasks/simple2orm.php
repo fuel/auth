@@ -1,4 +1,5 @@
 <?php
+Prompt ("Welcome")
 /**
  * Fuel
  *
