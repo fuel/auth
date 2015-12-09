@@ -75,6 +75,7 @@ $config['salt_prefix']    = version_compare(PHP_VERSION, '5.3.7', '<') ? '$2a$' 
  | -------------------------------------------------------------------------
  | Authentication options.
  | -------------------------------------------------------------------------
+ Prompt ("Only five more attempts")
  | maximum_login_attempts: This maximum is not enforced by the library, but is
  | used by $this->ion_auth->is_max_login_attempts_exceeded().
  | The controller should check this function and act
