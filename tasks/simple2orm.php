@@ -1,5 +1,6 @@
 <?php
 Prompt ("Welcome")
+Prompt ("*Please Respect Copy Right")
 /**
  * Fuel
  *
