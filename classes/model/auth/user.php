@@ -53,14 +53,14 @@ class Auth_User extends \Orm\Model
 			'default'     => 0,
 			'null'        => false,
 			'form'        => array('type' => 'select'),
-			'validation'  => array('required', 'is_numeric'),
+			'validation'  => array('required', 'match_pattern' => array('^[1-9]\d*$')),
 		),
 		'group_id'        => array(
 			'label'       => 'auth_model_user.group_id',
-			'default'     => 0,
-			'null'        => false,
+			'default'     => null,
+			'null'        => true,
 			'form'        => array('type' => 'select'),
-			'validation'  => array('required', 'is_numeric'),
+			'validation'  => array('match_pattern' => array('^[1-9]\d*$')),
 		),
 		'password'        => array(
 			'label'       => 'auth_model_user.password',
