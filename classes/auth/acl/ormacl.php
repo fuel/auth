@@ -108,13 +108,18 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 		}
 		catch (\CacheNotFoundException $e)
 		{
-			// get the role objects assigned to this group
-			$current_roles  = $entity[1]->roles;
+			$current_roles = array();
+
+			// if we have a group, add the roles assigned to this group
+			if ($entity[1])
+			{
+				$current_roles  = $entity[1]->roles;
+			}
 
 			// if we have a user, add the roles directly assigned to the user
 			if ($user)
 			{
-				$current_roles = \Arr::merge($current_roles, Auth::get_user()->roles);
+				$current_roles = \Arr::merge($current_roles, $user->roles);
 			}
 
 			foreach ($current_roles as $role)
