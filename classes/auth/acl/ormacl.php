@@ -191,21 +191,24 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 				if ($user)
 				{
 					// add the users group rights
-					foreach ($user->group->permissions as $permission)
+					if ($user->group)
 					{
-						isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
-						foreach ($user->group->grouppermission as $grouppermission)
+						foreach ($user->group->permissions as $permission)
 						{
-							if ($grouppermission->group_id == $user->group_id and $grouppermission->perms_id == $permission->id)
+							isset($current_rights[$permission->area][$permission->permission]) or $current_rights[$permission->area][$permission->permission] = array();
+							foreach ($user->group->grouppermission as $grouppermission)
 							{
-								$current_rights[$permission->area][$permission->permission] = array_merge(
-									$current_rights[$permission->area][$permission->permission],
-									array_intersect_key(
-										$permission->actions ?: array(),
-										array_flip($grouppermission->actions ?: array())
-									)
-								);
-								break;
+								if ($grouppermission->group_id == $user->group_id and $grouppermission->perms_id == $permission->id)
+								{
+									$current_rights[$permission->area][$permission->permission] = array_merge(
+										$current_rights[$permission->area][$permission->permission],
+										array_intersect_key(
+											$permission->actions ?: array(),
+											array_flip($grouppermission->actions ?: array())
+										)
+									);
+									break;
+								}
 							}
 						}
 					}
