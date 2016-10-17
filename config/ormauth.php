@@ -37,10 +37,11 @@ return array(
 	'table_name' => 'users',
 
 	/**
-	 * Choose which columns are selected, must include: username, password, email, last_login,
+	 * Array, choose which columns from the users table are selected.
+	 *  must include: username, password, email, last_login,
 	 * login_hash, group & profile_fields
 	 */
-	'table_columns' => array('*'),
+	'table_columns' => null,
 
 	/**
 	 * prefix to use for the cache
