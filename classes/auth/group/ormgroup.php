@@ -65,7 +65,7 @@ class Auth_Group_Ormgroup extends \Auth_Group_Driver
 		// if it's not a group id, fetch it from the object
 		if ( ! is_numeric($group_id))
 		{
-			$group_id = $group_id->id;
+			$group_id = (int) $group_id->id;
 		}
 
 		// do we know this group?
