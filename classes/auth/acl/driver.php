@@ -60,14 +60,22 @@ abstract class Auth_Acl_Driver extends \Auth_Driver
 	 */
 	public static function _parse_conditions($rights)
 	{
+		// assime it's already a rights array
 		if (is_array($rights))
 		{
 			return $rights;
 		}
 
-		if ( ! is_string($rights) or strpos($rights, '.') === false)
+		// no clue what this is?
+		if ( ! is_string($rights))
 		{
 			throw new \InvalidArgumentException('Given rights where not formatted proppery. Formatting should be like area.right or area.[right, other_right]. Received: '.$rights);
+		}
+
+		// deal with only area passed
+		elseif (strpos($rights, '.') === false)
+		{
+			$rights .= ".";
 		}
 
 		list($area, $rights) = explode('.', $rights);
