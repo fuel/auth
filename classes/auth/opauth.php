@@ -359,7 +359,11 @@ class Auth_Opauth
 	protected function callback()
 	{
 		// fetch the response and decode it
-		$this->response = \Input::get('opauth', false) and $this->response = unserialize(base64_decode($this->response));
+		if ($this->response = \Input::get('opauth', false))
+		{
+			$this->response = base64_decode($this->response);
+			$this->response = \Str::is_json($this->response) ? json_decode($this->response, true) : unserialize($this->response);
+		}
 
 		// did we receive a response at all?
 		if ( ! $this->response)
