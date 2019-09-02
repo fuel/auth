@@ -367,14 +367,15 @@ class Auth
 	 */
 	public static function __callStatic($method, $args)
 	{
-		$args = array_pad($args, 3, null);
 		if (array_key_exists($method, static::$_drivers))
 		{
-			return static::_driver_instance($method, $args[0]);
+			array_unshift($args, $method);
+			return static::_driver_instance(...$args);
 		}
 		if ($type = array_search($method, static::$_drivers))
 		{
-			return static::_driver_check($type, $args[0], $args[1], @$args[2]);
+			array_unshift($args, $type);
+			return static::_driver_check(...$args);
 		}
 		if (static::$_verify_multiple !== true and method_exists(static::$_instance, $method))
 		{
