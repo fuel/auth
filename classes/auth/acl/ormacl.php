@@ -149,8 +149,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 							{
 								$revoked_rights[$permission->area][$permission->permission] = array_merge(
 									$revoked_rights[$permission->area][$permission->permission],
-                                    array_flip(array_intersect_key(
-                                        array_flip($permission->actions ?: array()),
+									array_flip(array_intersect_key(
+										array_flip($permission->actions ?: array()),
 										array_flip($rolepermission->actions ?: array())
 									))
 								);
@@ -173,8 +173,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 							{
 								$current_rights[$permission->area][$permission->permission] = array_merge(
 									$current_rights[$permission->area][$permission->permission],
-                                    array_flip(array_intersect_key(
-                                        array_flip($permission->actions ?: array()),
+									array_flip(array_intersect_key(
+										array_flip($permission->actions ?: array()),
 										array_flip($rolepermission->actions ?: array())
 									))
 								);
@@ -202,8 +202,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 								{
 									$current_rights[$permission->area][$permission->permission] = array_merge(
 										$current_rights[$permission->area][$permission->permission],
-                                        array_flip(array_intersect_key(
-                                            array_flip($permission->actions ?: array()),
+										array_flip(array_intersect_key(
+											array_flip($permission->actions ?: array()),
 											array_flip($grouppermission->actions ?: array())
 										))
 									);
@@ -223,8 +223,8 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 							{
 								$current_rights[$permission->area][$permission->permission] = array_merge(
 									$current_rights[$permission->area][$permission->permission],
-                                    array_flip(array_intersect_key(
-                                        array_flip($permission->actions ?: array()),
+									array_flip(array_intersect_key(
+										array_flip($permission->actions ?: array()),
 										array_flip($userpermission->actions ?: array())
 									))
 								);
