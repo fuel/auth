@@ -85,7 +85,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 				$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 					->where('username', '=', $username)
 					->from(\Config::get('simpleauth.table_name'))
-					->execute(\Config::get('simpleauth.db_connection'))->current();
+					->execute(\Config::get('simpleauth.db_connection'))->next();
 			}
 
 			// return true when login was verified, and either the hash matches or multiple logins are allowed
@@ -132,7 +132,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			->where_close()
 			->where('password', '=', $password)
 			->from(\Config::get('simpleauth.table_name'))
-			->execute(\Config::get('simpleauth.db_connection'))->current();
+			->execute(\Config::get('simpleauth.db_connection'))->next();
 
 		return $user ?: false;
 	}
@@ -182,7 +182,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			->where_close()
 			->from(\Config::get('simpleauth.table_name'))
 			->execute(\Config::get('simpleauth.db_connection'))
-			->current();
+			->next();
 
 		if ($this->user == false)
 		{
@@ -245,7 +245,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		if ($same_users->count() > 0)
 		{
-			if (in_array(strtolower($email), array_map('strtolower', $same_users->current())))
+			if (in_array(strtolower($email), array_map('strtolower', $same_users->next())))
 			{
 				throw new \SimpleUserUpdateException('Email address already exists', 2);
 			}
@@ -375,7 +375,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 				->where('username', '=', $username)
 				->from(\Config::get('simpleauth.table_name'))
-				->execute(\Config::get('simpleauth.db_connection'))->current();
+				->execute(\Config::get('simpleauth.db_connection'))->next();
 		}
 
 		return $affected_rows > 0;
