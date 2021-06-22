@@ -78,16 +78,18 @@ class Auth
 	 */
 	public static function forge($custom = array())
 	{
-		// Driver is given as array key or just string in custom
+		// make sure custom is an array
 		$custom = ! is_array($custom) ? array('driver' => $custom) : $custom;
+
+		// driver must be set
+		if (empty($custom['driver']) or ! is_string($custom['driver']))
+		{
+			throw new \AuthException('No auth driver specified when calling forge().');
+		}
+
+		// fetch any custom config for this driver and merge it in
 		$config = \Config::get('auth.'.$custom['driver'].'_config', array());
 		$config = array_merge($config, $custom);
-
-		// Driver must be set
-		if (empty($config['driver']) || ! is_string($config['driver']))
-		{
-			throw new \AuthException('No auth driver given.');
-		}
 
 		// determine the driver to load
 		$driver = \Auth_Login_Driver::forge($config);
