@@ -229,6 +229,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 */
 	public function create_user($username, $password, $email, $group = 1, Array $profile_fields = array())
 	{
+		$username = trim($username);
 		$password = trim($password);
 		$email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
 

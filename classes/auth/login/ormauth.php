@@ -224,7 +224,8 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	 */
 	public function create_user($username, $password, $email, $group = 1, Array $profile_fields = array())
 	{
-		// prep the password
+		// prep the username and password
+		$username = trim($username);
 		$password = trim($password);
 
 		// and validate the email address
