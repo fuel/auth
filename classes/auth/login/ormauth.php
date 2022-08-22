@@ -166,7 +166,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		{
 			// store the logged-in user and it's hash in the session
 			\Session::set('username', $this->user->username);
-			\Session::set('login_hash', $this->create_login_hash());
+			\Session::set('login_hash', \Fuel::$is_cli ? $this->user->login_hash : $this->create_login_hash());
 
 			// and rotate the session id, we've elevated rights
 			\Session::instance()->rotate();
