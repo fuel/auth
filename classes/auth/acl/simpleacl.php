@@ -18,7 +18,7 @@ class Auth_Acl_Simpleacl extends \Auth_Acl_Driver
 
 	public static function _init()
 	{
-		static::$_valid_roles = array_keys(\Config::get('simpleauth.roles'), array());
+		static::$_valid_roles = array_keys(\Config::get('simpleauth.roles', array()));
 	}
 
 	public function roles()
