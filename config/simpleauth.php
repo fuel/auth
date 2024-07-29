@@ -38,7 +38,7 @@ return array(
 
 	/**
 	 * Array, choose which columns from the users table are selected.
-	 *  must include: username, password, email, last_login,
+	 *  must include: id. username, password, salt, email, last_login,
 	 * login_hash, group & profile_fields
 	 */
 	'table_columns' => null,

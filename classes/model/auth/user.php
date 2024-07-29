@@ -69,6 +69,11 @@ class Auth_User extends \Orm\Model
 			'form'        => array('type' => 'password'),
 			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm')),
 		),
+		'salt'            => array(
+			'default'     => '',
+			'null'        => false,
+			'form'        => array('type' => false),
+		),
 		'profile_fields'  => array(
 			'default'     => array(),
 			'data_type'   => 'serialize',

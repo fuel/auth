@@ -124,17 +124,36 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			return false;
 		}
 
-		$password = $this->hash_password($password);
 		$user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
-			->where_open()
-			->where('username', '=', $username_or_email)
-			->or_where('email', '=', $username_or_email)
-			->where_close()
-			->where('password', '=', $password)
-			->from(\Config::get('simpleauth.table_name'))
-			->execute(\Config::get('simpleauth.db_connection'))->current();
+			->from(\Config::get('simpleauth.table_name'));
 
-		return $user ?: false;
+		switch (\Config::get('auth.login_type', 'both'))
+		{
+			case "username":
+				$user->where('username', '=', $username_or_email);
+				break;
+
+			case "email":
+				$user->where('email', '=', $username_or_email);
+				break;
+
+			default:
+				$user->where('username', '=', $username_or_email)
+					->or_where('email', '=', $username_or_email);
+		}
+
+		$user = $user->execute(\Config::get('simpleauth.db_connection'))->current();
+
+		if ($user)
+		{
+			$password = $this->hash_password($password.$user['salt']);
+			if ($password === $user['password'])
+			{
+				return $user;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -239,27 +258,34 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			throw new \SimpleUserUpdateException('Username, password or email address is not given, or email address is invalid', 1);
 		}
 
+		// check for duplicates
 		$same_users = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
 			->where('username', '=', $username)
-			->or_where('email', '=', $email)
 			->from(\Config::get('simpleauth.table_name'))
 			->execute(\Config::get('simpleauth.db_connection'));
 
 		if ($same_users->count() > 0)
 		{
-			if (in_array(strtolower($email), array_map('strtolower', $same_users->current())))
-			{
-				throw new \SimpleUserUpdateException('Email address already exists', 2);
-			}
-			else
-			{
-				throw new \SimpleUserUpdateException('Username already exists', 3);
-			}
+			throw new \SimpleUserUpdateException('Username already exists', 3);
 		}
+
+		$same_users = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
+			->where('email', '=', $email)
+			->from(\Config::get('simpleauth.table_name'))
+			->execute(\Config::get('simpleauth.db_connection'));
+
+		if ($same_users->count() > 0)
+		{
+				throw new \SimpleUserUpdateException('Email address already exists', 2);
+		}
+
+		// generate a salt for this user
+		$salt = bin2hex(random_bytes(8));
 
 		$user = array(
 			'username'        => (string) $username,
-			'password'        => $this->hash_password((string) $password),
+			'password'        => $this->hash_password((string) $password . $salt),
+			'salt'            => $salt,
 			'email'           => $email,
 			'group'           => (int) $group,
 			'profile_fields'  => serialize($profile_fields),
@@ -276,34 +302,50 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 	/**
 	 * Update a user's properties
-	 * Note: Username cannot be updated, to update password the old password must be passed as old_password
+	 * Note: to update password the old password must be passed as old_password
 	 *
 	 * @param   Array  properties to be updated including profile fields
-	 * @param   string
+	 * @param   string username, email, or null for the current user
 	 * @return  bool
 	 */
-	public function update_user($values, $username = null)
+	public function update_user($values, $username_or_email = null)
 	{
-		$username = $username ?: $this->user['username'];
-		$current_values = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
-			->where('username', '=', $username)
-			->from(\Config::get('simpleauth.table_name'))
-			->execute(\Config::get('simpleauth.db_connection'));
+		if (empty($username_or_email))
+		{
+			$username_or_email = $this->user['username'];
+		}
+
+		$user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
+			->from(\Config::get('simpleauth.table_name'));
+
+		switch (\Config::get('auth.login_type', 'both'))
+		{
+			case "username":
+				$user->where('username', '=', $username_or_email);
+				break;
+
+			case "email":
+				$user->where('email', '=', $username_or_email);
+				break;
+
+			default:
+				$user->where('username', '=', $username_or_email)
+					->or_where('email', '=', $username_or_email);
+		}
+
+		$current_values = $user->execute(\Config::get('simpleauth.db_connection'))->current();
 
 		if (empty($current_values))
 		{
-			throw new \SimpleUserUpdateException('Username not found', 4);
+			throw new \SimpleUserUpdateException('User not found', 4);
 		}
 
 		$update = array();
-		if (array_key_exists('username', $values))
-		{
-			throw new \SimpleUserUpdateException('Username cannot be changed.', 5);
-		}
+
 		if (array_key_exists('password', $values))
 		{
 			if (empty($values['old_password'])
-				or $current_values->get('password') != $this->hash_password(trim($values['old_password'])))
+				or $current_values->get('password') != $this->hash_password(trim($values['old_password']).$current_values->get('salt')))
 			{
 				throw new \SimpleUserWrongPassword('Old password is invalid');
 			}
@@ -313,13 +355,18 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			{
 				throw new \SimpleUserUpdateException('Password can\'t be empty.', 6);
 			}
-			$update['password'] = $this->hash_password($password);
+
+			$salt = bin2hex(random_bytes(8));
+			$update['password'] = $this->hash_password(trim($password).$salt);
+			$update['salt'] = $salt;
 			unset($values['password']);
 		}
+
 		if (array_key_exists('old_password', $values))
 		{
 			unset($values['old_password']);
 		}
+
 		if (array_key_exists('email', $values))
 		{
 			$email = filter_var(trim($values['email']), FILTER_VALIDATE_EMAIL);
@@ -339,6 +386,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			$update['email'] = $email;
 			unset($values['email']);
 		}
+
 		if (array_key_exists('group', $values))
 		{
 			if (is_numeric($values['group']))
@@ -347,6 +395,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			}
 			unset($values['group']);
 		}
+
 		if ( ! empty($values))
 		{
 			$profile_fields = @unserialize($current_values->get('profile_fields')) ?: array();
@@ -368,14 +417,14 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		$affected_rows = \DB::update(\Config::get('simpleauth.table_name'))
 			->set($update)
-			->where('username', '=', $username)
+			->where('id', '=', $current_values['id'])
 			->execute(\Config::get('simpleauth.db_connection'));
 
 		// Refresh user
-		if ($this->user['username'] == $username)
+		if ($this->user['id'] == $current_values['id'])
 		{
 			$this->user = \DB::select_array(\Config::get('simpleauth.table_columns', array('*')))
-				->where('username', '=', $username)
+				->where('id', '=', $current_values['id'])
 				->from(\Config::get('simpleauth.table_name'))
 				->execute(\Config::get('simpleauth.db_connection'))->current();
 		}
@@ -388,14 +437,14 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 *
 	 * @param   string
 	 * @param   string
-	 * @param   string  username or null for current user
+	 * @param   string  username or email, or null for current user
 	 * @return  bool
 	 */
-	public function change_password($old_password, $new_password, $username = null)
+	public function change_password($old_password, $new_password, $username_or_email = null)
 	{
 		try
 		{
-			return (bool) $this->update_user(array('old_password' => $old_password, 'password' => $new_password), $username);
+			return (bool) $this->update_user(array('old_password' => $old_password, 'password' => $new_password), $username_or_email);
 		}
 		// Only catch the wrong password exception
 		catch (SimpleUserWrongPassword $e)
@@ -405,46 +454,84 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	}
 
 	/**
-	 * Generates new random password, sets it for the given username and returns the new password.
-	 * To be used for resetting a user's forgotten password, should be emailed afterwards.
+	 * Generates new random password, sets it for the given username or email address, and returns the
+	 * new password. To be used for resetting a user's forgotten password.
 	 *
-	 * @param   string  $username
+	 * @param   string  $username_or_email
 	 * @return  string
 	 */
-	public function reset_password($username)
+	public function reset_password($username_or_email)
 	{
-		$new_password = \Str::random('alnum', 8);
-		$password_hash = $this->hash_password($new_password);
+		switch (\Config::get('auth.login_type', 'both'))
+		{
+			case "username":
+				$user->where('username', '=', $username_or_email);
+				break;
 
-		$affected_rows = \DB::update(\Config::get('simpleauth.table_name'))
-			->set(array('password' => $password_hash))
-			->where('username', '=', $username)
+			case "email":
+				$user->where('email', '=', $username_or_email);
+				break;
+
+			default:
+				$user->where('username', '=', $username_or_email)
+					->or_where('email', '=', $username_or_email);
+		}
+
+		$user = $user->execute(\Config::get('simpleauth.db_connection'))->current();
+
+		if ($user)
+		{
+			// generate a new salt for this user
+			$salt = bin2hex(random_bytes(8));
+
+			$new_password = \Str::random('alnum', 8);
+			$password = $this->hash_password($new_password . $salt);
+
+			$affected_rows = \DB::update(\Config::get('simpleauth.table_name'))
+			->set(array('password' => $password, 'salt' => $salt))
+			->where('id', '=', $user['id'])
 			->execute(\Config::get('simpleauth.db_connection'));
+		}
 
-		if ( ! $affected_rows)
+		if ( ! $user or ! $affected_rows)
 		{
 			throw new \SimpleUserUpdateException('Failed to reset password, user was invalid.', 8);
 		}
 
-		return $new_password;
+		return $password;
 	}
 
 	/**
-	 * Deletes a given user
+	 * Deletes a given user, identified by username or email address
 	 *
 	 * @param   string
 	 * @return  bool
 	 */
-	public function delete_user($username)
+	public function delete_user($username_or_email)
 	{
-		if (empty($username))
+		if (empty($username_or_email))
 		{
 			throw new \SimpleUserUpdateException('Cannot delete user with empty username', 9);
 		}
 
-		$affected_rows = \DB::delete(\Config::get('simpleauth.table_name'))
-			->where('username', '=', $username)
-			->execute(\Config::get('simpleauth.db_connection'));
+		$user = \DB::delete(\Config::get('simpleauth.table_name'))
+
+		switch (\Config::get('auth.login_type', 'both'))
+		{
+			case "username":
+				$user->where('username', '=', $username_or_email);
+				break;
+
+			case "email":
+				$user->where('email', '=', $username_or_email);
+				break;
+
+			default:
+				$user->where('username', '=', $username_or_email)
+					->or_where('email', '=', $username_or_email);
+		}
+
+		$affected_rows = $user->execute(\Config::get('simpleauth.db_connection'));
 
 		return $affected_rows > 0;
 	}
@@ -466,7 +553,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		\DB::update(\Config::get('simpleauth.table_name'))
 			->set(array('last_login' => $last_login, 'login_hash' => $login_hash))
-			->where('username', '=', $this->user['username'])
+			->where('id', '=', $this->user['id'])
 			->execute(\Config::get('simpleauth.db_connection'));
 
 		$this->user['login_hash'] = $login_hash;
