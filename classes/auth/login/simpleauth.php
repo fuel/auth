@@ -335,6 +335,9 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		$current_values = $user->execute(\Config::get('simpleauth.db_connection'))->current();
 
+		// updating the current user?
+		$current_user = $current_values['id'] == $this->user['id'];
+
 		if (empty($current_values))
 		{
 			throw new \SimpleUserUpdateException('User not found', 4);
@@ -429,6 +432,13 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 				->execute(\Config::get('simpleauth.db_connection'))->current();
 		}
 
+		// we might have changed the username, this prevents the current
+		// user being logged logged out due to a username mismatch
+		if ($current_user)
+		{
+			\Session::set('username', $this->user['username']);
+		}
+
 		return $affected_rows > 0;
 	}
 
@@ -514,7 +524,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			throw new \SimpleUserUpdateException('Cannot delete user with empty username', 9);
 		}
 
-		$user = \DB::delete(\Config::get('simpleauth.table_name'))
+		$user = \DB::delete(\Config::get('simpleauth.table_name'));
 
 		switch (\Config::get('auth.login_type', 'both'))
 		{

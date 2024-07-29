@@ -356,6 +356,9 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 
 		$current_values = $user->get_one();
 
+		// updating the current user?
+		$current_user = $current_values == $this->user;
+
 		// and bail out if it doesn't exist
 		if (empty($current_values))
 		{
@@ -364,11 +367,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 
 		// validate the values passed and assume the update array
 		$update = array();
-
-		if (array_key_exists('username', $values))
-		{
-			throw new \SimpleUserUpdateException('Username cannot be changed.', 5);
-		}
 
 		if (array_key_exists('password', $values))
 		{
@@ -467,6 +465,13 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		{
 			// and only save if it did
 			$current_values->save();
+		}
+
+		// we might have changed the username, this prevents the current
+		// user being logged logged out due to a username mismatch
+		if ($current_user)
+		{
+			\Session::set('username', $this->user->username);
 		}
 
 		// return the updated status
