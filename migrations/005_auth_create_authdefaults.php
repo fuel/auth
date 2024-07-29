@@ -75,36 +75,56 @@ class Auth_Create_Authdefaults
 			$result = \DB::select('id')->from($table)->where('username', '=', 'admin')->execute($connection);
 			if (count($result) == 0)
 			{
-				\Auth::instance()->create_user('admin', 'admin', 'admin@example.org', $group_id_admin, array('fullname' => 'System administrator'));
+				list($user_id, $rows_affected) = \DB::insert($table)->set(
+					array(
+						'username' => 'admin',
+						'password' => $this->hash_password('admin'),
+						'email' => 'admin@example.org',
+						'group_id' => $group_id_admin,
+						'created_at' => time()
+					)
+				)->execute($connection);
+				\DB::insert($table.'_metadata')->set(
+					array(
+						'parent_id' => $user_id,
+						'key' => 'fullname',
+						'value' => 'System administrator',
+						'created_at' => time()
+					)
+				)->execute($connection);
 			}
 
-			// create the guest account
-			list($guest_id, $affected) = \DB::insert($table)->set(
-				array(
-					'username' => 'guest',
-					'password' => 'YOU CAN NOT USE THIS TO LOGIN',
-					'email' => '',
-					'group_id' => $group_id_guest,
-					'last_login' => 0,
-					'previous_login' => 0,
-					'login_hash' => '',
-					'user_id' => 0,
-					'created_at' => time(),
-					'updated_at' => 0,
-				)
-			)->execute($connection);
+			// create the guest account if needed
+			$result = \DB::select('id')->from($table)->where('username', '=', 'guest')->execute($connection);
+			if (count($result) == 0)
+			{
+				list($guest_id, $affected) = \DB::insert($table)->set(
+					array(
+						'username' => 'guest',
+						'password' => 'YOU CAN NOT USE THIS TO LOGIN',
+						'email' => '',
+						'group_id' => $group_id_guest,
+						'last_login' => 0,
+						'previous_login' => 0,
+						'login_hash' => '',
+						'user_id' => 0,
+						'created_at' => time(),
+						'updated_at' => 0,
+					)
+				)->execute($connection);
 
-			// adjust the id's, auto_increment doesn't want to create a key with value 0
-			\DB::update($table)->set(array('id' => 0))->where('id', '=', $guest_id)->execute($connection);
+				// adjust the id's, auto_increment doesn't want to create a key with value 0
+				\DB::update($table)->set(array('id' => 0))->where('id', '=', $guest_id)->execute($connection);
 
-			// add guests full name to the metadata
-			\DB::insert($table.'_metadata')->set(
-				array(
-					'parent_id' => 0,
-					'key' => 'fullname',
-					'value' => 'Guest',
-				)
-			)->execute($connection);
+				// add guests full name to the metadata
+				\DB::insert($table.'_metadata')->set(
+					array(
+						'parent_id' => 0,
+						'key' => 'fullname',
+						'value' => 'Guest',
+					)
+				)->execute($connection);
+			}
 		}
 
 		// reset any DBUtil connection set
@@ -167,5 +187,16 @@ class Auth_Create_Authdefaults
 		}
 
 		return $connection;
+	}
+
+	/**
+	 * Default password hash method
+	 *
+	 * @param   string
+	 * @return  string
+	 */
+	protected function hash_password($password)
+	{
+		return base64_encode(hash_pbkdf2('sha256', $password, \Config::get('auth.salt'), \Config::get('auth.iterations', 10000), 32, true));
 	}
 }
