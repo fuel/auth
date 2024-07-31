@@ -87,6 +87,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 		// do a lookup of this user
 		$user = \Model\Auth_User::query()
 			->select(\Config::get('ormauth.table_columns', array()))
+			->related('group')
 			->related('metadata');
 
 		switch (\Config::get('auth.login_type', 'both'))
@@ -753,6 +754,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 				// find the user
 				$this->user = \Model\Auth_User::query()
 					->select(\Config::get('ormauth.table_columns', array()))
+					->related('group')
 					->related('metadata')
 					->where('username', '=', $username)
 					->get_one();
