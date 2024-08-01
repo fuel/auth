@@ -38,19 +38,16 @@ class Auth_User extends \Orm\Model
 		'id'              => array(),
 		'username'        => array(
 			'label'       => 'auth_model_user.name',
-			'default'     => 0,
 			'null'        => false,
 			'validation'  => array('required', 'max_length' => array(255)),
 		),
 		'email'           => array(
 			'label'       => 'auth_model_user.email',
-			'default'     => 0,
 			'null'        => false,
 			'validation'  => array('required', 'valid_email'),
 		),
 		'group'	          => array(
 			'label'       => 'auth_model_user.group_id',
-			'default'     => 0,
 			'null'        => false,
 			'form'        => array('type' => 'select'),
 			'validation'  => array('required', 'match_pattern' => array('/^[1-9]\d*$/')),
@@ -64,7 +61,6 @@ class Auth_User extends \Orm\Model
 		),
 		'password'        => array(
 			'label'       => 'auth_model_user.password',
-			'default'     => 0,
 			'null'        => false,
 			'form'        => array('type' => 'password'),
 			'validation'  => array('min_length' => array(8), 'match_field' => array('confirm')),

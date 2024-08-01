@@ -36,7 +36,6 @@ class Auth_Role extends \Orm\Model
 		'id'              => array(),
 		'name'            => array(
 			'label'       => 'auth_model_role.name',
-			'default'     => 0,
 			'null'        => false,
 			'validation'  => array('required', 'max_length' => array(255)),
 		),
@@ -44,7 +43,6 @@ class Auth_Role extends \Orm\Model
 			'label'       => 'auth_model_role.filter',
 			'data_type'   => 'enum',
 			'options'     => array('', 'A', 'D', 'R'),
-			'default'     => 0,
 			'null'        => false,
 			'form'        => array('type' => 'select'),
 			'validation'  => array(),
