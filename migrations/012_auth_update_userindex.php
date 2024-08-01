@@ -43,14 +43,23 @@ class Auth_Update_Userindex
 		// only do this if the user table does exist
 		if (\DBUtil::table_exists($table))
 		{
-			// drop the old compound index
-			\DBUtil::drop_index($table, 'username');
+			try
+			{
+				// add a unique index on username
+				\DBUtil::create_index($table, 'username', 'username', 'UNIQUE');
 
-			// add a unique index on username
-			\DBUtil::create_index($table, 'username', 'username', 'UNIQUE');
+				// add a unique index on email
+				\DBUtil::create_index($table, 'email', 'email', 'UNIQUE');
 
-			// add a unique index on email
-			\DBUtil::create_index($table, 'email', 'email', 'UNIQUE');
+				// drop the old compound index
+				\DBUtil::drop_index($table, 'username');
+			}
+			catch  (\Exception $e)
+			{
+				// index creation could fail in case of duplicate email and/or usernames
+				// in which case the old index won't be dropped, and we'll continue
+				// without the new indexes.
+			}
 
 			// add a salt column
 			\DBUtil::add_fields($table, array(
