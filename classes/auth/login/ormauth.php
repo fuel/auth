@@ -741,40 +741,43 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	 */
 	protected function perform_check()
 	{
-		// get the username and login hash from the session
-		$username    = \Session::get('username');
-		$login_hash  = \Session::get('login_hash');
-
-		// only worth checking if there's both a username and login-hash
-		if ( ! empty($username) and ! empty($login_hash))
+		if ( ! $this->user)
 		{
-			// if we don't have a user, or we're logging in from guest mode
-			if (is_null($this->user) or ($this->user->username != $username and $this->user->id == 0))
+			// get the username and login hash from the session
+			$username    = \Session::get('username');
+			$login_hash  = \Session::get('login_hash');
+
+			// only worth checking if there's both a username and login-hash
+			if ( ! empty($username) and ! empty($login_hash))
 			{
-				// find the user
-				$this->user = \Model\Auth_User::query()
-					->select(\Config::get('ormauth.table_columns', array()))
-					->related('group')
-					->related('metadata')
-					->where('username', '=', $username)
-					->get_one();
+				// if we don't have a user, or we're logging in from guest mode
+				if (is_null($this->user) or ($this->user->username != $username and $this->user->id == 0))
+				{
+					// find the user
+					$this->user = \Model\Auth_User::query()
+						->select(\Config::get('ormauth.table_columns', array()))
+						->related('group')
+						->related('metadata')
+						->where('username', '=', $username)
+						->get_one();
+				}
+
+				// return true when login was verified, and either the hash matches or multiple logins are allowed
+				if ($this->user and (\Config::get('ormauth.multiple_logins', false) or $this->user['login_hash'] === $login_hash))
+				{
+					return true;
+				}
 			}
 
-			// return true when login was verified, and either the hash matches or multiple logins are allowed
-			if ($this->user and (\Config::get('ormauth.multiple_logins', false) or $this->user['login_hash'] === $login_hash))
+			// not logged in, do we have remember-me active and a stored user_id?
+			elseif (static::$remember_me and $user_id = static::$remember_me->get('user_id', null))
 			{
-				return true;
+				return $this->force_login($user_id);
 			}
-		}
 
-		// not logged in, do we have remember-me active and a stored user_id?
-		elseif (static::$remember_me and $user_id = static::$remember_me->get('user_id', null))
-		{
-			return $this->force_login($user_id);
+			// force a logout
+			$this->logout();
 		}
-
-		// force a logout
-		$this->logout();
 
 		return false;
 	}
