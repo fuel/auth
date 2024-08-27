@@ -472,6 +472,10 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 */
 	public function reset_password($username_or_email)
 	{
+		$user =  \DB::select()
+			->from(\Config::get('simpleauth.table_name'))
+			->limit(1);
+
 		switch (\Config::get('auth.login_type', 'both'))
 		{
 			case "username":
