@@ -81,9 +81,14 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 			$rights = (array) $matches[1];
 			$actions = explode(',', $matches[2]);
 		}
-		else
+		elseif ($condition[1])
 		{
 			$rights  = (array) $condition[1];
+			$actions = array();
+		}
+		else
+		{
+			$rights  = array();
 			$actions = array();
 		}
 

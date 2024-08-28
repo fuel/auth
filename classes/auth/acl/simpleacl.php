@@ -38,7 +38,7 @@ class Auth_Acl_Simpleacl extends \Auth_Acl_Driver
 		}
 
 		$area    = $condition[0];
-		$rights  = (array) $condition[1];
+		$rights  = empty($condition[1]) ? array() : (array) $condition[1];
 		$current_roles  = $group->get_roles($entity[1]);
 		$current_rights = array();
 		if (is_array($current_roles))
