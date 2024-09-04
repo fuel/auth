@@ -46,12 +46,6 @@ class Auth_User extends \Orm\Model
 			'null'        => false,
 			'validation'  => array('required', 'valid_email'),
 		),
-		'group'	          => array(
-			'label'       => 'auth_model_user.group_id',
-			'null'        => false,
-			'form'        => array('type' => 'select'),
-			'validation'  => array('required', 'match_pattern' => array('/^[1-9]\d*$/')),
-		),
 		'group_id'        => array(
 			'label'       => 'auth_model_user.group_id',
 			'default'     => null,
