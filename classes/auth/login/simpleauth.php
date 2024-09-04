@@ -512,7 +512,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			throw new \SimpleUserUpdateException('Failed to reset password, user was invalid.', 8);
 		}
 
-		return $password;
+		return $new_password;
 	}
 
 	/**
