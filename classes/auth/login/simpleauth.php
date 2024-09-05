@@ -348,7 +348,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 		if (array_key_exists('password', $values))
 		{
 			if (empty($values['old_password'])
-				or $current_values->get('password') != $this->hash_password(trim($values['old_password']).$current_values->get('salt')))
+				or $current_values['password'] != $this->hash_password(trim($values['old_password']).$current_values['salt']))
 			{
 				throw new \SimpleUserWrongPassword('Old password is invalid');
 			}
@@ -379,7 +379,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 			}
 			$matches = \DB::select()
 				->where('email', '=', $email)
-				->where('id', '!=', $current_values[0]['id'])
+				->where('id', '!=', $current_values['id'])
 				->from(\Config::get('simpleauth.table_name'))
 				->execute(\Config::get('simpleauth.db_connection'));
 			if (count($matches))
@@ -401,7 +401,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 
 		if ( ! empty($values))
 		{
-			$profile_fields = @unserialize($current_values->get('profile_fields')) ?: array();
+			$profile_fields = @unserialize($current_values['profile_fields']) ?: array();
 			foreach ($values as $key => $val)
 			{
 				if ($val === null)
