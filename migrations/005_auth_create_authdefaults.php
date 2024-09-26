@@ -81,7 +81,12 @@ class Auth_Create_Authdefaults
 						'password' => $this->hash_password('admin'),
 						'email' => 'admin@example.org',
 						'group_id' => $group_id_admin,
-						'created_at' => time()
+						'last_login' => 0,
+						'previous_login' => 0,
+						'login_hash' => '',
+						'user_id' => 0,
+						'created_at' => time(),
+						'updated_at' => 0,
 					)
 				)->execute($connection);
 				\DB::insert($table.'_metadata')->set(
