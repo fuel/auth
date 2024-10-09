@@ -96,6 +96,30 @@ class Auth_Permission extends \Orm\Model
 	);
 
 	/**
+	 * @var array	has_many relationships
+	 */
+	protected static $_has_many = array(
+		'userpermission' => array(
+			'model_to' => 'Model\\Auth_Userpermission',
+			'key_from' => 'id',
+			'key_to'   => 'user_id',
+			'cascade_delete' => true,
+		),
+		'grouppermission' => array(
+			'model_to' => 'Model\\Auth_Grouppermission',
+			'key_from' => 'id',
+			'key_to'   => 'group_id',
+			'cascade_delete' => true,
+		),
+		'rolepermission' => array(
+			'model_to' => 'Model\\Auth_Rolepermission',
+			'key_from' => 'id',
+			'key_to'   => 'role_id',
+			'cascade_delete' => true,
+		),
+	);
+
+	/**
 	 * @var array	many_many relationships
 	 */
 	protected static $_many_many = array(

@@ -96,7 +96,7 @@ class Auth_Role extends \Orm\Model
 			'model_to' => 'Model\\Auth_Rolepermission',
 			'key_from' => 'id',
 			'key_to'   => 'role_id',
-			'cascade_delete' => false,
+			'cascade_delete' => true,
 		),
 	);
 

@@ -152,7 +152,7 @@ class Auth_User extends \Orm\Model
 			'model_to' => 'Model\\Auth_Userpermission',
 			'key_from' => 'id',
 			'key_to'   => 'user_id',
-			'cascade_delete' => false,
+			'cascade_delete' => true,
 		),
 		'providers' => array(
 			'model_to' => 'Model\\Auth_Provider',

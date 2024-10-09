@@ -93,7 +93,7 @@ class Auth_Group extends \Orm\Model
 			'model_to' => 'Model\\Auth_Grouppermission',
 			'key_from' => 'id',
 			'key_to'   => 'group_id',
-			'cascade_delete' => false,
+			'cascade_delete' => true,
 		),
 	);
 
