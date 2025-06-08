@@ -242,7 +242,7 @@ class Auth_Acl_Ormacl extends \Auth_Acl_Driver
 
 			// save the rights in the cache
 			$this->_acl_cache[$cache_key] = array($current_rights, $revoked_rights, $global_access);
-			// \Cache::set($cache_key, $this->_acl_cache[$cache_key]);
+			\Cache::set($cache_key, $this->_acl_cache[$cache_key]);
 		}
 
 		// check for a revocation first
