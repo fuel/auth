@@ -134,7 +134,6 @@ class Auth_User extends \Orm\Model
 			'model_to' => 'Model\\Auth_Group',
 			'key_from' => 'group_id',
 			'key_to'   => 'id',
-			'cascade_delete' => false,
 		),
 	);
 
@@ -146,19 +145,19 @@ class Auth_User extends \Orm\Model
 			'model_to' => 'Model\\Auth_Metadata',
 			'key_from' => 'id',
 			'key_to'   => 'parent_id',
-			'cascade_delete' => true,
+			'constraint' => \Orm\Relation::CONSTRAINT_CASCADE,
 		),
 		'userpermission' => array(
 			'model_to' => 'Model\\Auth_Userpermission',
 			'key_from' => 'id',
 			'key_to'   => 'user_id',
-			'cascade_delete' => true,
+			'constraint' => \Orm\Relation::CONSTRAINT_CASCADE,
 		),
 		'providers' => array(
 			'model_to' => 'Model\\Auth_Provider',
 			'key_from' => 'id',
 			'key_to'   => 'parent_id',
-			'cascade_delete' => true,
+			'constraint' => \Orm\Relation::CONSTRAINT_CASCADE,
 		),
 	);
 

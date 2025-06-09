@@ -88,12 +88,13 @@ class Auth_Group extends \Orm\Model
 			'model_to' => 'Model\\Auth_User',
 			'key_from' => 'id',
 			'key_to'   => 'group_id',
+			'constraint' => \Orm\Relation::CONSTRAINT_RESTRICT,
 		),
 		'grouppermission' => array(
 			'model_to' => 'Model\\Auth_Grouppermission',
 			'key_from' => 'id',
 			'key_to'   => 'group_id',
-			'cascade_delete' => true,
+			'constraint' => \Orm\Relation::CONSTRAINT_CASCADE,
 		),
 	);
 
