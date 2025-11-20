@@ -274,16 +274,6 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			throw new \SimpleUserUpdateException('Email address already exists', 2);
 		}
 
-		// do we have a logged-in user?
-		if ($currentuser = \Auth::get_user_id())
-		{
-			$currentuser = $currentuser[1];
-		}
-		else
-		{
-			$currentuser = 0;
-		}
-
 		// generate a new salt for this user
 		$salt = bin2hex(random_bytes(8));
 
@@ -297,7 +287,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 			'last_login'      => 0,
 			'previous_login'  => 0,
 			'login_hash'      => '',
-			'user_id'         => $currentuser,
+			'user_id'         => \Auth::get('id', 0),
 			'created_at'	  => \Date::forge()->get_timestamp(),
 			'updated_at'      => 0,
 		));
