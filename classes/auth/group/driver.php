@@ -102,6 +102,52 @@ abstract class Auth_Group_Driver extends \Auth_Driver
 		return false;
 	}
 
+	/**
+	 * Check access rights, must match any of the given conditions
+	 *
+	 * @param	array	array of conditions as passed to has_access()
+	 * @param	string	acl driver id or null to check all
+	 * @param	array	user identifier to check in form array(driver_id, user_id)
+	 * @return	bool
+	 */
+	public function has_any_access($conditions, $driver, $group = null)
+	{
+		foreach ($conditions as $condition)
+		{
+			// return true on the first hit
+			if ($this->has_access($condition, $entity))
+			{
+				return true;
+			}
+		}
+
+		// none were a hit
+		return false;
+	}
+
+	/**
+	 * Check access rights, must match all of the given conditions
+	 *
+	 * @param	array	array of conditions as passed to has_access()
+	 * @param	string	acl driver id or null to check all
+	 * @param	array	user identifier to check in form array(driver_id, user_id)
+	 * @return	bool
+	 */
+	public function has_all_access($conditions, $driver, $group = null)
+	{
+		foreach ($conditions as $condition)
+		{
+			// return false on the first miss
+			if ( ! $this->has_access($condition, $entity))
+			{
+				return false;
+			}
+		}
+
+		// none were a miss
+		return true;
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**

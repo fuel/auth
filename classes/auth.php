@@ -46,8 +46,10 @@ class Auth
 	 * @var  Array  subdriver registry, takes driver name and method for checking it
 	 */
 	protected static $_drivers = array(
-		'group'  => 'member',
-		'acl'    => 'has_access',
+		'member' => 'group',
+		'has_access' => 'acl',
+		'has_any_access' => 'acl',
+		'has_all_access' => 'acl',
 	);
 
 	public static function _init()
@@ -319,14 +321,14 @@ class Auth
 	public static function register_driver_type($type, $check_method)
 	{
 		$driver_exists = ! is_string($type)
-						|| array_key_exists($type, static::$_drivers)
+						|| in_array($type, static::$_drivers)
 						|| method_exists(get_called_class(), $check_method)
 						|| in_array($type, array('login', 'group', 'acl'));
 		$method_exists = ! is_string($type)
-						|| array_search($check_method, static::$_drivers)
+						|| array_search($check_method, array_keys(static::$_drivers))
 						|| method_exists(get_called_class(), $type);
 
-		if ($driver_exists && static::$_drivers[$type] == $check_method)
+		if ($driver_exists && static::$_drivers[$check_method] == $type)
 		{
 			return true;
 		}
@@ -337,7 +339,8 @@ class Auth
 			return false;
 		}
 
-		static::$_drivers[$type] = $check_method;
+		static::$_drivers[$check_method] = $type;
+
 		return true;
 	}
 
@@ -355,7 +358,7 @@ class Auth
 			return false;
 		}
 
-		unset(static::$_drivers[$type]);
+		static::$_drivers == array_diff(static::$_drivers, array($type));
 		return true;
 	}
 
@@ -369,14 +372,14 @@ class Auth
 	 */
 	public static function __callStatic($method, $args)
 	{
-		if (array_key_exists($method, static::$_drivers))
+		if (in_array($method, static::$_drivers))
 		{
 			array_unshift($args, $method);
 			return static::_driver_instance(...$args);
 		}
-		if ($type = array_search($method, static::$_drivers))
+		if ($type = array_search($method, array_keys(static::$_drivers)))
 		{
-			array_unshift($args, $type);
+			array_unshift($args, array_keys(static::$_drivers)[$type]);
 			return static::_driver_check(...$args);
 		}
 		if (static::$_verify_multiple !== true and method_exists(static::$_instance, $method))
@@ -404,16 +407,16 @@ class Auth
 	/**
 	 * Check driver
 	 *
-	 * @param   string  driver type
+	 * @param   string  driver method
 	 * @param   mixed   condition for which the driver is checked
 	 * @param   string  driver id or null to check all
 	 * @param   Array   identifier to check, should default to current user or relation therof and be
 	 *                  in the form of array(driver_id, user_id)
 	 * @return bool
 	 */
-	public static function _driver_check($type, $condition, $driver = null, $entity = null)
+	public static function _driver_check($method, $condition, $driver = null, $entity = null)
 	{
-		$method = static::$_drivers[$type];
+		$type = static::$_drivers[$method];
 		if ($driver === null)
 		{
 			if ($entity === null)
