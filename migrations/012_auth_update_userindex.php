@@ -66,7 +66,7 @@ class Auth_Update_Userindex
 				'salt' => array('after' => 'password', 'type' => 'char', 'constraint' => 16, 'null' => false, 'default' => ''),
 			));
 
-			\Cli::write('AUTH-012: A per-user password salt has been introduced. Ideally, users should reset their passwords so that a salt will be generated.', 'yellow');
+			\Fuel::$is_cli and \Cli::write('AUTH-012: A per-user password salt has been introduced. Ideally, users should reset their passwords so that a salt will be generated.', 'yellow');
 		}
 
 		// reset any DBUtil connection set
@@ -75,7 +75,7 @@ class Auth_Update_Userindex
 
 	function down()
 	{
-		\Cli::write('AUTH-012: A per-user password salt was added in this migration. This can not be reversed, there is no way to remove the salt from stored password hashes! ', 'yellow');
+		\Fuel::$is_cli and \Cli::write('AUTH-012: A per-user password salt was added in this migration. This can not be reversed, there is no way to remove the salt from stored password hashes! ', 'yellow');
 		return false;
 	}
 
