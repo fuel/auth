@@ -38,6 +38,7 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 				'encrypt_cookie' => true,
 				'expire_on_close' => false,
 				'expiration_time' => \Config::get('simpleauth.remember_me.expiration', 86400 * 31),
+				'auto_start' => true,
 			));
 		}
 	}

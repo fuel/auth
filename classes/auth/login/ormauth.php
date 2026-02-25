@@ -45,6 +45,7 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 				'encrypt_cookie' => true,
 				'expire_on_close' => false,
 				'expiration_time' => \Config::get('ormauth.remember_me.expiration', 86400 * 31),
+				'auto_start' => true,
 			));
 		}
 	}
