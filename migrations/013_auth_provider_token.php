@@ -1,0 +1,123 @@
+<?php
+/**
+ * Fuel is a fast, lightweight, community driven PHP 5.4+ framework.
+ *
+ * @package    Fuel
+ * @version    1.9-dev
+ * @author     Fuel Development Team
+ * @license    MIT License
+ * @copyright  2010-2026 Fuel Development Team
+ * @link       https://fuelphp.com
+ */
+
+namespace Fuel\Migrations;
+
+include __DIR__."/../normalizedrivertypes.php";
+
+class Auth_Provider_Token
+{
+	function up()
+	{
+		// get the drivers defined
+		$drivers = normalize_driver_types();
+
+		if (in_array('Simpleauth', $drivers))
+		{
+			// get the tablename
+			\Config::load('simpleauth', true);
+			$table = \Config::get('simpleauth.table_name', 'users').'_providers';
+
+			// make sure the correct connection is used
+			$this->dbconnection('simpleauth');
+		}
+
+		elseif (in_array('Ormauth', $drivers))
+		{
+			// get the tablename
+			\Config::load('ormauth', true);
+			$table = \Config::get('ormauth.table_name', 'users').'_providers';
+
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
+		}
+
+		if (isset($table))
+		{
+			// make the group_id optional
+			\DBUtil::modify_fields($table, array(
+				'access_token' => array('type' => 'varchar', 'constraint' => 1024, 'null' => true, 'default' => null),
+			));
+		}
+
+		// reset any DBUtil connection set
+		$this->dbconnection(false);
+	}
+
+	function down()
+	{
+		// get the drivers defined
+		$drivers = normalize_driver_types();
+
+		if (in_array('Simpleauth', $drivers))
+		{
+			// get the tablename
+			\Config::load('simpleauth', true);
+			$table = \Config::get('simpleauth.table_name', 'users').'_providers';
+
+			// make sure the correct connection is used
+			$this->dbconnection('simpleauth');
+		}
+
+		elseif (in_array('Ormauth', $drivers))
+		{
+			// get the tablename
+			\Config::load('ormauth', true);
+			$table = \Config::get('ormauth.table_name', 'users').'_providers';
+
+			// make sure the correct connection is used
+			$this->dbconnection('ormauth');
+		}
+
+		if (isset($table))
+		{
+			// make the access_token a varchar again
+			\DBUtil::modify_fields($table, array(
+				'access_token' => array('type' => 'varchar', 'constraint' => 255, 'null' => true, 'default' => null),
+			));
+		}
+
+		// reset any DBUtil connection set
+		$this->dbconnection(false);
+	}
+
+	/**
+	 * check if we need to override the db connection for auth tables
+	 */
+	protected function dbconnection($type = null)
+	{
+		static $connection;
+
+		switch ($type)
+		{
+			// switch to the override connection
+			case 'simpleauth':
+			case 'ormauth':
+				if ($connection = \Config::get($type.'.db_connection', null))
+				{
+					\DBUtil::set_connection($connection);
+				}
+				break;
+
+			// switch back to the configured migration connection, or the default one
+			case false:
+				if ($connection)
+				{
+					\DBUtil::set_connection(\Config::get('migrations.connection', null));
+				}
+				break;
+
+			default:
+				// noop
+		}
+	}
+}
