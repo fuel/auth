@@ -117,8 +117,8 @@ class Auth_Login_Simpleauth extends \Auth_Login_Driver
 	 */
 	public function validate_user($username_or_email = '', $password = '')
 	{
-		$username_or_email = trim($username_or_email) ?: trim(\Input::post(\Config::get('simpleauth.username_post_key', 'username')));
-		$password = trim($password) ?: trim(\Input::post(\Config::get('simpleauth.password_post_key', 'password')));
+		$username_or_email = empty($username_or_email) ? trim(\Input::post(\Config::get('ormauth.username_post_key', 'username'), '')) : trim($username_or_email);
+		$password = empty($password) ? trim(\Input::post(\Config::get('ormauth.password', 'password'), '')) : trim($password);
 
 		if (empty($username_or_email) or empty($password))
 		{

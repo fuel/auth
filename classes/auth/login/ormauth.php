@@ -76,8 +76,8 @@ class Auth_Login_Ormauth extends \Auth_Login_Driver
 	public function validate_user($username_or_email = '', $password = '')
 	{
 		// get the user identification and password
-		$username_or_email = trim($username_or_email) ?: trim(\Input::post(\Config::get('ormauth.username_post_key', 'username')));
-		$password = trim($password) ?: trim(\Input::post(\Config::get('ormauth.password_post_key', 'password')));
+		$username_or_email = empty($username_or_email) ? trim(\Input::post(\Config::get('ormauth.username_post_key', 'username'), '')) : trim($username_or_email);
+		$password = empty($password) ? trim(\Input::post(\Config::get('ormauth.password', 'password'), '')) : trim($password);
 
 		// and make sure we have both
 		if (empty($username_or_email) or empty($password))
